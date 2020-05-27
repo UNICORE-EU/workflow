@@ -1,0 +1,46 @@
+<sim:Workflow xmlns:sim="http://www.chemomentum.org/workflow/simple" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <sim:Documentation/>
+          <sim:Activity Id="Start" Type="START" Name="START"/>
+          <sim:Transition Id="cb292be9-a9f5-4af5-b92c-c77bfe4eca08" From="Start" To="OuterFor"/>
+          <sim:SubWorkflow Id="OuterFor" IteratorName="ForEach1_ITERATOR" xsi:type="sim:ForEachType">
+            <sim:Documentation/>
+            <sim:Option name="unicore.workflow.forEach.maxConcurrentActivities">1</sim:Option>
+            <sim:SubWorkflow Id="OuterForBody" Type="LOOP_BODY" IteratorName="ForEach1_ITERATOR">
+              <sim:Documentation/>
+              <sim:SubWorkflow Id="InnerFor" IteratorName="ForEach2_ITERATOR" xsi:type="sim:ForEachType">
+              <sim:Option name="unicore.workflow.forEach.maxConcurrentActivities">1</sim:Option>
+                <sim:Documentation/>
+                <sim:SubWorkflow Id="InnerForBody" Type="LOOP_BODY" IteratorName="ForEach2_ITERATOR">
+                  <sim:Documentation/>
+                  <sim:Activity Id="Job1" Type="JSDL" Name="JSDL">
+                    <sim:Option name="SPLIT">false</sim:Option>
+                    <sim:JSDL id="Job1">
+                      <jsdl:JobDescription xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+                        <jsdl:JobIdentification>
+                          <jsdl:JobName>Job1_iteration_${CURRENT_TOTAL_ITERATOR}</jsdl:JobName>
+                        </jsdl:JobIdentification>
+                        <jsdl:Application>
+                          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+                        </jsdl:Application>
+                      </jsdl:JobDescription>
+                    </sim:JSDL>
+                  </sim:Activity>
+                </sim:SubWorkflow>
+                <sim:VariableSet>
+                  <sim:VariableName>Variable2</sim:VariableName>
+                  <sim:Type>INTEGER</sim:Type>
+                  <sim:StartValue>0</sim:StartValue>
+                  <sim:Expression>Variable2++;</sim:Expression>
+                  <sim:EndCondition>eval(Variable2&lt;2)</sim:EndCondition>
+                </sim:VariableSet>
+              </sim:SubWorkflow>
+            </sim:SubWorkflow>
+            <sim:VariableSet>
+              <sim:VariableName>Variable1</sim:VariableName>
+              <sim:Type>INTEGER</sim:Type>
+              <sim:StartValue>0</sim:StartValue>
+              <sim:Expression>Variable1++;</sim:Expression>
+              <sim:EndCondition>eval(Variable1&lt;2)</sim:EndCondition>
+            </sim:VariableSet>
+          </sim:SubWorkflow>
+</sim:Workflow>

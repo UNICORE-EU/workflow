@@ -1,0 +1,75 @@
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+Buildroot: %{_builddir}/%{name}-root
+Name: unicore-@component-name@@component-suffix@
+Version: @component-version@
+Release: @component-release@@component-disttag@
+Obsoletes: unicore-@component-name@
+Provides: unicore-@component-name@
+Summary: UNICORE Workflow
+License: BSD
+Distribution: RedHat
+Group: System Environment/Daemons
+URL: http://www.unicore.eu
+AutoReqProv: no
+BuildArch: @component-architecture@
+Packager: UNICORE unicore-support@lists.sourceforge.net
+@preamble@
+
+%description
+UNICORE (Uniform Interface to Computing Resources) offers a
+ready-to-run Grid system including client and server software.
+UNICORE makes distributed computing and data resources available
+in a seamless and secure way in intranets and the internet.
+
+This package contains the UNICORE Workflow service.
+
+%changelog
+* Sun May 10 2015 Piotr Piernik <unicore-support@lists.sourceforge.net> 
+-Initial rpm package
+
+@install_command@
+
+%files
+
+%dir %attr(755 unicore unicore) "/etc/unicore/workflow/"
+%dir %attr(755 unicore unicore) "/etc/unicore/workflow/xacml2Policies"
+%config(noreplace) %attr(0644 unicore unicore) "/etc/unicore/workflow/startup.properties"
+%config(noreplace) %attr(0644 unicore unicore) "/etc/unicore/workflow/logging.properties"
+%config(noreplace) %attr(0600 unicore unicore) "/etc/unicore/workflow/rest-users.txt"
+%config(noreplace) %attr(0644 unicore unicore) "/etc/unicore/workflow/simpleuudb"
+%config(noreplace) %attr(0600 unicore unicore) "/etc/unicore/workflow/container.properties"
+%config %attr(0644 unicore unicore)"/etc/unicore/workflow/xacml2.config"
+%config(noreplace) %attr(0644 unicore unicore) "/etc/unicore/workflow/xacml2Policies/*.xml"
+
+%attr(0644 unicore unicore) "/usr/lib/systemd/system/unicore-workflow.service"
+
+%attr(0744 unicore unicore) "/usr/sbin/unicore-workflow-start.sh"
+%attr(0744 unicore unicore) "/usr/sbin/unicore-workflow-stop.sh"
+%attr(0744 unicore unicore) "/usr/sbin/unicore-workflow-status.sh"
+
+%docdir %attr(755 root root) "/usr/share/doc/unicore/workflow/"
+%attr(644 root root) "/usr/share/doc/unicore/workflow/*"
+
+%attr(755 root root) %dir "/usr/share/unicore/workflow/lib"
+%attr(644 root root) "/usr/share/unicore/workflow/lib/*.jar"
+
+%dir %attr(0755 unicore unicore) "/var/log/unicore"
+%dir %attr(0755 unicore unicore) "/var/log/unicore/workflow"
+%dir %attr(0755 unicore unicore) "/var/run/unicore"
+%dir %attr(0750 unicore unicore) "/var/lib/unicore"
+%dir %attr(0750 unicore unicore) "/var/lib/unicore/workflow"
+
+
+%pre
+/usr/sbin/groupadd -r unicore 2>/dev/null || :
+/usr/sbin/useradd -c "UNICORE" -g unicore \
+    -s /sbin/nologin -r -d /usr/share/unicore unicore 2>/dev/null || :
+	
+%post
+/usr/bin/systemctl enable unicore-workflow.service
+
+%preun
+if [ "$1" = "0" ]; then
+    /usr/bin/systemctl stop unicore-workflow.service  >/dev/null 2>&1
+    /usr/bin/systemctl disable unicore-workflow.service
+fi

@@ -1,0 +1,33 @@
+{
+"comments" : ["",],
+
+"activities" : [
+
+ {
+   "id": "date1",
+   "type": "JOB",
+   "job": {
+     "ApplicationName": "Date",
+     "Exports": [
+       {"From": "stdout", "To": "wf:date1/out",},
+      ],
+    },
+ },
+
+ {
+   "id": "date2",
+   "type": "JOB",
+   "job": {
+     "Executable": "cat file.dat",
+     "Imports": [
+       {"From": "wf:date1/out", "To": "file.dat"},
+     ],
+    },
+ },
+],
+
+"transitions": [
+ {"id": "12", "from": "date1", "to": "date2" }
+
+],
+}

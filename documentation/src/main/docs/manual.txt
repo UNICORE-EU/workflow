@@ -1,0 +1,25 @@
+UNICORE Workflow System manual
+=============================
+UNICORE Team <unicore-support@lists.sourceforge.net>
+:revnumber: 1.0.0
+:numbered:
+
+
+The UNICORE Workflow System provides advanced
+workflow processing capabilities using UNICORE Grid resources.
+Its main components are the Workflow Engine and the 
+Service Orchestrator. While the Workflow Engine provides high-level
+control constructs (for-each, while, if-then-else, etc), the
+Service Orchestrator contains a powerful, extensible resource
+broker, and deals with execution of single UNICORE jobs.
+
+For more information about UNICORE visit http://www.unicore.eu[http://www.unicore.eu].
+
+include::setup.txt[]
+
+include::config.txt[]
+
+include::workflow-dialect.txt[]
+
+include::update.txt[]
+

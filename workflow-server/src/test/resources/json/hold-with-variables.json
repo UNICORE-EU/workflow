@@ -1,0 +1,42 @@
+{
+
+    "variables": [
+	{
+	    "id": "decl1",
+	    "name": "COUNTER",
+	    "type": "INTEGER",
+	    "initial_value": "123",
+	},
+    ],
+    
+    "activities" : [
+
+	{
+	    "id": "date1",
+	    "type": "JOB",
+	    "job": {
+		"ApplicationName": "Date",
+	    },
+	},
+	
+	{
+	    "id": "hold1",
+	    "type": "HOLD",
+	},
+	
+	{
+	    "id": "date2",
+	    "type": "JOB",
+	    "job": {
+		"Executable": "date",
+	    },
+	},
+    ],
+    
+    "transitions": [
+	{"id": "1-hold", "from": "date1", "to": "hold1" },
+	{"id": "hold-2", "from": "hold1", "to": "date2" },
+	
+    ],
+
+}

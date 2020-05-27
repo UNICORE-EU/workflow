@@ -1,0 +1,83 @@
+{
+
+    "Partitions": {
+	
+	"batch" : {
+	    "Description" : "Default queue",
+            "OperatingSystem" : "LINUX",
+	    "OperatingSystemVersion": "4.4",
+	    "CPUArchitecture" : "x86_64",    
+            "Resources" : {
+		"Runtime"     : "60-3600:600",
+		"Nodes"       : "1-4:1",
+		"CPUsPerNode" : "1-16:1",
+		"TotalCPUs"   : "1-64:1",
+		"Memory"      : "0-1073741824",
+          }
+	},
+	
+	"dev" : {
+	    "Description" : "Development queue",
+            "OperatingSystem" : "LINUX",
+	    "OperatingSystemVersion": "4.4",
+	    "CPUArchitecture" : "x86_64",    
+            "Resources" : {
+		"Runtime"     : "1-600:60",
+		"Nodes"       : "1-1:1",
+		"CPUsPerNode" : "1-16:1",
+		"TotalCPUs"   : "1-16:1",
+		"Memory"      : "0-1073741824",
+          }
+	},
+	
+    },
+
+    "Applications" : [
+	{
+	    "Name"       : "Date",
+	    "Version"    : "1.0",
+	    "Executable" : "date",
+	},
+
+	{
+	    "Name"       : "Bash shell",
+	    "Version"    : "4.4",
+	    "Executable" : "/bin/bash",
+	    "Arguments"  : [
+                "-d$DEBUG?",
+		"-vVERBOSE?",
+		"$OPTIONS?",
+		"$SOURCE?",
+		"$ARGUMENTS",
+	    ],
+	    "Parameters": {
+		"SOURCE": { "Type": "filename"},
+		"ARGUMENTS": {"Type": "string"},
+		"DEBUG": {"Type": "boolean"},
+		"VERBOSE": {"Type": "boolean"},
+		"OPTIONS": {"Type": "string"},
+	    },
+	},
+
+	{
+	    "Name"       : "Python Script",
+	    "Version"    : "2.7.15",
+	    "Executable" : "/usr/bin/python",
+	    "Arguments"  : [
+                "-d$DEBUG?",
+		"-vVERBOSE?",
+		"$OPTIONS?",
+		"$SOURCE?",
+		"$ARGUMENTS",
+	    ],
+	    "Parameters": {
+		"SOURCE": { "Type": "filename"},
+		"ARGUMENTS": {"Type": "string"},
+		"DEBUG": {"Type": "boolean"},
+		"VERBOSE": {"Type": "boolean"},
+		"OPTIONS": {"Type": "string"},
+	    },
+	},
+
+    ],
+}

@@ -1,0 +1,5 @@
+@component-prefix@@component-name@@component-suffix@ (@component-version@-@component-release@@component-disttag@) stable; urgency=low
+
+  * Initial release
+
+ -- Piotr Piernik <unicore-support@lists.sourceforge.net>  Sun, 10 May 2015 11:51:33 +0100

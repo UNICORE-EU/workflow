@@ -1,0 +1,34 @@
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+          xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl"
+          xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+  <s:Documentation>
+    <s:Comment>Simple chain: 'date1' - hold - 'date2'
+    </s:Comment>
+  </s:Documentation>
+  
+  <s:Activity Id="date1" Name="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+   
+  <s:Activity Id="hold" Name="HOLD"/>
+   
+  <s:Activity Id="date2" Name="JSDL">
+    <s:JSDL>
+       <jsdl:JobDescription>
+        <jsdl:Application>
+          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+
+  <s:Transition Id="date1-hold" From="date1" To="hold"/>
+  <s:Transition Id="hold-date2" From="hold" To="date2"/>
+
+</s:Workflow>

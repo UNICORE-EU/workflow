@@ -1,0 +1,39 @@
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple" xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+  <s:DeclareVariable>
+    <s:Name>COUNTER</s:Name>
+    <s:Type>INTEGER</s:Type>
+    <s:InitialValue>1</s:InitialValue>
+  </s:DeclareVariable>
+  <s:Activity Id="Start" Type="START"/>
+  <s:Activity Id="Join" Type="Merge"/>
+  <s:Activity Id="RunScript" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+           <jsdl:ApplicationName>Echo</jsdl:ApplicationName>
+           <jsdl1:POSIXApplication>
+            <jsdl1:Argument>$COUNTER</jsdl1:Argument>
+          </jsdl1:POSIXApplication>
+        </jsdl:Application>
+         <jsdl:DataStaging>
+          <jsdl:FileName>env://COUNTER</jsdl:FileName>
+          <jsdl:Source>
+            <jsdl:URI>context://COUNTER</jsdl:URI>
+          </jsdl:Source>
+        </jsdl:DataStaging>
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+  <s:Activity Id="IncrementCounter" Type="ModifyVariable">
+    <s:Option name="variableName">COUNTER</s:Option>
+    <s:Option name="expression">COUNTER+=1;</s:Option>
+  </s:Activity>
+  <s:Transition From="Start" To="Join" Id="Start-Join"/>
+  <s:Transition From="Join" To="RunScript" Id="Join-RunScript"/>
+  <s:Transition From="RunScript" To="IncrementCounter" Id="Run-Increment"/>
+  <s:Transition From="IncrementCounter" To="Join" Id="Increment-Join">
+    <s:Condition>
+      <s:Expression>COUNTER&lt;5</s:Expression>
+    </s:Condition>
+  </s:Transition>
+</s:Workflow>

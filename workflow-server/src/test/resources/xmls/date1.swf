@@ -1,0 +1,21 @@
+<Workflow xmlns="http://www.chemomentum.org/workflow/simple"
+          xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl"
+          xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix"
+>
+  <Documentation>
+    <Comment>Simple 'date' with some options set</Comment>
+  </Documentation>
+  <Activity Id="date1" Type="JSDL">
+   <JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+          <jsdl:ApplicationVersion>1.0</jsdl:ApplicationVersion>
+        </jsdl:Application>
+      </jsdl:JobDescription>
+    </JSDL>
+    <Option name="IGNORE_FAILURE">true</Option>
+    <Option name="MAX_RESUBMITS">10</Option>
+   </Activity>
+
+</Workflow>

@@ -1,0 +1,898 @@
+[[wf_dialect]]
+The "simple workflow" workflow description language
+---------------------------------------------------
+
+Introduction
+~~~~~~~~~~~~
+
+This chapter provides an overview of the "simple workflow" XML
+dialect that is used to describe workflows. It will allow
+you to write workflows "by hand", i.e. without using the graphical 
+UNICORE Rich client. These can be submitted for example using
+the UNICORE commandline client (UCC).
+
+The workflow language is an XML dialect, the corresponding
+XML schema can be found in the UNICORE SourceForge code repository
+[http://bit.ly/U6-Workflow-Schema]
+
+After presenting all the constructs individually, several complete
+xref:wf_examples[] are given.
+
+Overview and simple constructs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The overall workflow document has the following form:
+
+-----------
+<Workflow xmlns="http://www.chemomentum.org/workflow/simple" 
+          Id="...">
+  <Documentation>?
+  <DeclareVariable>*
+  <Activity>*
+  <Transition>*
+  <SubWorkflow>*
+  <Option>*
+</Workflow>
+-----------
+
+Here and in the following we use a simple notation to denote XML elements 
+and their multiplicity, where "*" denotes zero or multiple occurences and
+ "?" denotes zero or one occurence of a given element. In the next sections 
+the elements of the workflow description will be discussed in detail.
+
+NOTE
+=========
+The +Id+ attribute is used in many workflow elements, and must be an identifier
+string that is UNIQUE within the workflow. 
+=========
+
+==== Documentation
+
+The Documentation element allows to add some meta-information to 
+the workflow description, i.e. it will be ignored by the processing engine. 
+In detail
+
+--------
+<Documentation xmlns="http://www.chemomentum.org/workflow/simple">
+  <Name>?
+  <Creator>?
+  <CreationDate>?
+  <Comment>*
+</Documentation>
+---------
+
+==== Activities
+
+Activity elements have the following form
+
+------
+<Activity xmlns="http://www.chemomentum.org/workflow/simple"
+          Id="..." Type="..." >
+  <Option Name="...">*
+  <JSDL>?
+</Activity>
+------
+
+The +Id+ attribute must be unique within the workflow. There are different types of 
+activity, which are distinguished by the "Type" attribute.
+
+ * "START" denotes an explicit start activity. If no such activity is present, the
+   processing engine will detect the proper starting activities
+
+ * "JSDL" denotes a executable (job) activity. In this case, the +JSDL+ sub element 
+   holds the JSDL job definition
+
+ * "ModifyVariable" allows to modify a workflow variable. An option named "variableName" 
+   identifies the variable to be modified, and an option "expression" holds the
+   modification expression in the Groovy programming language syntax. See also the variables
+   section later
+
+ * "Split": this activity can have multiple outgoing transitions. All transitions with matching 
+conditions will be followed. This is comparable to an "if() ... if() ... if()" construct 
+in a programming language.
+
+ * "Branch": this activity can have multiple outgoing transitions. The transition with the 
+first matching condition will be followed. This is comparable to an "if() ... elseif() ... else()"
+construct in a programming language
+
+ * "Merge" merges multiple flows without synchronising them
+
+ * "Synchronize" merges multiple flows and synchronises them
+
+ * "HOLD" stops further processing of the current flow until the client explicitely
+sends continue message.
+
+==== Subworkflows
+
+The workflow description allows nested sub workflows, which have the same formal structure
+as the main workflow
+
+-------
+<SubWorkflow xmlns="http://www.chemomentum.org/workflow/simple" 
+             Id="..." 
+  <DeclareVariable>*
+  <Activity>*
+  <Transition>*
+  <SubWorkflow>*
+  <Option>*
+</SubWorkflow>
+-------
+
+
+
+==== JSDL activities
+
+JSDL activities are the basic executable pieces of a workflow.
+The embedded JSDL job definition will be packed in a so-called work assignment
+and sent to a service orchestrator for processing.
+
+----
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+          xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+
+  <s:Documentation>
+    <s:Comment>Simple 'Date'</s:Comment>
+  </s:Documentation>
+
+  <s:Activity Id="date1" Type="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+      </jsdl:JobDescription>
+    </s:JSDL>
+   </s:Activity>
+
+</s:Workflow>
+----
+
+The processing of the JSDL activity can be influenced using Option sub-elements.
+Currently the following options can be used
+
+ * +IGNORE_FAILURE+ if set to "true", the workflow engine will ignore any
+failure of the task and continue processing as if the activity had been completed
+successfully. NOTE: this has nothing to do with the exit code of the actual UNICORE 
+job! Failure means for example data staging failed, or the service orchestrator did
+not find a matching target system for the job.
+ * +MAX_RESUBMITS+ set to an integer value to control the number of times the activity
+will be retried. By default, the workflow engine will re-try three times (except in those
+cases where it makes no sense to retry).
+
+==== Transitions and conditions
+
+The basic flow of control in a workflow is handled using +Transition+ elements.
+These reference to "From+ and +To+ activities (or subflows) and may have conditions 
+attached. If no condition is present, the transition is followed unconditionally, otherwise
+the condition is evaluated and the transition is followed only if the condition matches
+(i.e. evaluates to +true+).
+
+The syntax for a Transition is as follows.
+
+----------------
+<Transition xmlns="http://www.chemomentum.org/workflow/simple"
+ From="..." To="..." Id="...">
+  <Condition>?
+</Transition>
+-----------------
+
+The +From+ and +To+ attributes denote Activity or SubWorkflow Id's, 
+and the +Id+ attribute has to be workflow-unique. 
+
+An activity can have outgoing (and incoming) transitions.  In general,
+all outgoing transitions (where the condition is fulfilled) will be
+followed. The exception is the "Branch" activity, where only the
+first matching transition will be followed.
+
+
+The optional +Condition+ element has the following syntax
+
+--------------
+<Condition xmlns="http://www.chemomentum.org/workflow/simple">
+  <Expression>...</Expression>
+</Condition>
+--------------
+
+where +Expression+ is string-valued. The workflow engine offers some 
+pre-defined functions that can be used in these expressions.
+For example you can use the exit code of a job, or check for the existence of a file
+within these expressions.
+
+ * +eval(expr)+ Evaluates the expression "expr" in Groovy syntax, which must evaluate to a boolean. 
+The expression may contain workflow variables
+
+ * +exitCodeEquals(activityID, value)+ Allows to compare the exit code of the Grid job associated 
+with the Activity identified by “activityID” to "value"
+
+ * +exitCodeNotEquals(activityID, value)+ Allows to check the exit code of the Grid job associated 
+with the Activity identified by "activityID", and check that it is different from "value"
+
+ * +fileExists(activityID, fileName)+ Checks that the working directory of the Grid job associated with 
+the given Activity contains a file "fileName" 
+
+ * +fileLengthGreaterThanZero(activityID, fileName)+ Checks that the working directory of the Grid job 
+associated with the given Activity contains the named file, which has a non-zero length
+
+ * +before(time)+ and +after(time)+ check whether the current time is before or after the given time
+(in "yyyy-MM-dd HH:mm" format)
+
+ * +fileContent(activityID, fileName)+ Reads the content of the named file in the working directory of
+the job associated with the given Activity and returns it as a string.
+ 
+[[wf_variables]]
+Using workflow variables
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Workflow variables need to be declared using a +DeclareVariable+ element
+before they can be used.
+
+--------
+<DeclareVariable xmlns="http://www.chemomentum.org/workflow/simple">
+  <Name>
+  <Type>
+  <InitialValue>
+</DeclareVariable>
+-----------
+
+Currently variables of type "STRING", "INTEGER" , "FLOAT" and "BOOLEAN" are supported.
+
+Variables can be modified using an activity of type +ModifyVariable+.
+
+For example, to increment the value of the "COUNTER" variable, the following Activity is used
+
+------------
+<Activity xmlns="http://www.chemomentum.org/workflow/simple" 
+Type="ModifyVariable" Id="incrementCounter">
+    <Option name="variableName">COUNTER</Option>
+    <Option name="expression">COUNTER += 1;</Option>
+</Activity>
+--------------
+
+The option named "expression" contains  an expression in Groovy syntax (which is very close 
+to Java).
+
+The workflow engine will replace variables in JSDL data staging sections and 
+environment definitions, allowing to inject variables into jobs. Examples for this 
+mechanism will be given in the examples section.
+
+Loop constructs
+~~~~~~~~~~~~~~~
+
+Apart from graphs constructed using +Activity+ and +Transition+ elements, the workflow 
+system supports special looping constructs, for-each, while and repeat-until, 
+which to setup allow complex workflows very easily.
+
+While and repeat-until loops
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These allow to loop a certain part of the workflow while (or until) a condition is met.
+A while loop looks like this
+
+------------------
+<s:SubWorkflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              Id="while" xsi:type="s:WhileType" >
+
+ <s:DeclareVariable Id="decl">
+    <s:Name>C</s:Name>
+    <s:Type>INTEGER</s:Type>
+    <s:InitialValue>1</s:InitialValue>
+ </s:DeclareVariable>
+ 
+ <s:SubWorkflow Id="while_body">
+  
+  <s:Activity Id="job" Type="JSDL">
+    <s:JSDL> ... </s:JSDL>
+  </s:Activity>
+  
+  <!-- this modifies the variable used in the 
+       'while' loop's exit condition -->
+  <s:Activity Id="mod" Type="ModifyVariable">
+   <s:Option name="variableName">C</s:Option>
+   <s:Option name="expression">C++;</s:Option>
+  </s:Activity>
+
+  <s:Transition From="job" To="mod" Id="job-mod"/>
+   
+ </s:SubWorkflow>
+  
+ <!-- exit condition -->
+ <s:Condition>
+  <s:Expression>eval(C&lt;5)</s:Expression>
+ </s:Condition>
+    
+</s:SubWorkflow>
+------------------
+
+The necessary ingredients are that the loop body (Id="while_body" in the example) 
+modifies the loop variable ("C" in the example), and the exit condition
+eventually terminates the loop.
+
+Completely analogously, a repeat-until loop is constructed, the only syntactic
+difference is that the +SubWorkflow" now has a different +xsi:type+ attribute:
+
+------------------
+<s:SubWorkflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              Id="while" xsi:type="s:RepeatUntilType" >
+
+ <s:DeclareVariable Id="decl">
+    <s:Name>C</s:Name>
+    <s:Type>INTEGER</s:Type>
+    <s:InitialValue>1</s:InitialValue>
+ </s:DeclareVariable>
+ 
+ <s:SubWorkflow Id="repeat_body">
+  
+  <s:Activity Id="job" Type="JSDL">
+    <s:JSDL> ... </s:JSDL>
+  </s:Activity>
+  
+  <!-- this modifies the variable used in the 
+       repeat' loop's exit condition -->
+  <s:Activity Id="mod" Type="ModifyVariable">
+   <s:Option name="variableName">C</s:Option>
+   <s:Option name="expression">C++;</s:Option>
+  </s:Activity>
+
+  <s:Transition From="job" To="mod" Id="job-mod"/>
+   
+ </s:SubWorkflow>
+  
+ <!-- exit condition -->
+ <s:Condition>
+  <s:Expression>eval(C&lt;5)</s:Expression>
+ </s:Condition>
+    
+</s:SubWorkflow>
+------------------
+
+Semantically, the repeat-loop will always execute the body at least once, since the
+condition is checked after executing the body, while in the "while" case, the condition will
+be checked before executing the body.
+
+
+For-each loop
+~~~~~~~~~~~~~
+
+The for-each loop is a complex, yet powerful feature of the workflow system, since it allows
+parallel execution of the loop body, and different ways of building the different iterations.
+Put briefly, one can loop over variables (as in the "while" and "repeat-until" case), but
+one can also loop over enumerated values and (most importantly) over file sets.
+
+The basic syntax is 
+
+------------------
+<s:SubWorkflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               Id="..." xsi:type="s:ForEachType" 
+               IteratorName="...">
+
+ <-- ... activities to be looped over
+    (loop body)
+ -->
+ <s:SubWorkflow Id="..">
+ </s:SubWorkflow>
+
+ <!-- define range to loop over -->
+
+ <s:ValueSet> ...  </s:ValueSet> 
+
+ OR 
+
+ <s:VariableSet> ... <s:/VariableSet>
+ 
+ OR 
+
+ <s:FileSet> ... <s:/FileSet>
+
+ <!-- optional chunking -->
+ <:Chunking> ... </s:Chunking>
+
+</s:SubWorkflow>
+------------------
+
+
+The +IteratorName+ attribute allows to control how the "loop iterator 
+variable" is to be called.
+
+
+The ValueSet element
+^^^^^^^^^^^^^^^^^^^^
+
+Using +ValueSet+, iteration over a fixed set of strings can be defined.
+The main use for this is parameter sweeps, i.e. executing the same job multiple
+times with different arguments or environment variables.
+
+-----
+<s:ValueSet xmlns:s="http://www.chemomentum.org/workflow/simple">
+
+ <s:Value>10</s:Value>
+ <s:Value>20</s:Value>
+ <s:Value>30</s:Value>
+ <s:Value>40</s:Value>
+
+</s:ValueSet>
+-----
+
+In each iteration, the workflow variables "CURRENT_ITERATOR_VALUE" and
+"CURRENT_ITERATOR_INDEX" will be set to the current value and index.
+
+
+The +VariableSet+ element
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The +VariableSet+ allows to define the iteration range using a variable,
+similar to a for-loop in a programming language.
+
+------------
+  <s:VariableSet xmlns:s="http://www.chemomentum.org/workflow/simple">
+      <s:VariableName>C</s:VariableName>
+      <s:Type>INTEGER</s:Type>
+      <s:StartValue>0</s:StartValue>
+      <s:Expression>C++</s:Expression>
+      <s:EndCondition>C&lt;5</s:EndCondition>
+  </s:VariableSet>
+------------
+
+The sub-elements should be self-explanatory.
+
+In each iteration, the workflow variables "CURRENT_ITERATOR_VALUE" and
+"CURRENT_ITERATOR_INDEX" will be set to the current value and index.
+
+
+The +FileSet+ element
+^^^^^^^^^^^^^^^^^^^^^
+
+This is a very useful variation of the for-each loop which allows to loop over
+a set of files, optionally chunking together several files in a single iteration.
+
+The basic structure of a +FileSet+ definition is this
+
+------
+  <s:FileSet xmlns:s="http://www.chemomentum.org/workflow/simple"
+             recurse="true|false" indirection="true|false">
+      <s:Base> ... <s:/Base>
+      <s:Include>?
+      <s:Exclude>?
+  </s:FileSet>
+------
+
+The +Base+ element defines a base of the filenames, which will be resolved at runtime,
+and complemented according to the +Includes+ and/or +Excludes+ elements.
+The +recurse+ attribute allows to control whether the resolution should be done 
+recursively into any subdirectories. The +indirection+ attribute is explained below.
+
+For example to recursively collect all PDF files (but not the file named "ununsed.pdf") 
+in a certain directory on a storage:
+
+------
+  <s:FileSet xmlns:s="http://www.chemomentum.org/workflow/simple"
+             recurse="true">
+      <s:Base>BFT:https://mysite/services/StorageManagement?res=123#/files/pdf/</s:Base>
+      <s:Include>*.pdf</s:Include>
+      <s:Exclude>unused.pdf</s:Exclude>
+  </s:FileSet>
+------
+
+The following variables are set where +ITERATOR_NAME+ is the loop iterator name defined in the +SubWorkflow+ as
+shown above.
+
+ * +ITERATOR_NAME+ is set to the current iteration index (1, 2, 3, ...)
+ 
+ * +ITERATOR_NAME_VALUE+ is set to the current full file path
+ 
+ * +ITERATOR_NAME_FILENAME+ is set to the current file name (last element of the path)
+
+
+Indirection
+^^^^^^^^^^^
+
+Sometimes the list of files that should be looped over is not known at workflow design time, 
+but will be computed at runtime. Or, you wish simply to list the files in a file, and not put them 
+all in your workflow description. The +indirection+ attribute on a +FileSet+ allows to do just that.
+If +indirection+ is set to +true+, the workflow engine will load the given file(s) in the fileset 
+at runtime, and read the actual list of files to iterate over from them.
+As an example, you might have a file +filelist.txt+ containing a list of UNICORE SMS files and 
+logical files:
+
+------
+BFT:https://someserver#/file1
+...
+BFT:https://someserver#/fileN
+c9m:${WORKFLOW_ID}/files/file1
+...
+c9m:${WORKFLOW_ID}/files/fileN
+-------
+
+and the fileset
+
+-----
+  <s:FileSet xmlns:s="http://www.chemomentum.org/workflow/simple"
+             recurse="false" indirection="true">
+      <s:Base>BFT:https://someserver/services/StorageManagement?res=123#/</s:Base>
+      <s:Include>filelist.txt</s:Include>
+  </s:FileSet>
+------
+ 
+You can have more than one file list.
+
+Chunking
+^^^^^^^^
+
+Chunking allows to group sets of files into a single iteration, for example for 
+efficiency reasons. The number of files in a chunk can be controlled, alternatively
+the size of the chunk in kbytes can be set.
+
+--------------
+  <s:Chunking xmlns:s="http://www.chemomentum.org/workflow/simple">
+      <s:Chunksize> ... </s:Chunksize>
+      <s:IsKbytes>true|false</s:IsKbytes>
+      <s:FilenameFormat> ... </s:FilenameFormat>
+      <s:ComputeChunksize>_expression_</s:ComputeChunksize>
+  </s:Chunking>
+--------------
+
+The +Chunksize+ element  is either the number of files in a chunk, or (if +IsKbytes+ is
+set to "true") the size of a chunk in kbytes.
+
+For example:
+
+To process 10 files per iteration:
+--------------
+  <s:Chunking xmlns:s="http://www.chemomentum.org/workflow/simple">
+      <s:Chunksize>10</s:Chunksize>
+      <s:IsKbytes>false</s:IsKbytes>
+  </s:Chunking>
+--------------
+
+
+To process 2000 kBytes of data per iteration:
+--------------
+  <s:Chunking xmlns:s="http://www.chemomentum.org/workflow/simple">
+      <s:Chunksize>2000</s:Chunksize>
+      <s:IsKbytes>true</s:IsKbytes>
+  </s:Chunking>
+--------------
+
+If required the chunksize can also be computed at runtime using the expression given in
+the +ComputeChunksize+ element. In the expression, two special variables may be used.
+The +TOTAL_NUMBER+ variable holds the total number of files iterated over, while
+the +TOTAL_SIZE+ variable holds the aggregated file size in kbytes. 
+The script must return an integer-valued result. The +IsKbytes+ element is used
+to choose whether the chunk size is interpreted as data size or as number of files.
+
+For example:
+
+To choose a larger chunksize if a certain total file size is exceeded:
+
+-------------
+  <s:Chunking xmlns:s="http://www.chemomentum.org/workflow/simple">
+      <s:IsKbytes>true</s:IsKbytes>
+      <s:ComputeChunksize>
+         if(TOTAL_SIZE>50*1024)return 5*1024; 
+         return 2048;  
+      </s:ComputeChunksize>
+  </s:Chunking>
+-------------
+
+The optional +FilenameFormat+ allows to control how the individual files (which are staged 
+into the job directory) should be named. By default, the index is prepended, i.e. "inputfile" 
+would be named "1_inputfile" to "N_inputfile" in each chunk. The pattern uses the variables
+"{0}", "{1}" and "{2}", which control the index, filename without extension and extension 
+respectively. For example, if you have a set of PDF files, and you want them to be
+named "file_1.pdf" to "file_N.pdf", you could use the pattern
+
+------------
+  <s:FilenameFormat>file_{0}.pdf</s:FilenameFormat>
+------------
+
+or, if you prefer to keep the existing extensions, but append an index to the name,
+
+-------------
+  <s:FilenameFormat>{1}{0}.{2}</s:FilenameFormat>
+-------------
+
+
+
+[[wf_examples]]
+Examples
+~~~~~~~~
+
+This section collects a few simple example workflows. They 
+are intended to be submitted using UCC.
+
+Simple "diamond" graph
+^^^^^^^^^^^^^^^^^^^^^^
+
+This example shows how to use transitions for building simple workflow graphs.
+It consists of four "Date" jobs arranged in a diamond shape, i.e. "date2a" and "date2b"
+are executed roughly in parallel. A "Split" activity is inserted to divide the
+control flow into two parallel branches.
+
+All "stdout" files are staged out to the workflow storage.
+
+----
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple"
+          xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+
+  <s:Documentation>
+    <s:Comment>Simple diamond graph</s:Comment>
+  </s:Documentation>
+
+  <s:Activity Id="date1" Type="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+          <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+          <jsdl:ApplicationVersion>1.0</jsdl:ApplicationVersion>
+        </jsdl:Application>
+       <jsdl:DataStaging>
+         <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+         <jsdl:Target>
+           <jsdl:URI>c9m:${WORKFLOW_ID}/date1.out</jsdl:URI>
+         </jsdl:Target>
+         </jsdl:DataStaging>
+      </jsdl:JobDescription>
+    </s:JSDL>
+   </s:Activity>
+
+  <Activity Id="split" Type="Split"/>
+
+  <s:Activity Id="date2a" Type="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+         <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+       <jsdl:DataStaging>
+         <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+         <jsdl:Target>
+           <jsdl:URI>c9m:${WORKFLOW_ID}/date2a.out</jsdl:URI>
+         </jsdl:Target>
+         </jsdl:DataStaging>
+      </jsdl:JobDescription>
+    </s:JSDL>
+   </s:Activity>
+
+  <s:Activity Id="date2b" Type="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+         <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+       <jsdl:DataStaging>
+         <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+         <jsdl:Target>
+           <jsdl:URI>c9m:${WORKFLOW_ID}/date2b.out</jsdl:URI>
+         </jsdl:Target>
+         </jsdl:DataStaging>
+      </jsdl:JobDescription>
+    </s:JSDL>
+   </s:Activity>
+
+  <s:Activity Id="date3" Type="JSDL">
+   <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+         <jsdl:ApplicationName>Date</jsdl:ApplicationName>
+        </jsdl:Application>
+       <jsdl:DataStaging>
+         <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+         <jsdl:Target>
+           <jsdl:URI>c9m:${WORKFLOW_ID}/date3.out</jsdl:URI>
+         </jsdl:Target>
+         </jsdl:DataStaging>
+      </jsdl:JobDescription>
+    </s:JSDL>
+   </s:Activity>
+
+  <s:Transition Id="date1-split" From="date1" To="split"/>
+  <s:Transition Id="split-date2a" From="split" To="date2a"/>
+  <s:Transition Id="split-date2b" From="split" To="date2b"/>
+  <s:Transition Id="date2b-date3" From="date2b" To="date3"/>
+  <s:Transition Id="date2a-date3" From="date2a" To="date3"/>
+
+</s:Workflow>
+----
+
+
+Conditional execution in an if-else construct
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transitions from one activity to another may be conditional, which allows
+all sorts of if-else constructs. Here is a simple example
+
+----
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple" 
+            xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" 
+            xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<s:Activity Id="branch" Type="Branch"/>
+ 
+<s:SubWorkflow Id="if">
+  <s:Activity Id="if-job" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription/>
+    </s:JSDL>
+  </s:Activity>
+</s:SubWorkflow>
+
+<s:SubWorkflow Id="else">
+  <s:Activity Id="else-job" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription/>
+    </s:JSDL>
+  </s:Activity>
+</s:SubWorkflow>
+
+<!-- conditional transition into the 'if' group -->
+<s:Transition From="branch" To="if" Id="branch-if">
+  <s:Condition>
+     <s:Expression>2 &gt; 1</s:Expression>
+  </s:Condition>
+</s:Transition>
+
+<s:Transition From="branch" To="else" Id="branch-else"/>
+
+</s:Workflow>
+----
+
+Here we use the "Branch" activity to make sure only the first matching
+transition is followed.
+
+
+While loop example using workflow variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The next example shows some uses of workflow variables in a while loop.
+The loop variable "C" is copied into the job's environment.
+Another possible use is to use workflow variables in data staging sections,
+for example to name files.
+
+-----
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple" 
+            xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" 
+            xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<s:Activity Id="start" Type="START"/>
+
+<s:SubWorkflow Id="while" xsi:type="s:WhileType" IteratorName="C">
+
+ <s:DeclareVariable Id="decl">
+    <s:Name>C</s:Name>
+    <s:Type>INTEGER</s:Type>
+    <s:InitialValue>0</s:InitialValue>
+ </s:DeclareVariable>
+
+ <s:SubWorkflow Id="while_body">
+
+  <s:Activity Id="job" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+           <jsdl1:POSIXApplication>
+             <jsdl1:Executable>/bin/echo</jsdl1:Executable>
+             <jsdl1:Argument>$TEST</jsdl1:Argument>
+             <jsdl1:Environment name="TEST">${C}</jsdl1:Environment>
+           </jsdl1:POSIXApplication>
+        </jsdl:Application>
+        
+         <jsdl:DataStaging>
+          <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+          <jsdl:Target>
+            <jsdl:URI>c9m:${WORKFLOW_ID}/out_${C}</jsdl:URI>
+          </jsdl:Target>      
+        </jsdl:DataStaging>
+
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+
+  <!-- this modifies the variable used in the while loop's exit condition -->
+  <s:Activity Id="mod" Type="ModifyVariable">
+   <s:Option name="variableName">C</s:Option>
+   <s:Option name="expression">C++;</s:Option>
+  </s:Activity>
+  
+  <s:Transition From="job" To="mod" Id="job-mod"/>
+
+  </s:SubWorkflow>
+  
+  <!-- exit condition -->
+  <s:Condition>
+   <s:Expression>eval(C&lt;=5)</s:Expression>
+  </s:Condition>
+    
+</s:SubWorkflow>
+
+<s:Transition From="start" To="while" Id="start-while"/>
+
+</s:Workflow>
+-----
+
+The output files (named using "global" identifiers) can be downloaded using
+UCC, for example (replace WFID by the real workflow ID obtained after submission)
+
+-----
+ucc get-file -s c9m:WFID/out_1 -t ./out_1
+-----
+
+For-each loop example
+^^^^^^^^^^^^^^^^^^^^^
+
+The next example shows how to use the for-each loop to loop over a set of files.
+The jobs will stage-in the current file. Also, the name of the current file is
+placed into the job environment.
+ 
+-----
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple" 
+            xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" 
+            xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<s:Activity Id="start" Type="START"/>
+
+<s:SubWorkflow Id="for" xsi:type="s:ForEachType" IteratorName="IT">
+
+ <s:SubWorkflow Id="for_body">
+
+  <s:Activity Id="job" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+           <jsdl1:POSIXApplication>
+             <jsdl1:Executable>/bin/echo</jsdl1:Executable>
+             <jsdl1:Argument>Processing file: $NAME</jsdl1:Argument>
+             <!-- put current filename into environemt -->
+             <jsdl1:Environment name="NAME">${IT_FILENAME}</jsdl1:Environment>
+           </jsdl1:POSIXApplication>
+        </jsdl:Application>
+
+        <!-- stage in the current file -->
+        <jsdl:DataStaging>
+          <jsdl:FileName>infile</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+          <jsdl:Source>
+            <!-- use variable containing file path -->
+            <jsdl:URI>${IT_VALUE}</jsdl:URI>
+          </jsdl:Source>      
+        </jsdl:DataStaging>
+        
+        <jsdl:DataStaging>
+          <jsdl:FileName>stdout</jsdl:FileName>
+         <jsdl:CreationFlag>overwrite</jsdl:CreationFlag>
+          <jsdl:Target>
+            <!-- iterator variable contains iteration index -->
+            <jsdl:URI>c9m:${WORKFLOW_ID}/out_${IT}</jsdl:URI>
+          </jsdl:Target>      
+        </jsdl:DataStaging>
+
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+
+  </s:SubWorkflow>
+ 
+  <!-- file set defining which files to loop over --> 
+  <s:FileSet recurse="false">
+   <s:Base>https://mygateway.de:7700/MYSITE/services/StorageManagement?res=default_storage#/</s:Base>
+  <s:Include>/myfiles/*</s:Include>
+ 
+ </s:FileSet>
+
+    
+</s:SubWorkflow>
+
+<s:Transition From="start" To="for" Id="start-for"/>
+
+</s:Workflow>
+-----
+

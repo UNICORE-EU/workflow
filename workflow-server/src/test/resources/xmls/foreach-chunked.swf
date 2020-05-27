@@ -1,0 +1,36 @@
+<s:Workflow xmlns:s="http://www.chemomentum.org/workflow/simple" 
+            xmlns:jsdl="http://schemas.ggf.org/jsdl/2005/11/jsdl" 
+            xmlns:jsdl1="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<s:SubWorkflow Id="for1" xsi:type="s:ForEachType" IteratorName="ForEachIterator">
+
+<s:SubWorkflow Id="for1_body">
+  <s:Activity Id="RunScript" Type="JSDL">
+    <s:JSDL>
+      <jsdl:JobDescription>
+        <jsdl:Application>
+           <jsdl:ApplicationName>Echo</jsdl:ApplicationName>
+           <jsdl1:POSIXApplication>
+            <jsdl1:Argument>${CURRENT_ITERATOR_VALUE}</jsdl1:Argument>
+          </jsdl1:POSIXApplication>
+        </jsdl:Application>
+      </jsdl:JobDescription>
+    </s:JSDL>
+  </s:Activity>
+</s:SubWorkflow>
+
+  <s:FileSet>
+    <s:Base>http://foo</s:Base>
+    <s:Include>/*</s:Include>
+  </s:FileSet>
+  
+  <s:Chunking>
+      <s:Chunksize>10</s:Chunksize>
+      <s:FilenameFormat>{0}_{1}{2}</s:FilenameFormat>
+  </s:Chunking>
+  
+ </s:SubWorkflow>
+ 
+
+</s:Workflow>

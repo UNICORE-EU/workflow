@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>workflowservice</artifactId>
+  <packaging>jar</packaging>
+  <description>UNICORE Workflow engine</description>
+  <inceptionYear>2009</inceptionYear>
+  <name>Workflow engine</name>
+  <version>3.0.0</version>
+
+  <parent>
+    <groupId>eu.unicore.workflow</groupId>
+    <artifactId>workflow-parent</artifactId>
+    <version>3.0.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <specification.version>8.0.0</specification.version>	
+    <compiler.fork>false</compiler.fork>
+    <package.version>8.0.0</package.version>
+    <package.release>1</package.release>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>apache-log4j-extras</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>eu.unicore.workflow</groupId>
+      <artifactId>workflow-client</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.unicore</groupId>
+      <artifactId>uas-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>unicore.eu</id>
+      <name>UNICORE repository</name>
+      <url>https://unicore-dev.zam.kfa-juelich.de/maven</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://unicore.svn.sourceforge.net/svnroot/unicore/workflow/tags</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!--skip>true</skip-->
+          <forkMode>pertest</forkMode>
+          <useSystemClassloader>true</useSystemClassloader>
+          <suiteXmlFiles>
+            <suiteXmlFile>testng-unittests.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <useProjectReferences>false</useProjectReferences>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

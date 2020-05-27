@@ -1,0 +1,25 @@
+{
+
+"subworkflows" : [
+
+{
+   "id": "for1", "type": "FOR_EACH", "iterator_name": "ForEachIterator",
+
+   "body": {
+     "id": "for1_body",
+     "activities": [
+       { "id": "RunScript", "type": "JOB",
+         "job":
+         {
+           "Executable": "echo",
+           "Arguments": [ "${CURRENT_ITERATOR_VALUE}" ],
+         }
+        },
+      ],
+  },
+  "values": [ "a", "b", "c" ],
+},
+ 
+],
+ 
+}
