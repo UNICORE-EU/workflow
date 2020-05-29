@@ -1,5 +1,6 @@
 package eu.unicore.workflow.pe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,11 +8,15 @@ import java.util.UUID;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.chemomentum.dsws.ConversionResult;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import de.fzj.unicore.uas.util.Pair;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
+import de.fzj.unicore.xnjs.util.IOUtils;
+import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
@@ -27,13 +32,24 @@ import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.persistence.PEStatus;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Constants;
-import eu.unicore.workflow.pe.xnjs.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 
 public class TestForLoopProcessing extends TestBase {
-
+	
+	@Test
+	public void testConvertedWF() throws Exception {
+		String file="src/test/resources/json/foreach.json";
+		String wfID=UUID.randomUUID().toString();
+		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
+		ConversionResult res = new Converter(true).convert(wfID, json);
+		assert !res.hasConversionErrors();
+		PEWorkflow wf = res.getConvertedWorkflow();
+		doProcess(wf);
+	}
+	
 	@Test
 	public void testIterateOverValueSet()throws Exception{
 		Validate.clear();

@@ -1,9 +1,17 @@
 {
 
+    
+  "activities" : [
+         {
+           "id": "start",
+           "type": "START"
+           }
+   ],
+
 "subworkflows" : [
 
 {
-   "id": "for1", "type": "FOR_EACH", "iterator_name": "ForEachIterator",
+   "id": "for1", "type": "FOR_EACH",
 
    "body": {
      "id": "for1_body",
@@ -21,5 +29,9 @@
 },
  
 ],
- 
+
+      "transitions":[
+          {"from": "start", "to": "for1",},
+        ],
+
 }

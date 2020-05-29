@@ -14,7 +14,9 @@ import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
 import eu.unicore.workflow.pe.model.PEWorkflow;
+import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.Transition;
+import eu.unicore.workflow.pe.model.WhileGroup;
 
 public class TestConversion {
 
@@ -24,7 +26,7 @@ public class TestConversion {
 		String wfID="1";
 		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
 		assert wf!=null;
-		ConversionResult res=Converter.convert(wfID, wf);
+		ConversionResult res = new Converter().convert(wfID, wf);
 		assert res!=null;
 		assert !res.hasConversionErrors();
 		assert wfID.equals(res.getWorkflowID());
@@ -49,7 +51,7 @@ public class TestConversion {
 		String wfID="1";
 		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
 		assert wf!=null;
-		ConversionResult res=Converter.convert(wfID, wf);
+		ConversionResult res = new Converter().convert(wfID, wf);
 		assert res!=null;
 		printErrors(res);
 		assert !res.hasConversionErrors();
@@ -76,7 +78,7 @@ public class TestConversion {
 		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
 		System.out.println(wf.toString(2));
 		assert wf!=null;
-		ConversionResult res=Converter.convert(wfID, wf);
+		ConversionResult res = new Converter().convert(wfID, wf);
 		assert res!=null;
 		printErrors(res);
 		assert !res.hasConversionErrors();
@@ -118,7 +120,7 @@ public class TestConversion {
 		String wfID="1";
 		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
 		assert wf!=null;
-		ConversionResult res=Converter.convert(wfID, wf);
+		ConversionResult res = new Converter().convert(wfID, wf);
 		assert res!=null;
 		assert !res.hasConversionErrors();
 		assert wfID.equals(res.getWorkflowID());
@@ -132,6 +134,46 @@ public class TestConversion {
 		JSONArray exp = job.optJSONArray("Exports");
 		assert exp!=null;
 		assert exp.length() == 1;
+	}
+	
+	@Test
+	public void testSubflow1() throws Exception {
+		String file="src/test/resources/json/subflow1.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		assert wfID.equals(res.getWorkflowID());
+		PEWorkflow ag=res.getConvertedWorkflow();
+		Activity act=ag.getActivity("date1");
+		assert act!=null;
+		ActivityGroup subGroup = (ActivityGroup)ag.getActivity("sw1");
+		assert subGroup!=null;
+		Activity act1 = subGroup.getActivity("sw1-date1");
+		assert act1!=null;
+		
+	}
+	
+
+	@Test
+	public void testWhile() throws Exception {
+		String file="src/test/resources/json/while.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		PEWorkflow ag=res.getConvertedWorkflow();
+		WhileGroup whileGrp = (WhileGroup)ag.getActivity("while");
+		ScriptCondition sc = (ScriptCondition) whileGrp.getCondition();
+		System.out.println(sc.getScript());
+	//	assert "eval(COUNTER<5);".equals(sc.getScript()): sc.getScript();
+		
 	}
 	
 	protected void printErrors(ConversionResult res){

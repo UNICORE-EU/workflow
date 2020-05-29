@@ -15,8 +15,11 @@ public class Statistics implements Serializable{
 	// number of jobs
 	private int totalJobs;
 	
-	public Statistics(){
+	private final String id;
+	
+	public Statistics(String parentID){
 		startTime = System.currentTimeMillis();
+		this.id = parentID;
 	}
 	
 	/**
@@ -40,4 +43,7 @@ public class Statistics implements Serializable{
 		totalJobs+=other.totalJobs;
 	}
 
+	public String toString() {
+		return "stats for <"+id+"> totalJobs="+totalJobs;
+	}
 }

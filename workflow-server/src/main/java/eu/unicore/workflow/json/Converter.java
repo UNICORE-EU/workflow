@@ -43,6 +43,7 @@ import eu.unicore.workflow.pe.model.RepeatGroup;
 import eu.unicore.workflow.pe.model.RoutingActivity;
 import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.WhileGroup;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Constants;
 
 public class Converter {
@@ -58,7 +59,15 @@ public class Converter {
 		CONVERTER_OPTIONS=Collections.unmodifiableSet(s);
 	}
 
-	private Converter(){}
+	private final boolean unitTesting;
+
+	public Converter(){
+		this(false);
+	}
+
+	public Converter(boolean unitTesting){
+		this.unitTesting = unitTesting;
+	}
 
 	/**
 	 * generate internal workflow representation from the supplied top-level workflow instance
@@ -68,7 +77,7 @@ public class Converter {
 	 * t
 	 * @return the {@link ConversionResult} for the workflow instance
 	 */
-	public static ConversionResult convert(String wfUUID, JSONObject wf) throws Exception {
+	public ConversionResult convert(String wfUUID, JSONObject wf) throws Exception {
 		if(logger.isDebugEnabled())logger.debug("Converting workflow "+wf.toString(2));
 		List<String>outputFiles = new ArrayList<String>();
 		ConversionResult result = new ConversionResult();
@@ -83,7 +92,7 @@ public class Converter {
 	/**
 	 * build the ActivityGroup corresponding to a sub-workflow
 	 */
-	protected static ActivityGroup convertSubFlow(JSONObject wf,
+	protected ActivityGroup convertSubFlow(JSONObject wf,
 			List<String>outputFiles, String parentLoopID, ConversionResult result) throws JSONException {
 
 		WorkflowInfo workflowInfo = WorkflowInfo.buildSubflow(wf);
@@ -193,19 +202,17 @@ public class Converter {
 	/**
 	 * build a "for-each" group 
 	 */
-	protected static eu.unicore.workflow.pe.model.Activity processForEach(JSONObject wf,
+	protected eu.unicore.workflow.pe.model.Activity processForEach(JSONObject wf,
 			List<String>outputFiles, String parentLoopID, ConversionResult result)throws Exception{
 		String id = wf.getString("id");
-		if(wf.optString("iterator_name",null)==null){
-			result.addError("For-each loop '"+id+"': must define an iterator name");
-			return null;
-		}
+		String iteratorName = wf.optString("iterator_name", "IT");
+		
 		Iterate iterate = buildIterator(wf, result.getWorkflowID(), result);
 		JSONObject body = wf.getJSONObject("body");
 		ActivityGroup bodyGroup=convertSubFlow(body, outputFiles, parentLoopID, result);
 
 		bodyGroup.setIterate(iterate);
-		bodyGroup.setLoopIteratorName(wf.getString("iterator_name"));
+		bodyGroup.setLoopIteratorName(iteratorName);
 		ForGroup res = new ForGroup(id, result.getWorkflowID(), bodyGroup);
 
 		String maxConcurrent = getOption(wf, ForGroup.PROPERTY_MAX_CONCURRENT_ACTIVITIES);
@@ -231,7 +238,7 @@ public class Converter {
 		JSONArray values = wf.optJSONArray("values");
 		JSONArray fileSetDef = wf.optJSONArray("filesets");
 		JSONArray variableSets = wf.optJSONArray("variable_sets");
-		
+
 		if(values!=null && values.length()>0){
 			iterate=new ValueSetIterator(JSONUtil.toArray(values));
 		}
@@ -301,7 +308,7 @@ public class Converter {
 			iterate=new VariableSetIterator(wfID,varSets.toArray(new VariableSet[varSets.size()]));
 		}
 		if(iterate!=null){
-			iterate.setIteratorName(wf.getString("iterator_name"));
+			iterate.setIteratorName(wf.optString("iterator_name", "IT"));
 		}
 		else{
 			result.addError("For-each loop '"+id+"' does not define an iterator.");
@@ -312,41 +319,64 @@ public class Converter {
 	/**
 	 * build a "repeat-until" group
 	 */
-	protected static eu.unicore.workflow.pe.model.Activity processRepeatUntil(JSONObject wf,
+	protected eu.unicore.workflow.pe.model.Activity processRepeatUntil(JSONObject wf,
 			List<String>outputFiles, String parentLoopID, ConversionResult result)throws Exception{
 
 		String id = wf.getString("id");
 		eu.unicore.workflow.pe.model.Condition condition=buildCondition(wf, result.getWorkflowID());
 		JSONObject body = wf.getJSONObject("body");
 		ActivityGroup bodyGroup = convertSubFlow(body, outputFiles, parentLoopID, result);	
-		Iteration iterate = new Iteration();
-		String iteratorName = wf.optString("iterator_name", "IT");
-		iterate.setIteratorName(iteratorName);
-		bodyGroup.setIterate(iterate);
-		bodyGroup.setLoopIteratorName(iteratorName);
+		
 		RepeatGroup res = new RepeatGroup(id,result.getWorkflowID(),bodyGroup, condition);
 		WorkflowInfo workflowInfo = WorkflowInfo.build(wf);
 		addVariableDeclarations(workflowInfo, res, result);
+		
+		Iteration iterate=new Iteration();
+		String iteratorName = wf.optString("iterator_name", null);
+		if(iteratorName == null) {
+			if(res.getDeclarations().size()!=1) {
+				result.addError("Iterator for group <"+id+"> cannot be determined - set it explicitely via 'iterator_name'");
+			}
+			else {
+				iteratorName = res.getDeclarations().iterator().next().getVariableName();
+			}
+		}
+		iterate.setIteratorName(iteratorName);
+		bodyGroup.setIterate(iterate);
+		bodyGroup.setLoopIteratorName(iteratorName);
+		
 		return res;
 	}
 
 	/**
 	 * build a "while" group
 	 */
-	protected static eu.unicore.workflow.pe.model.Activity processWhile(JSONObject wf,
+	protected eu.unicore.workflow.pe.model.Activity processWhile(JSONObject wf,
 			List<String>outputFiles, String parentLoopID, ConversionResult result)throws Exception {
 		String id = wf.getString("id");
 		eu.unicore.workflow.pe.model.Condition condition=buildCondition(wf, result.getWorkflowID());
 		JSONObject body = wf.getJSONObject("body");
+		body.put("is_loop_body", "true");
 		ActivityGroup bodyGroup = convertSubFlow(body, outputFiles, parentLoopID, result);	
-		Iteration iterate=new Iteration();
-		String iteratorName = wf.optString("iterator_name", "IT");
-		iterate.setIteratorName(iteratorName);
-		bodyGroup.setIterate(iterate);
-		bodyGroup.setLoopIteratorName(iteratorName);
+	
 		WhileGroup res = new WhileGroup(id,result.getWorkflowID(),bodyGroup, condition);
 		WorkflowInfo workflowInfo=WorkflowInfo.build(wf);
 		addVariableDeclarations(workflowInfo, res, result);
+		
+		Iteration iterate=new Iteration();
+		String iteratorName = wf.optString("iterator_name", null);
+		if(iteratorName == null) {
+			if(res.getDeclarations().size()!=1) {
+				result.addError("Iterator for group <"+id+"> cannot be determined - set it explicitely via 'iterator_name'");
+			}
+			else {
+				iteratorName = res.getDeclarations().iterator().next().getVariableName();
+			}
+		}
+		iterate.setIteratorName(iteratorName);
+		bodyGroup.setIterate(iterate);
+		bodyGroup.setLoopIteratorName(iteratorName);
+		
 		return res;
 	}
 
@@ -365,7 +395,7 @@ public class Converter {
 	/**
 	 * build an activity
 	 */
-	protected static void processActivity(JSONObject a, 
+	protected void processActivity(JSONObject a, 
 			WorkflowInfo workflowInfo,
 			List<eu.unicore.workflow.pe.model.Activity>activities,
 			ConversionResult result, List<String> outputFiles) throws JSONException {
@@ -381,12 +411,18 @@ public class Converter {
 		String activityType = a.getString("type");
 
 		if("JOB".equals(activityType)){
+			if(unitTesting) {
+				activities.add(new TestActivity(id, result.getWorkflowID()));
+				return;
+			}
+			
 			JSONObject job = a.optJSONObject("job");
 			if(job!=null){
 				addWork(a,outputFiles,activities,workflowInfo,result);
 			}
 			else {
 				result.addError("Job activity '"+id+"': no job definition found.");
+				err = true;
 			}
 		}
 		else if ("MODIFY_VARIABLE".equals(activityType)){
@@ -395,6 +431,7 @@ public class Converter {
 
 			if(name==null || expr==null){
 				result.addError("Variable modification '"+id+"': need 'variableName' and 'expression' options.");
+				err = true;
 			}
 			else{
 				addVariableModification(a,outputFiles,activities,workflowInfo,result);
@@ -445,6 +482,7 @@ public class Converter {
 				}
 				catch(NumberFormatException nfe){
 					result.addError("Activity '"+id+"': parameter 'sleepTime' must be of type 'long'");
+					err = true;
 				}
 			}
 			activities.add(r);
@@ -452,6 +490,13 @@ public class Converter {
 
 		else {
 			result.addError("Activity '"+id+"': unknown activity type <"+activityType+">");
+			err = true;
+		}
+
+		if(err) {
+			// add a dummy activity with the correct ID to avoid follow-on errors 
+			// that "distract" the user from the real error
+			activities.add(new RoutingActivity(id, result.getWorkflowID()));
 		}
 	}
 
@@ -463,20 +508,17 @@ public class Converter {
 		List<eu.unicore.workflow.pe.model.Transition>resultTransitions=new ArrayList<eu.unicore.workflow.pe.model.Transition>();
 		List<JSONObject>transitions=workflowInfo.getTransitions();
 		for(JSONObject t: transitions){
-			String transitionID = t.optString("id", null);
-			if(transitionID==null){
-				result.addError("Transition '"+transitionID+"': need an ID!");
-				continue;
-			}
 
 			eu.unicore.workflow.pe.model.Activity from=subflow.getActivity(t.getString("from"));
 			eu.unicore.workflow.pe.model.Activity to=subflow.getActivity(t.getString("to"));
+			String transitionID = t.optString("id", newUID());
+
 			if(from==null){
-				result.addError("Transition '"+transitionID+"': references non-existent 'from' entity");
+				result.addError("Transition "+from+"->"+to+" : references non-existent 'from' entity");
 				continue;
 			}
 			if(to==null){
-				result.addError("Transition '"+transitionID+"': references non-existent 'to' entity");
+				result.addError("Transition "+from+"->"+to+": references non-existent 'to' entity");
 				continue;
 			}
 
@@ -599,7 +641,7 @@ public class Converter {
 
 	static char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 	static Random random = new Random();
-	
+
 	private static synchronized String newUID() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -612,12 +654,14 @@ public class Converter {
 		return getOption(a, optionName, null);
 	}
 
-	private static String getOption(JSONObject a, String optionName,String defaultValue){
+	private static String getOption(JSONObject a, String optionName, String defaultValue){
 		JSONObject opts = a.optJSONObject("options");
 		if(opts!=null) {
 			return opts.optString(optionName, defaultValue);
 		}
-		return defaultValue;
+		else {
+			return a.optString(optionName, defaultValue);
+		}
 	}
 
 	/**

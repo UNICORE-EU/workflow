@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.chemomentum.dsws.ConversionResult;
 import org.chemomentum.dsws.util.SetupWorkflowService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -151,5 +152,15 @@ public class TestBase {
 			else break;
 		}
 		assert s == ActionStatus.DONE;
+	}
+	
+	
+	protected void printErrors(ConversionResult res){
+		if(res.hasConversionErrors()){
+			System.out.println("ERRORS:");
+			for(String err:res.getConversionErrors()){
+				System.out.println(err+"\n");
+			}
+		}
 	}
 }

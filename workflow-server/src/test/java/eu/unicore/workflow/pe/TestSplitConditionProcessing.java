@@ -6,11 +6,11 @@ import org.junit.Test;
 
 import eu.unicore.workflow.pe.model.Activity.MergeType;
 import eu.unicore.workflow.pe.model.Activity.SplitType;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.model.Condition;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.Transition;
-import eu.unicore.workflow.pe.xnjs.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 

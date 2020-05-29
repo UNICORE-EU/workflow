@@ -9,6 +9,7 @@ import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.util.TestActivity;
 
 /**
  * Testing only: processes a single workflow activity<br/>

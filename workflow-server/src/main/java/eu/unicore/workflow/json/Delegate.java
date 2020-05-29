@@ -38,7 +38,7 @@ public class Delegate implements DSLDelegate {
 		
 		//extract the workflow document
 		try{
-			ConversionResult attr=Converter.convert(uniqueID,json);
+			ConversionResult attr = new Converter().convert(uniqueID,json);
 			return attr;
 		}catch(Exception e){
 			String msg=Log.createFaultMessage("Can't process workflow", e);

@@ -6,7 +6,7 @@ import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
-import eu.unicore.workflow.pe.xnjs.TestActivity;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 

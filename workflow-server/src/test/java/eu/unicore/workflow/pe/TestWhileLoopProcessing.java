@@ -1,10 +1,15 @@
 package eu.unicore.workflow.pe;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
+import org.chemomentum.dsws.ConversionResult;
+import org.json.JSONObject;
 import org.junit.Test;
 
+import de.fzj.unicore.xnjs.util.IOUtils;
+import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.ActivityStatus;
@@ -16,12 +21,25 @@ import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.model.WhileGroup;
 import eu.unicore.workflow.pe.persistence.PEStatus;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Constants;
-import eu.unicore.workflow.pe.xnjs.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 
 public class TestWhileLoopProcessing extends TestBase {
+
+	@Test
+	public void testConvertedWhileWF() throws Exception {
+		String file="src/test/resources/json/while.json";
+		String wfID=UUID.randomUUID().toString();
+		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
+		ConversionResult res = new Converter(true).convert(wfID, json);
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		
+		PEWorkflow wf = res.getConvertedWorkflow();
+		doProcess(wf);
+	}
 
 	@Test
 	public void testWhileLoop()throws Exception{

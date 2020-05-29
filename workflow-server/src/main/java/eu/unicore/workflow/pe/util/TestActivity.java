@@ -1,4 +1,4 @@
-package eu.unicore.workflow.pe.xnjs;
+package eu.unicore.workflow.pe.util;
 
 import de.fzj.unicore.persist.util.Wrapper;
 import eu.unicore.workflow.pe.model.ActivityStatus;

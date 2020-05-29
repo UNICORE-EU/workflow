@@ -12,7 +12,7 @@ import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
-import eu.unicore.workflow.pe.xnjs.TestActivity;
+import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.xnjs.TestBase;
 
 public class TestStatusStorage extends TestBase {

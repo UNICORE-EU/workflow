@@ -209,8 +209,11 @@ public class ForGroupProcessor extends GroupProcessorBase{
 							action.getProcessingContext().get(ProcessVariables.class).putAll(pv);
 						}
 
-						String subActivityID=((Activity)sub.getAjd()).getID();
+						// collect statistics from sub-activity
+						Statistics subStats=sub.getProcessingContext().get(Statistics.class);
+						getStatistics().addAll(subStats);
 
+						
 						//clean up the sub-action
 						xnjs.get(Manager.class).destroy(subActionID, action.getClient());
 						iterator.remove();
@@ -219,6 +222,7 @@ public class ForGroupProcessor extends GroupProcessorBase{
 							workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
 							attr=workflowInfo.findSubFlowAttributes(ag.getID());
 							String iteration=(String)sub.getProcessingContext().get(PV_KEY_ITERATION);
+							String subActivityID=((Activity)sub.getAjd()).getID();
 							PEStatus stat=attr.getActivityStatus(subActivityID, iteration);
 							stat.setActivityStatus(ActivityStatus.SUCCESS);
 						}finally{

@@ -39,7 +39,7 @@
 
   <modules>
     <module>workflow-client</module>
-    <module>workflows-server</module>
+    <module>workflow-server</module>
     <!--module>documentation</module-->
   </modules>
 

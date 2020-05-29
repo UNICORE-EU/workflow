@@ -45,10 +45,10 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 	protected Statistics getStatistics(){
 		Statistics stats=action.getProcessingContext().get(Statistics.class);
 		if(stats==null){
-			stats=new Statistics();
+			stats=new Statistics(action.getUUID());
 			action.getProcessingContext().put(Statistics.class, stats);
-			action.setDirty();
 		}
+		action.setDirty();
 		return stats;
 	}
 	

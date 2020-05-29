@@ -160,12 +160,13 @@ public class GroupProcessorBase extends ProcessorBase {
 			}
 		}
 		
+		String subActivityID=((Activity)sub.getAjd()).getID();
+		String subActionID=sub.getUUID();
+
 		// collect statistics from sub-activity
 		Statistics subStats=sub.getProcessingContext().get(Statistics.class);
 		getStatistics().addAll(subStats);
-		
-		String subActivityID=((Activity)sub.getAjd()).getID();
-		String subActionID=sub.getUUID();
+	
 		//clean up the sub-action
 		if(!PEConfig.getInstance().isKeepAllActions()){
 			xnjs.get(Manager.class).destroy(subActionID, action.getClient());

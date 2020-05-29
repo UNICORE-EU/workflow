@@ -275,7 +275,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 						else{
 							subActivity.setStatus(ActivityStatus.SUCCESS);
 						}
-						
+	
 						if(!stopProcessingThisGroup){
 							ProcessVariables pv=sub.getProcessingContext().get(ProcessVariables.class);
 							//set follow-on activities to state READY so they can be submitted
