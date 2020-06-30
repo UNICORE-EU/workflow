@@ -591,10 +591,6 @@ public class Converter {
 			String type = dv.optString("type", null);
 			String initialValue = dv.optString("initial_value", "");
 
-			if(id==null){
-				result.addError("Variable declaration: needs an id.");
-				OK=false;
-			}
 			if(type==null){
 				result.addError("Variable declaration '"+id+"': need a type.");
 				OK=false;
@@ -602,6 +598,12 @@ public class Converter {
 			if(name==null){
 				result.addError("Variable declaration '"+id+"': need a name.");
 				OK=false;
+			}
+
+			if(id==null){
+				if(OK) {
+					id = "declare-"+name+"-"+type;
+				}
 			}
 
 			if(OK){

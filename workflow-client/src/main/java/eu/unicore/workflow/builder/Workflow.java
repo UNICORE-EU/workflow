@@ -1,18 +1,15 @@
-package eu.unicore.workflow;
+package eu.unicore.workflow.builder;
 
 import org.json.JSONObject;
 
-public class Workflow {
-
-	
-	protected JSONObject json;
+public class Workflow extends Group {
 
 	public Workflow(JSONObject json) {
-		this.json = json;
+		super(null, json);
 	}
-
+	
 	public Workflow() {
-		this(new JSONObject());
+		super(null);
 	}
 
 	public final JSONObject getJSON() {
