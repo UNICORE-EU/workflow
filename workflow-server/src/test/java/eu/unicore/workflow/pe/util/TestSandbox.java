@@ -5,7 +5,7 @@ import groovy.lang.GroovyShell;
 import java.security.AccessControlException;
 
 import org.junit.Test;
-import org.unigrids.x2006.x04.services.jms.HoldDocument;
+import org.oasisOpen.docs.wsrf.rl2.CurrentTimeDocument;
 
 public class TestSandbox {
 
@@ -42,9 +42,9 @@ public class TestSandbox {
 	@Test
 	public void testLoadXMLBeansClassFromScript(){
 		StringBuilder sb=new StringBuilder();
-		sb.append("org.unigrids.x2006.x04.services.jms.HoldDocument.Factory.newInstance();");
+		sb.append("org.oasisOpen.docs.wsrf.rl2.CurrentTimeDocument.Factory.newInstance();");
 		String script=sb.toString();
-		GroovyShell shell=new GroovyShell(HoldDocument.class.getClassLoader());
+		GroovyShell shell=new GroovyShell(CurrentTimeDocument.class.getClassLoader());
 		new ScriptSandbox().eval(shell, script);
 	}
 	

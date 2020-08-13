@@ -40,13 +40,11 @@ public class ResolverFactory {
 	public static Resolver getResolver(String base)throws ProcessingException{
 		for(Class<? extends Resolver> c: resolvers){
 			try{
-				Resolver r = c.newInstance();
+				Resolver r = c.getConstructor().newInstance();
 				if(r.acceptBase(base)){
 					return r;
 				}
-			}catch(IllegalAccessException iae){
-				throw new ProcessingException(new ErrorCode(0,"Cannot create resolver for <"+base+">"));
-			}catch(InstantiationException iae){
+			}catch(Exception iae){
 				throw new ProcessingException(new ErrorCode(0,"Cannot create resolver for <"+base+">"));
 			}
 		}

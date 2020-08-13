@@ -31,8 +31,8 @@
   </scm>
 
   <properties>
-    <uas.version>2.0.3</uas.version>
-    <use.version>4.0.3</use.version>
+    <uas.version>2.0.4</uas.version>
+    <use.version>4.0.4</use.version>
     <groovy.version>2.4.16</groovy.version>
     <spring.version>3.2.3.RELEASE</spring.version>
   </properties>
@@ -74,18 +74,25 @@
       </dependency>
       <dependency>
         <groupId>eu.unicore</groupId>
-        <artifactId>brokering-jsdl-extensions</artifactId>
-        <version>${broker.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>eu.unicore</groupId>
         <artifactId>uas-core</artifactId>
         <version>${uas.version}</version>
+	<exclusions>
+	  <exclusion>
+	    <groupId>eu.unicore</groupId>
+	    <artifactId>uftp-core</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>eu.unicore</groupId>
         <artifactId>uas-client</artifactId>
         <version>${uas.version}</version>
+	<exclusions>
+	  <exclusion>
+	    <groupId>eu.unicore</groupId>
+	    <artifactId>uftp-core</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.groovy</groupId>

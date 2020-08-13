@@ -5,18 +5,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.fzj.unicore.persist.PersistenceException;
+import de.fzj.unicore.wsrflite.Kernel;
+import de.fzj.unicore.wsrflite.utils.TimeoutRunner;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.services.rest.client.BaseClient;
+import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.Log;
+import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.ProcessState;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
@@ -24,6 +34,7 @@ import eu.unicore.workflow.pe.model.ActivityStatus;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
+import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 
@@ -342,12 +353,60 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	@Override
 	protected void setToDoneSuccessfully(){
 		super.setToDoneSuccessfully();
+		sendNotification(null);
 		logUsage();
 	}
 	
 	@Override
 	protected void setToDoneAndFailed(String reason){
 		super.setToDoneAndFailed(reason);
+		sendNotification(reason);
 		logUsage();
 	}
+	
+	protected void sendNotification(String failureReason) {
+		ActivityGroup ag = (ActivityGroup)action.getAjd();
+		String wfID = ag.getWorkflowID();
+		if(!ag.getID().equals(wfID)){
+			// not a toplevel workflow
+			return;
+		}
+		PEWorkflow wfg = (PEWorkflow)ag;
+		String url = wfg.getNotificationURL();
+		if(url==null)return;
+		
+		try{
+			Kernel kernel = PEConfig.getInstance().getKernel();
+			final JSONObject msg = new JSONObject();
+			if(failureReason!=null)msg.put("reason", failureReason);
+			ProcessState ps = PEConfig.getInstance().getProcessEngine().getProcessState(wfID);
+			msg.put("status", String.valueOf(ps.getState()));
+			msg.put("href", kernel.getContainerProperties().getContainerURL()+"/rest/workflows/"+wfID);
+			
+			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(wfID);
+			if(wfc==null){
+				throw new Exception("Parent workflow information not found.");
+			}
+			final String user = wfc.getUserDN();
+			final IAuthCallback auth = PEConfig.getInstance().getAuthCallback(user);
+			IClientConfiguration security = kernel.getClientConfiguration().clone();
+			final BaseClient bc = new BaseClient(url, security, auth);
+			
+			Callable<String>task = new Callable<String>() {
+				@Override
+				public String call() throws Exception {
+					HttpResponse res = bc.post(msg);
+					bc.checkError(res);
+					return "OK";
+				}
+			};
+			String res = new TimeoutRunner<String>(task, kernel.getContainerProperties().getThreadingServices(), 30, TimeUnit.SECONDS).call();
+			if(res==null)throw new TimeoutException("Timeout waiting for notification send/reply");
+			
+		}catch(Exception ex) {
+			logger.warn("Could not send success/failure notification for workflow <"+wfID+"> to <"+url+">");
+		}
+		
+	}
+	
 }

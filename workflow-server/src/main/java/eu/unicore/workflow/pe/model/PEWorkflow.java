@@ -11,8 +11,18 @@ public class PEWorkflow extends ActivityGroup {
 
 	private static final long serialVersionUID = 1L;
 
+	private String notificationURL = null;
+	
 	public PEWorkflow(String workflowID) {
 		super(workflowID, workflowID, new NullIteration());
+	}
+	
+	public void setNotificationURL(String notificationURL) {
+		this.notificationURL = notificationURL;
+	}
+	
+	public String getNotificationURL(){
+		return notificationURL;
 	}
 	
 	private static class NullIteration extends Iteration{

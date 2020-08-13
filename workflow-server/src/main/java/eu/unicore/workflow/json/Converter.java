@@ -102,6 +102,9 @@ public class Converter {
 
 		if(subID.equals(result.getWorkflowID())){
 			converted=new PEWorkflow(result.getWorkflowID());
+			String notification = wf.optString("notification", null);
+			if(notification==null)notification = wf.optString("Notification", null);
+			((PEWorkflow)converted).setNotificationURL(notification);
 		}
 		else{
 			converted=new ActivityGroup(subID,result.getWorkflowID());

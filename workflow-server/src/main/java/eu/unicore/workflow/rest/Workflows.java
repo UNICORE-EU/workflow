@@ -137,11 +137,8 @@ public class Workflows extends ServicesBase {
 		try{
 			JSONObject wf = new JSONObject(json);
 			String dialect = Delegate.DIALECT;
-			String storageURL = null;
-
-			try{
-				storageURL = wf.optString("storageURL",null);
-			}catch(Exception ex) {}
+			String storageURL = wf.optString("storageURL",null);
+			
 			ConversionResult cr = getResource().submit(dialect, wf, storageURL);
 			if(!cr.hasConversionErrors()) {
 				return Response.ok().build();
