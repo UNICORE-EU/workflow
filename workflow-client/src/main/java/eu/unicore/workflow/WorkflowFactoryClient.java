@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
+import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
@@ -31,4 +32,11 @@ public class WorkflowFactoryClient extends BaseServiceClient {
 		return new WorkflowClient(ep, security, auth);
 	}
 	
+	/**
+	 * get the list of workflows
+	 */
+	public EnumerationClient getWorkflowList() throws Exception {
+		return new EnumerationClient(endpoint.cloneTo(endpoint.getUrl()), security, auth);
+	}
+
 }

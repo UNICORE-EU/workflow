@@ -15,4 +15,5 @@ public class WorkflowInitParameters extends BaseInitParameters {
 	
 	public String workflowName;
 
+	public String[] initialTags;
 }

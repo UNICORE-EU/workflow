@@ -24,6 +24,7 @@ import org.chemomentum.dsws.WorkflowFactoryImpl;
 import org.chemomentum.dsws.WorkflowHome;
 import org.chemomentum.dsws.WorkflowInstance;
 import org.chemomentum.dsws.WorkflowModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.fzj.unicore.persist.PersistenceException;
@@ -92,9 +93,12 @@ public class Workflows extends ServicesBase {
 			}
 			String storageURL = j.optString("storageURL",null);
 			factory = getFactory();
-			id = factory.createNewWorkflow(name, tt, storageURL);
+			
+			String[] tags = getTags(j);
+			
+			id = factory.createNewWorkflow(name, tt, storageURL, tags);
 
-			boolean haveWFSubmission = j.optJSONArray("activities")!=null;
+			boolean haveWFSubmission = !Boolean.parseBoolean(j.optString("createOnly",null));
 			if(haveWFSubmission) {
 				newWF = (WorkflowInstance)kernel.getHome("WorkflowManagement").getForUpdate(id);
 				ConversionResult cr = newWF.submit(dialect, j, storageURL);
@@ -138,7 +142,6 @@ public class Workflows extends ServicesBase {
 			JSONObject wf = new JSONObject(json);
 			String dialect = Delegate.DIALECT;
 			String storageURL = wf.optString("storageURL",null);
-			
 			ConversionResult cr = getResource().submit(dialect, wf, storageURL);
 			if(!cr.hasConversionErrors()) {
 				return Response.ok().build();
@@ -318,6 +321,19 @@ public class Workflows extends ServicesBase {
 					" Please check your security setup!");
 		}
 		return (WorkflowFactoryImpl)home.getForUpdate(factories.get(0));
+	}
+	
+	public String[] getTags(JSONObject json){
+		JSONArray tags = json.optJSONArray("Tags");
+		if(tags==null)tags = json.optJSONArray("tags");
+		if(tags!=null){
+			String[] ret = new String[tags.length()];
+			for(int i=0;i<tags.length();i++){
+				ret[i]=tags.optString(i);
+			}
+			return ret;
+		}
+		return null;
 	}
 
 }

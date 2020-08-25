@@ -1,5 +1,6 @@
 package org.chemomentum.dsws;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 /**
- * a workflow instance
+ * a USE resource representing a workflow instance
  * 
  * @author schuller
  */
@@ -77,6 +78,11 @@ public class WorkflowInstance extends BaseResourceImpl {
 		model.setStorageURL(wfInit.storageURL);
 
 		model.submissionTime = Calendar.getInstance();
+		
+		String[] tags = wfInit.initialTags;
+		if(tags!=null && tags.length>0){
+			model.getTags().addAll(Arrays.asList(tags));
+		}
 		
 		Locations loc = new Locations();
 		loc.setWorkflowID(getUniqueID());

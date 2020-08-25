@@ -36,7 +36,7 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 		super();
 	}
 	
-	public String createNewWorkflow(String name, Calendar tt, String storageURL) throws Exception {
+	public String createNewWorkflow(String name, Calendar tt, String storageURL, String...tags) throws Exception {
 		String uid = Utilities.newUniqueID();
 		String clientName = getClient().getDistinguishedName();
 		logger.info("Creating new workflow instance <"+uid+"> for client "+clientName);
@@ -45,6 +45,7 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 		init.parentUUID = getUniqueID();
 		init.workflowName = name;
 		init.storageURL = storageURL;
+		init.initialTags = tags;
 		String id=workflowHome.createResource(init);
 		getModel().owners.put(id, clientName);
 		return id;
