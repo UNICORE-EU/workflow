@@ -140,7 +140,7 @@ public class WorkflowInfo {
 	public List<JSONObject>getStartActivities() throws JSONException {
 		List<JSONObject> res=new ArrayList<>();
 		for(JSONObject a: getActivities()){
-			if("START".equals(a.getString("type")) || getIncomingTransitions(a).size()==0){
+			if("START".equals(a.optString("type",null)) || getIncomingTransitions(a).size()==0){
 				res.add(a);
 				continue;
 			}

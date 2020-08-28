@@ -5,15 +5,20 @@ UNICORE Team <unicore-support@lists.sourceforge.net>
 :numbered:
 
 
-The UNICORE Workflow System provides advanced
-workflow processing capabilities using UNICORE Grid resources.
-Its main components are the Workflow Engine and the 
-Service Orchestrator. While the Workflow Engine provides high-level
-control constructs (for-each, while, if-then-else, etc), the
-Service Orchestrator contains a powerful, extensible resource
-broker, and deals with execution of single UNICORE jobs.
+The UNICORE Workflow engine provides advanced workflow processing
+capabilities using UNICORE Resources. The Workflow engine provides
+high-level control constructs (for-each, while, if-then-else, etc) and
+handles submission and execution of single UNICORE jobs.
 
-For more information about UNICORE visit http://www.unicore.eu[http://www.unicore.eu].
+The Workflow engine offers a REST API for workflow submission and
+management and an easy-to-understand workflow description syntax in
+JSON format.
+
+Thanks to a flexible internal workflow execution model, the Workflow
+engine can be in principle extended with custom workflow parsers.
+
+For more information about UNICORE visit
+http://www.unicore.eu[http://www.unicore.eu].
 
 include::setup.txt[]
 

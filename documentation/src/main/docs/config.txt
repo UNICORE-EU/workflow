@@ -4,8 +4,8 @@ Configuration of the Workflow server
 
 This chapter covers configuration options for the Workflow server.
 Since the Workflow server is running in the same underlying 
-environment (UNICORE Services Environment, USE), you can find
-basic configuration options in the UNICORE/X manual.
+environment (UNICORE Services Environment, USE), a lot of the
+basic configuration options are documented in the UNICORE/X manual.
 
 NOTE
 ================
@@ -59,15 +59,6 @@ workflow.resubmitLimit=3
 --------
 
 
-==== Disabling tracing
-
-To disable sending messages to the tracer component, set
-
---------
-workflow.tracing=false
---------
-
-
 ==== Cleanup behaviour
 
 This controls the behaviour when a workflow is removed (automatically or 
@@ -85,59 +76,19 @@ XNJS settings
 ~~~~~~~~~~~~~
 
 The workflow engine uses the XNJS library for processing workflows.
-The XNJS has a separate configuration file, which is controlled using 
-the following property
+Some settings for modifying the behaviour are available, and
+are usually found in the workflow server's +container.properties+ file
 
------------------
-workflow.xnjsConfiguration=conf/xnjs.xml
------------------
+An important characteristic is the number of threads used by the
+workflow engine for processing.Note, this does not control the number
+of concurrent activities etc, since all XNJS processing is
+asynchronous. The default number (4) is usually fine.
 
-
-The number of threads used by the workflow engine for processing
-can be controlled in the +xnjs.xml+ file. Note, this does
-not control the number of parallel activities etc, since all XNJS
-processing is asynchronous. The default number (4) is usually
-sufficient.
-
-What is more important is the data directory where the XNJS will store
-its state. This should be on a fast (local) filesystem for maximum
-performance. Shared (NFS) directories should not be used.
-
-These two properties are set using
+This  properties is set via
 
 --------
-  <eng:Properties>
-   <eng:Property name="XNJS.statedir" value="data/NJSSTATE"/>
-   <eng:Property name="XNJS.numberofworkers" value="4"/>
-  </eng:Properties>
+XNJS.numberofworkers=4
 --------
-
-Location mapper
-~~~~~~~~~~~~~~~
-
-The location mapper provides a crucial service: it is used to 
-obtain "abstract names" for files, i.e. clients and server
-components can define names that refer to actual files stored
-on some storage without having to deal with the actual file 
-locations.
-
-The location mapper uses its own database for storing these
-mappings, which can be either H2 or MySQL. The database configuration
-is done in +wsrflite.xml+ using a set of property values named
- +org.chemomentum.dataManagement.locationManager.*+
-
-Tracer
-~~~~~~
-
-The (optional) tracer service stores timestamps for activities associated 
-with any given workflow, for example submission time, workflow to service 
-orchestrator submission, job submissions, etc. It is used on the clients
-to show time profile data to the user. The URC contains a nice user interface
-for interacting with this trace data.
-
-This data is stored in a H2 database, which stores its data on the
-filesystem (in the usual persistence directory). 
-Currently no other database is supported.
 
 
 Property reference
@@ -148,95 +99,3 @@ is given in the following table.
 
 include::wf-properties.txt[]
 
-
-
-Servorch server
----------------
-
-This chapter covers configuration options for the Servorch server.
-Since the Servorch server is running in the same underlying 
-environment (UNICORE Services Environment, USE), you can find
-basic configuration options in the UNICORE/X manual.
-
-Additional servorch server configuration is performed in the 
-+uas.config+ file. Advanced re-configuration such as adding new
-brokering strategies can be done in the set of Spring configuration 
-files +servorch/conf/spring+.
-
-NOTE
-============================
-The directory containing the Spring config files is controlled by
-the property +servorch.springConfig+ in +uas.config+. 
-============================
-
-Depending on how you installed the server, the config files are
-located in
-
- * +/etc/unicore/servorch+ (Linux package)
- * +<basedir>/servorch/conf+ (standalone installer)
-
-
-Data directories
-~~~~~~~~~~~~~~~~
-
-By default, runtime data is placed into the "data" subdirectory in the
-service orchestrator directory. To change, there are several properties.
-
- * The usual UNICORE data directory is set in +wsrflite.xml+ in the
-+persistence.directory+ property (default: "data")
-
- * The local indexes created by the resource broker are placed into
-the directory configured in +conf/spring/attributeCache.xml+, by
-default this is set to "data/brokering/attributes".
-
-Preferred file transfer protocol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you want to change the preferred protocol, you may set
---------------
-servorch.outcomesProtocol=BFT
---------------
-
-The default "BFT" will work with any UNICORE installation. 
-If available, "UFTP" will provide more performance.
-
-Job processing
-~~~~~~~~~~~~~~
-
-A number of properties control how jobs are processed by the
-service orchestrator.
-
- * +servorch.jobSupervisors+ controls the number of threads 
-that act as "job supervisors". These threads are used for resource 
-brokering, job submission, status polling and storing job outcomes. 
-The default is "10".
-
- * +servorch.jobUpdateInterval+ controls the number of 
-milliseconds between two job status polls. The default is "5000".
-
- * +servorch.jobFirstUpdateInterval+ is the delay in 
-milliseconds between job submission and first status check. 
-The default is "5000".
-
- * +servorch.outcomesUpdateInterval+ is the number of
-milliseconds between status polls while transferring files. 
-The default is "5000".
-
-Resource checking and attribute gathering interval
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The service orchestrator periodically updates its internal information
-about available sites and their resources. The update interval
-is controlled in the file +conf/uas.config+ 
-
- * +servorch.siteUpdateInterval+ controls the number of 
-milliseconds between two site refresh calls. The default is "20000".
-
-
-Property reference
-~~~~~~~~~~~~~~~~~~
-
-A complete reference of the properties for configuring the Servorch server
-is given in the following table.
-
-include::so-properties.txt[]

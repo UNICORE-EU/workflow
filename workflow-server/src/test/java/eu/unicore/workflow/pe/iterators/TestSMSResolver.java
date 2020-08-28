@@ -10,9 +10,9 @@ public class TestSMSResolver {
 	public void testMakeURL()throws Exception{
 		SMSResolver r=new SMSResolver();
 		String b1="BFT:http://localhost:8080/site/rest/core/storages/WORK/files/basedir";
-		String u1=r.getURL(b1);
+		String u1=r.extractStorageURL(b1);
 		assert "http://localhost:8080/site/rest/core/storages/WORK".equals(u1);
-		String baseDir=r.getBaseDir(b1);
+		String baseDir=r.extractBaseDir(b1);
 		System.out.println(baseDir);
 		assert "/basedir".equals(baseDir);
 	}

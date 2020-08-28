@@ -44,7 +44,7 @@ public class TestWorkflowProcessing extends TestBase {
 		assert(Validate.wasInvoked("a2"));
 		assert(Validate.before("a1", "a2"));
 	}
-
+	
 	/*
 	 * builds and runs a diamond shaped graph, where one branch takes longer than the other.
 	 */

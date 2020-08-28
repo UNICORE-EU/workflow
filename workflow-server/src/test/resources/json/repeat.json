@@ -1,0 +1,65 @@
+{
+
+  "activities" : [
+         {
+           "id": "start",
+           "type": "START"
+           }
+   ],
+   
+  "subworkflows" : [
+
+   { "id": "while", type: "REPEAT_UNTIL", 
+   
+    "variables": [
+	  {
+	    "id": "decl1",
+	    "name": "COUNTER",
+	    "type": "INTEGER",
+	    "initial_value": "1",
+	  },
+	  
+	  {
+	    "id": "dummy-decl",
+	    "name": "TEST",
+	    "type": "INTEGER",
+	    "initial_value": "123",
+	  },
+    ],
+
+    "condition": "COUNTER>2",
+    
+    "body": {
+        
+        "activities" : [
+         {
+           "id": "echo1",
+           "type": "JOB",
+   		   "job": {
+             "Executable": "echo",
+             "Arguments": ["${CURRENT_ITERATOR_VALUE}"],
+           },
+         },
+         
+         {
+           "id": "increment-counter",
+           "type": "MODIFY_VARIABLE",
+           "variableName": "COUNTER",
+           "expression": "COUNTER++",
+         }
+         
+        ],
+        "transitions":[
+          { "from": "increment-counter", "to": "echo1" },
+        ],
+    
+      },
+ 
+  },
+  ],
+
+  "transitions":[
+          {"from": "start", "to": "while",},
+        ],
+
+}

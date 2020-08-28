@@ -57,7 +57,7 @@ public class Iteration implements Serializable, Iterate{
 			String val=getCurrentValue();
 			if(lastValue!=null && val.equals(lastValue)){
 				String msg="Iteration value did not change! " +
-				"Probably your workflow contains loops that are not labeled as LOOP_BODY";
+				"Probably your loop increment expression is faulty?";
 				logger.warn(msg);
 				if(logger.isDebugEnabled()){
 					StringBuilder st=new StringBuilder();

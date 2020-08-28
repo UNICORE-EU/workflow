@@ -30,6 +30,8 @@ public class ActivityGroup extends ActivityContainer{
 	
 	private boolean coBrokerActivities=false;
 	
+	private String notificationURL = null;
+	
 	public ActivityGroup(){}
 	
 	public ActivityGroup(String id,String workflowID) {
@@ -213,6 +215,15 @@ public class ActivityGroup extends ActivityContainer{
 			Log.logException("Clone of "+this.getClass().getName()+" not supported", ce);
 			return this;
 		}
+	}
+	
+	
+	public void setNotificationURL(String notificationURL) {
+		this.notificationURL = notificationURL;
+	}
+	
+	public String getNotificationURL(){
+		return notificationURL;
 	}
 	
 }

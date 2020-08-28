@@ -40,12 +40,23 @@ import eu.unicore.workflow.xnjs.TestBase;
 public class TestForLoopProcessing extends TestBase {
 	
 	@Test
-	public void testConvertedWF() throws Exception {
+	public void testValuesIteration() throws Exception {
 		String file="src/test/resources/json/foreach.json";
 		String wfID=UUID.randomUUID().toString();
 		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
 		ConversionResult res = new Converter(true).convert(wfID, json);
 		assert !res.hasConversionErrors();
+		PEWorkflow wf = res.getConvertedWorkflow();
+		doProcess(wf);
+	}
+	
+	@Test
+	public void testVariableSetIteration() throws Exception {
+		String file="src/test/resources/json/foreach_varset.json";
+		String wfID=UUID.randomUUID().toString();
+		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
+		ConversionResult res = new Converter(true).convert(wfID, json);
+		assert !res.hasConversionErrors(): String.valueOf(res.getConversionErrors());
 		PEWorkflow wf = res.getConvertedWorkflow();
 		doProcess(wf);
 	}

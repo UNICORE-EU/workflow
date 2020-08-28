@@ -34,7 +34,6 @@ import eu.unicore.workflow.pe.model.ActivityStatus;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
-import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 
@@ -367,12 +366,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	protected void sendNotification(String failureReason) {
 		ActivityGroup ag = (ActivityGroup)action.getAjd();
 		String wfID = ag.getWorkflowID();
-		if(!ag.getID().equals(wfID)){
-			// not a toplevel workflow
-			return;
-		}
-		PEWorkflow wfg = (PEWorkflow)ag;
-		String url = wfg.getNotificationURL();
+		String url = ag.getNotificationURL();
 		if(url==null)return;
 		
 		try{
@@ -382,7 +376,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			ProcessState ps = PEConfig.getInstance().getProcessEngine().getProcessState(wfID);
 			msg.put("status", String.valueOf(ps.getState()));
 			msg.put("href", kernel.getContainerProperties().getContainerURL()+"/rest/workflows/"+wfID);
-			
+			msg.put("group_id", ag.getID());
 			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(wfID);
 			if(wfc==null){
 				throw new Exception("Parent workflow information not found.");

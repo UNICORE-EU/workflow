@@ -30,8 +30,8 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class SMSResolver implements Resolver{
 
-	//TODO how to specify the preferred protocol ?
-	private String protocol = "BFT";
+	// TODO how to specify the preferred protocol ?
+	// private String protocol = "BFT";
 	
 	@Override
 	public boolean acceptBase(String base) {
@@ -42,8 +42,8 @@ public class SMSResolver implements Resolver{
 	@Override
 	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ProcessingException {
 		try{
-			String url=getURL(fileset.base);
-			String baseDir=getBaseDir(fileset.base);
+			String url=extractStorageURL(fileset.base);
+			String baseDir=extractBaseDir(fileset.base);
 			List<Pair<String,Long>>results=new ArrayList<Pair<String,Long>>();
 			Kernel kernel=PEConfig.getInstance().getKernel();
 			StorageClient sms = getSMSClient(url, workflowID, kernel.getClientConfiguration());
@@ -55,11 +55,12 @@ public class SMSResolver implements Resolver{
 	}
 	
 	protected Collection<Pair<String,Long>>getMatches(StorageClient sms, String base, FileSet fileSet)throws Exception{
-		String urlBase=protocol+":"+sms.getEndpoint().getUrl()+"/files";
+		String urlBase = //protocol+":"+
+				sms.getEndpoint().getUrl()+"/files";
 		List<Pair<String,Long>>result=new ArrayList<>();
 		FileList files = sms.getFiles(base);
 		for (FileListEntry file : files.list(0, 1000)) {
-			String name = file.group;
+			String name = file.path;
 			if(file.isDirectory && fileSet.recurse){
 				result.addAll(getMatches(sms, name, fileSet)); 
 			}
@@ -139,29 +140,33 @@ public class SMSResolver implements Resolver{
 	}
 	
 	/**
-	 * make a valid URL from the given base (i.e. strip off any leading protocol)
+	 * extract the storage URL from the given base, i.e. strip off any 
+	 * leading protocol and file path
+	 * 
 	 * @param base
 	 */
-	String getURL(String base)throws Exception{
-		//check if we have an extra U6 protocol in the string
+	String extractStorageURL(String base)throws Exception {
+		
+		// strip off UNICORE protocol
 		int i=base.indexOf(':');
 		String sub=base.substring(i+1);
 		if ( sub.startsWith("http://") || sub.startsWith("https://")){
-			int j=sub.indexOf("/files/");
-			if(j>-1){
-				sub=sub.substring(0, j);
-			}
-			return sub;
-		}  
+			base = sub;
+		}
+		
+		// strip off file path
+		int j=base.indexOf("/files/");
+		if(j>-1){
+			return base.substring(0, j);
+		}
+		 
 		return base;
 	}
 	
 	/**
-	 * extract the base dir from the given UNICORE storage URI
-	 * @param base
 	 * @return the base dir, starting with "/"
 	 */
-	String getBaseDir(String base)throws Exception{
+	String extractBaseDir(String base)throws Exception {
 		if(!base.startsWith("/"))base="/"+base;
 		int i=base.indexOf("/files/");
 		if(i>-1){

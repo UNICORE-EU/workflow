@@ -116,7 +116,8 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	}
 
 	/**
-	 * Create a new ChunkedFileIterator with the given file set and chunk size
+	 * Create a new ChunkedFileIterator with the given file set and 
+	 * expression to calculate the chunk size
 	 *  
 	 * @param source - the underlying file set iterator
 	 * @param chunkSizeExpression - a Groovy expression for dynamically calculating the chunk size

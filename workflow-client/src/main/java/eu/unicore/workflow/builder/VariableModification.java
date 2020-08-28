@@ -18,7 +18,7 @@ public class VariableModification {
 	}
 	
 	public VariableModification name(String val) {
-		JSONUtil.putQuietly(json, "name", val);
+		JSONUtil.putQuietly(json, "variable_name", val);
 		return this;
 	}
 	

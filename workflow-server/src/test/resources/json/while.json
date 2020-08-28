@@ -1,66 +1,56 @@
 {
 
-  "activities" : [
-         {
-           "id": "start",
-           "type": "START"
-           }
-   ],
-   
   "subworkflows" : [
 
-   { "id": "while", type: "WHILE", iterator_name: "COUNTER",
+   { "id": "while", type: "WHILE", 
    
     "variables": [
 	  {
-	    "id": "decl1",
-	    "name": "COUNTER",
+	    "name": "C",
 	    "type": "INTEGER",
 	    "initial_value": "1",
 	  },
 	  
 	  {
-	    "id": "dummy-decl",
 	    "name": "TEST",
 	    "type": "INTEGER",
 	    "initial_value": "123",
 	  },
     ],
 
-    "condition": "COUNTER<5",
+    "condition": "C<=2",
     
     "body": {
         "id": "while-body",
         
         "activities" : [
          {
-           "id": "echo1",
-           "type": "JOB",
+           "id": "job",
    		   "job": {
              "Executable": "echo",
-             "Arguments": ["${CURRENT_ITERATOR_VALUE}"],
-           },
+             "Arguments": ["$TEST", " ", "${CURRENT_ITERATOR_VALUE}"],
+     	     "Environment": ["TEST=${C}"],
+     	     "Exports": [
+               { "From": "stdout", "To": "wf:/out_${C}" }
+	    	 ]
+          },
          },
          
          {
            "id": "increment-counter",
            "type": "MODIFY_VARIABLE",
-           "variableName": "COUNTER",
-           "expression": "COUNTER++",
+           "variable_name": "C",
+           "expression": "C++",
          }
          
         ],
         "transitions":[
-          { "from": "increment-counter", "to": "echo1" },
+          { "from": "job", "to": "increment-counter" },
         ],
     
       },
  
   },
   ],
-
-  "transitions":[
-          {"from": "start", "to": "while",},
-        ],
 
 }

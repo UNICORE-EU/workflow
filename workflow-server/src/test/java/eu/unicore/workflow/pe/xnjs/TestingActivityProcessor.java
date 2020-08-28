@@ -45,10 +45,19 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 		getStatistics().incrementJobs();
 		action.setStatus(ActionStatus.RUNNING);
 		TestActivity activity=(TestActivity)action.getAjd();
+		
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
 		int n=activity.getDelay()>-1? activity.getDelay() : rand.nextInt(500);
+		StringBuilder sb = new StringBuilder();
+		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
+		if(vars!=null){
+			for(String s: vars.keySet()) {
+				sb.append(s).append("=").append(String.valueOf(vars.get(s))).append(" ");
+			}
+		}
 		logger.info("Processing activity <"+activity.getID()+"> in iteration <"
-				+myIteration+">, waiting <"+n+"> millis");
+				+myIteration+">, waiting <"+n+"> millis, state <"+sb+">");
+
 		Validate.invoked(activity.getID());
 		Validate.actionCreated(action.getUUID());
 		action.setStatus(ActionStatus.RUNNING);

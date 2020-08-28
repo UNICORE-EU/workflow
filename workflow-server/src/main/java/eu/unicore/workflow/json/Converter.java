@@ -22,6 +22,7 @@ import eu.unicore.util.Log;
 import eu.unicore.workflow.EvaluationFunctions;
 import eu.unicore.workflow.pe.Evaluator;
 import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
+import eu.unicore.workflow.pe.iterators.CounterIteration;
 import eu.unicore.workflow.pe.iterators.FileSetIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 import eu.unicore.workflow.pe.iterators.Iteration;
@@ -102,15 +103,17 @@ public class Converter {
 
 		if(subID.equals(result.getWorkflowID())){
 			converted=new PEWorkflow(result.getWorkflowID());
-			String notification = wf.optString("notification", null);
-			if(notification==null)notification = wf.optString("Notification", null);
-			((PEWorkflow)converted).setNotificationURL(notification);
+			
 		}
 		else{
 			converted=new ActivityGroup(subID,result.getWorkflowID());
 			boolean coBroker = Boolean.parseBoolean(getOption(wf, "COBROKER", "false"));
 			converted.setCoBrokerActivities(coBroker);
 		}
+		
+		String notification = wf.optString("notification", null);
+		if(notification==null)notification = wf.optString("Notification", null);
+		converted.setNotificationURL(notification);
 
 		if(workflowInfo.isLoop()){
 			parentLoopID=workflowInfo.getIteratorName();
@@ -212,6 +215,9 @@ public class Converter {
 		
 		Iterate iterate = buildIterator(wf, result.getWorkflowID(), result);
 		JSONObject body = wf.getJSONObject("body");
+		if(body.optString("id", null)==null) {
+			body.put("id",id+"__body__");
+		}
 		ActivityGroup bodyGroup=convertSubFlow(body, outputFiles, parentLoopID, result);
 
 		bodyGroup.setIterate(iterate);
@@ -240,7 +246,7 @@ public class Converter {
 		Iteration iterate=null;
 		JSONArray values = wf.optJSONArray("values");
 		JSONArray fileSetDef = wf.optJSONArray("filesets");
-		JSONArray variableSets = wf.optJSONArray("variable_sets");
+		JSONArray variableSets = wf.optJSONArray("variables");
 
 		if(values!=null && values.length()>0){
 			iterate=new ValueSetIterator(JSONUtil.toArray(values));
@@ -250,6 +256,7 @@ public class Converter {
 			boolean chunked=false;
 			int chunkSize=0;
 			String formatString=null;
+			String expression = null;
 			for(int i=0; i<fileSetDef.length(); i++){
 				JSONObject fileSet = fileSetDef.getJSONObject(i);
 				boolean recurse = fileSet.optBoolean("recurse", false);
@@ -260,13 +267,16 @@ public class Converter {
 				fileSets.add(new FileSet(base,incl,excl,recurse,indirection));
 			}
 			JSONObject chunk = wf.optJSONObject("chunking");
+			boolean isAggregatedFileSize = false;
 			if(chunk!=null){
 				chunked=true;
 				chunkSize = chunk.optInt("chunksize", 1);
-				if(chunkSize==1){
+				isAggregatedFileSize = chunk.optBoolean("is_kbytes", false);
+				expression = chunk.optString("expression", null);
+				if(chunkSize==1 && !isAggregatedFileSize){
 					chunked=false;
 				}
-				else if(chunkSize<1){
+				else if(chunkSize<1 && !isAggregatedFileSize){
 					result.addError("For-each loop '"+id+"': chunk size  must be an integer value larger than 0. Got: "+chunkSize);
 					chunked=false;
 				}
@@ -281,10 +291,14 @@ public class Converter {
 				}
 			}
 			FileSetIterator fileSetIterator=new FileSetIterator(wfID, fileSets.toArray(new FileSetIterator.FileSet[fileSets.size()]));
-			//should it be chunked?
+			//add chunking
 			if(chunked){
-				boolean isAggregatedFileSize = chunk.optBoolean("is_kbytes", false);
-				iterate=new ChunkedFileIterator(fileSetIterator,chunkSize,isAggregatedFileSize);
+				if(expression!=null) {
+					iterate=new ChunkedFileIterator(fileSetIterator, expression, isAggregatedFileSize);
+				}
+				else {
+					iterate=new ChunkedFileIterator(fileSetIterator, chunkSize, isAggregatedFileSize);
+				}
 				if(formatString!=null)((ChunkedFileIterator)iterate).setFormatString(formatString);
 			}
 			else{
@@ -328,26 +342,25 @@ public class Converter {
 		String id = wf.getString("id");
 		eu.unicore.workflow.pe.model.Condition condition=buildCondition(wf, result.getWorkflowID());
 		JSONObject body = wf.getJSONObject("body");
+		if(body.optString("id", null)==null) {
+			body.put("id", id+"__body__");
+		}
 		ActivityGroup bodyGroup = convertSubFlow(body, outputFiles, parentLoopID, result);	
 		
 		RepeatGroup res = new RepeatGroup(id,result.getWorkflowID(),bodyGroup, condition);
 		WorkflowInfo workflowInfo = WorkflowInfo.build(wf);
 		addVariableDeclarations(workflowInfo, res, result);
 		
-		Iteration iterate=new Iteration();
+		Iterate iterate=new Iteration();
 		String iteratorName = wf.optString("iterator_name", null);
 		if(iteratorName == null) {
-			if(res.getDeclarations().size()!=1) {
-				result.addError("Iterator for group <"+id+"> cannot be determined - set it explicitely via 'iterator_name'");
-			}
-			else {
-				iteratorName = res.getDeclarations().iterator().next().getVariableName();
-			}
+			iterate = new CounterIteration();
 		}
-		iterate.setIteratorName(iteratorName);
+		else {
+			((Iteration)iterate).setIteratorName(iteratorName);
+		}
 		bodyGroup.setIterate(iterate);
 		bodyGroup.setLoopIteratorName(iteratorName);
-		
 		return res;
 	}
 
@@ -360,23 +373,23 @@ public class Converter {
 		eu.unicore.workflow.pe.model.Condition condition=buildCondition(wf, result.getWorkflowID());
 		JSONObject body = wf.getJSONObject("body");
 		body.put("is_loop_body", "true");
+		if(body.optString("id", null)==null) {
+			body.put("id", id+"__body__");
+		}
 		ActivityGroup bodyGroup = convertSubFlow(body, outputFiles, parentLoopID, result);	
 	
 		WhileGroup res = new WhileGroup(id,result.getWorkflowID(),bodyGroup, condition);
 		WorkflowInfo workflowInfo=WorkflowInfo.build(wf);
 		addVariableDeclarations(workflowInfo, res, result);
 		
-		Iteration iterate=new Iteration();
+		Iterate iterate=new Iteration();
 		String iteratorName = wf.optString("iterator_name", null);
 		if(iteratorName == null) {
-			if(res.getDeclarations().size()!=1) {
-				result.addError("Iterator for group <"+id+"> cannot be determined - set it explicitely via 'iterator_name'");
-			}
-			else {
-				iteratorName = res.getDeclarations().iterator().next().getVariableName();
-			}
+			iterate = new CounterIteration();
 		}
-		iterate.setIteratorName(iteratorName);
+		else {
+			((Iteration)iterate).setIteratorName(iteratorName);
+		}
 		bodyGroup.setIterate(iterate);
 		bodyGroup.setLoopIteratorName(iteratorName);
 		
@@ -411,7 +424,11 @@ public class Converter {
 
 		String id = a.getString("id");
 
-		String activityType = a.getString("type");
+		String activityType = a.optString("type", null);
+
+		if(activityType==null && a.optJSONObject("job")!=null) {
+			activityType = "JOB";
+		}
 
 		if("JOB".equals(activityType)){
 			if(unitTesting) {
@@ -429,11 +446,11 @@ public class Converter {
 			}
 		}
 		else if ("MODIFY_VARIABLE".equals(activityType)){
-			String name = getOption(a, "variableName");
+			String name = getOption(a, "variable_name");
 			String expr = getOption(a, "expression");
 
 			if(name==null || expr==null){
-				result.addError("Variable modification '"+id+"': need 'variableName' and 'expression' options.");
+				result.addError("Variable modification '"+id+"': need 'variable_name' and 'expression' options.");
 				err = true;
 			}
 			else{
@@ -491,7 +508,7 @@ public class Converter {
 			activities.add(r);
 		}
 
-		else {
+		else if (!err){
 			result.addError("Activity '"+id+"': unknown activity type <"+activityType+">");
 			err = true;
 		}
@@ -631,7 +648,7 @@ public class Converter {
 		try{
 			id = a.getString("id");
 			String wfid = result.getWorkflowID();
-			String varName = getOption(a, "variableName");
+			String varName = getOption(a, "variable_name");
 			String expression = getOption(a, "expression");
 			String script = convertExpression(wfid, expression);
 			ModifyVariableActivity modVar = new ModifyVariableActivity(id,wfid,varName,script);
@@ -681,7 +698,7 @@ public class Converter {
 		}
 
 		String activityType = a.optString("type", null);
-		if(activityType==null){
+		if(activityType==null && a.optJSONObject("job")==null){
 			result.addError("Activity '"+activityID+"' needs a 'type' attribute");
 		}
 

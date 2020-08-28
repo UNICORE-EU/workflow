@@ -17,7 +17,7 @@ public class Variable {
 		this.json = new JSONObject();
 		JSONUtil.putQuietly(json, "name", name);
 		JSONUtil.putQuietly(json, "type", "INTEGER");
-		JSONUtil.putQuietly(json, "default_value", "0");
+		JSONUtil.putQuietly(json, "initial_value", "0");
 	}
 
 	public JSONObject getJSON() {
