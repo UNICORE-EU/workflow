@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import de.fzj.unicore.uas.impl.BaseResourceImpl;
 import de.fzj.unicore.wsrflite.InitParameters;
 import de.fzj.unicore.wsrflite.messaging.Message;
-import de.fzj.unicore.wsrflite.messaging.PullPoint;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
@@ -133,35 +132,6 @@ public class WorkflowInstance extends BaseResourceImpl {
 		PEConfig.getInstance()
 		.getProcessEngine()
 		.process(peWorkflow, getSecurityTokens(), getModel().storageURL, terminationTime);
-	}
-
-	@Override
-	public void processMessages(PullPoint p) {
-		// check for new job instance URLs and store them in the model
-		try {
-			while (p.hasNext()) {
-				try {
-					String msg = p.next().getBody();
-					System.out.println("MSG: "+msg);
-					addJobURL(msg);
-				} catch (Exception ex) {
-					Log.logException(
-							"Can't add job address to job list in workflow "
-									+ getUniqueID(), ex, logger);
-				}
-			}
-		} catch (Exception e) {
-			Log.logException("Can't refresh job list in workflow "
-					+ getUniqueID(), e, logger);
-		}
-	}
-
-	public void addJobURL(String url){
-		WorkflowModel m = getModel();
-		if(!m.getJobURLs().contains(url)){
-			if(logger.isDebugEnabled())logger.debug("Adding job instance with address " + url);
-			m.getJobURLs().add(url);
-		}
 	}
 
 	public void doResume(Map<String, String> params) throws Exception {

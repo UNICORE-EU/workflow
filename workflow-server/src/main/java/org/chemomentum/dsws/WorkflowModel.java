@@ -1,9 +1,7 @@
 package org.chemomentum.dsws;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.fzj.unicore.uas.impl.UASBaseModel;
@@ -24,13 +22,7 @@ public class WorkflowModel extends UASBaseModel {
 	
 	// variable names / types
 	private final Map<String,String> declaredVariables = new HashMap<>();
-	
-	final List<String> jobURLs = new ArrayList<String>();
 
-	public List<String> getJobURLs(){
-		return jobURLs;
-	}
-	
 	public void setSubmittedWorkflow(String wf){
 		submittedWorkflow = wf;
 	}

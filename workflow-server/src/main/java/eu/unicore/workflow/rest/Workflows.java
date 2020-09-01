@@ -4,14 +4,19 @@ import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,11 +42,13 @@ import eu.unicore.security.AuthorisationException;
 import eu.unicore.security.Client;
 import eu.unicore.security.Role;
 import eu.unicore.services.rest.Link;
+import eu.unicore.services.rest.PagingHelper;
 import eu.unicore.services.rest.USEResource;
 import eu.unicore.services.rest.impl.ServicesBase;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.json.Delegate;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 
 /**
  * REST interface to workflows
@@ -65,10 +72,10 @@ public class Workflows extends ServicesBase {
 	}
 	
 	/**
-	 * create a new workflow (optionally submitting it)
+	 * create a new workflow
 	 * 
-	 * @param json - JSON containing workflow name, termination time, storage address
-	 * @return address of new resource
+	 * @param json - workflow JSON, also containing extra info like workflow name, termination time, storage address
+	 * @return address of new resource. If workflow has errors, response will have error info and status '400'
 	 */
 	@POST
 	@Path("/")
@@ -128,39 +135,6 @@ public class Workflows extends ServicesBase {
 		}
 	}
 
-
-	/**
-	 * submit the new workflow 
-	 * 
-	 * @param json - JSON 
-	 */
-	@POST
-	@Path("/{uniqueID}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response submitWorkflow(String json) throws Exception {
-		try{
-			JSONObject wf = new JSONObject(json);
-			String dialect = Delegate.DIALECT;
-			String storageURL = wf.optString("storageURL",null);
-			ConversionResult cr = getResource().submit(dialect, wf, storageURL);
-			if(!cr.hasConversionErrors()) {
-				return Response.ok().build();
-			}
-			else {
-				StringBuilder msg = new StringBuilder();
-				msg.append("Could not submit workflow. Workflow contains errors.\n");
-				int i = 1;
-				for (String s : cr.getConversionErrors()) {
-					msg.append(i + ": " + s + "\n");
-					i++;
-				}
-				return createErrorResponse(HttpStatus.SC_BAD_REQUEST, msg.toString());
-			}
-		}catch(Exception ex){
-			return handleError("Could not submit workflow", ex, logger);
-		}
-	}
-
 	/**
 	 * handle workflow files as a sub-resource
 	 */
@@ -170,6 +144,31 @@ public class Workflows extends ServicesBase {
 		return new WorkflowFiles(kernel, getResource(), filesURL);
 	}
 
+	/**
+	 * job list as separate sub-resource
+	 */
+	@GET
+	@Path("/{uniqueID}/jobs")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getJobs(@QueryParam("offset") @DefaultValue(value="0") int offset, 
+			@QueryParam("num") @DefaultValue(value="200") int num) throws Exception {
+		try{
+			WorkflowContainer wfc = PEConfig.getInstance().getPersistence().read(resourceID);
+			Collection<String>jobs = wfc.collectJobs();
+			List<String> toRender = null;
+			if(jobs instanceof List)toRender = (List<String>)jobs;
+			else {
+				toRender = new ArrayList<String>();
+				toRender.addAll(jobs);
+			}
+			PagingHelper ph = new PagingHelper(getBaseURL()+"/"+resourceID+"/jobs", "", "jobs");
+			JSONObject o = ph.renderJson(offset, num, toRender);
+			return Response.ok(o.toString(), MediaType.APPLICATION_JSON).build();
+
+		}catch(Exception ex){
+			return handleError("Error", ex, logger);
+		}
+	}
 
 	@Override
 	protected void doHandleAction(String action, JSONObject json) throws Exception {
@@ -210,7 +209,6 @@ public class Workflows extends ServicesBase {
 	protected Map<String,Object>getProperties() throws Exception {
 		Map<String,Object> props = super.getProperties();
 		renderStatus(props);
-		renderJobList(props);
 		return props;
 	}
 
@@ -222,10 +220,6 @@ public class Workflows extends ServicesBase {
 		o.put("detailedStatus", getDetailedStatus());
 		o.put("parameters", resource.getVariableValues());
 		o.put("submissionTime", UnitParser.getISO8601().format(model.getSubmissionTime().getTime()));
-	}
-
-	protected void renderJobList(Map<String,Object> o) throws Exception{
-		o.put("jobs", getModel().getJobURLs());
 	}
 
 	protected Map<String,Object>getDetailedStatus() throws Exception {
@@ -310,6 +304,7 @@ public class Workflows extends ServicesBase {
 		links.add(new Link("action:abort",getBaseURL()+"/"+resource.getUniqueID()+"/actions/abort","Abort"));
 		links.add(new Link("action:continue",getBaseURL()+"/"+resource.getUniqueID()+"/actions/continue","Continue"));
 		links.add(new Link("action:callback",getBaseURL()+"/"+resource.getUniqueID()+"/actions/callback","Job status callback"));
+		links.add(new Link("jobs",getBaseURL()+"/"+resource.getUniqueID()+"/jobs","Job list"));
 	}
 
 	synchronized WorkflowFactoryImpl getFactory() throws PersistenceException {
