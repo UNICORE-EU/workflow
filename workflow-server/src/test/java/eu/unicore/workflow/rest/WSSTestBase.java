@@ -15,6 +15,9 @@ import de.fzj.unicore.wsrflite.Kernel;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
+/**
+ * starts a full USE workflow engine
+ */
 public abstract class WSSTestBase {
 
 	protected static Kernel kernel;
@@ -24,7 +27,6 @@ public abstract class WSSTestBase {
 	@BeforeClass
 	public static void setUp()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data"));
-		FileUtils.deleteQuietly(new File("/tmp/XNJS_TEST_TMPDIRS"));
 		
 		uas=new UAS("src/test/resources/container.properties");
 		kernel=uas.getKernel();

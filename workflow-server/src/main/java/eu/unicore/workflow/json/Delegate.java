@@ -123,7 +123,7 @@ public class Delegate implements DSLDelegate {
 				if(s.getActivityStatus().equals(eu.unicore.workflow.pe.model.ActivityStatus.FAILED)){
 					String errorCode = s.getErrorCode();
 					String error = s.getErrorDescription();
-					ase.put("errorMessage", errorCode+" "+error);
+					ase.put("errorMessage", errorCode+": "+error);
 				}
 				ase.put("status", convertStatus(s.getActivityStatus()));
 				as.add(ase);

@@ -4,32 +4,28 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import eu.unicore.client.Endpoint;
+import eu.unicore.client.core.BaseServiceClient;
+import eu.unicore.workflow.WorkflowClient;
+import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.pe.PEConfig;
+import junit.framework.Assert;
 
 public class TestRESTServices extends WSSTestBase {
 
 	@Test
 	public void testRunDate()throws Exception{
 		
-		RESTClient client = createWorkflow();
-		JSONObject wfProps = client.getJSON();
-		System.out.println(wfProps.toString(2));
-		
-		JSONObject in = loadJSON("src/test/resources/json/date1.json");
-		HttpResponse res = client.post(in);
-		client.checkError(res);
-		
-		wfProps = client.getJSON();
+		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
+		JSONObject wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		
 		waitWhileRunning(client);
 
-		wfProps = client.getJSON();
+		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 
 	}
@@ -37,20 +33,13 @@ public class TestRESTServices extends WSSTestBase {
 	@Test
 	public void testRunForEach()throws Exception{
 		
-		RESTClient client = createWorkflow();
-		JSONObject wfProps = client.getJSON();
-		System.out.println(wfProps.toString(2));
-		
-		JSONObject in = loadJSON("src/test/resources/json/foreach.json");
-		HttpResponse res = client.post(in);
-		client.checkError(res);
-		
-		wfProps = client.getJSON();
+		WorkflowClient client = createWorkflow("src/test/resources/json/foreach.json");
+		JSONObject wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		
 		waitWhileRunning(client);
 
-		wfProps = client.getJSON();
+		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 
 	}
@@ -58,16 +47,13 @@ public class TestRESTServices extends WSSTestBase {
 	@Test
 	public void testRunTwoSteps()throws Exception{
 		
-		RESTClient client = createWorkflow("src/test/resources/json/twostep.json");
-		JSONObject wfProps = client.getJSON();
-		System.out.println(wfProps.toString(2));
-		
-		wfProps = client.getJSON();
+		WorkflowClient client = createWorkflow("src/test/resources/json/twostep.json");
+		JSONObject wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		
 		waitWhileRunning(client);
 
-		wfProps = client.getJSON();
+		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 
 	}
@@ -76,56 +62,77 @@ public class TestRESTServices extends WSSTestBase {
 	@Test
 	public void testRunTwoStepWithOutputs()throws Exception{
 		
-		RESTClient client = createWorkflow("src/test/resources/json/two-with-outputs.json");
-		JSONObject wfProps = client.getJSON();
+		WorkflowClient client = createWorkflow("src/test/resources/json/two-with-outputs.json");
+		JSONObject wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		
-		wfProps = client.getJSON();
-		System.out.println(wfProps.toString(2));
-		String wfID = client.getURL().substring(client.getURL().lastIndexOf("/")+1);
 		waitWhileRunning(client);
 
-		wfProps = client.getJSON();
+		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		
+		String wfURL = client.getEndpoint().getUrl();
+		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
 		// check location map
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
 		System.out.println(loc);
 	}
 	
-	private RESTClient createWorkflow() throws Exception {
-		return createWorkflow(null);
+	
+	@Test
+	public void testRunCatInput()throws Exception{
+		FileUtils.forceMkdir(new File("target/data/WORK"));
+		FileUtils.write(new File("target/data/WORK/input.txt"), "test123", "UTF-8");
+		WorkflowClient client = createWorkflow("src/test/resources/json/cat-input.json");
+		JSONObject wfProps = client.getProperties();
+		System.out.println(wfProps.toString(2));
+		
+		waitWhileRunning(client);
+
+		wfProps = client.getProperties();
+		System.out.println(wfProps.toString(2));
+		
+		String wfURL = client.getEndpoint().getUrl();
+		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
+		// check location map
+		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
+		System.out.println(loc);
+		Assert.assertNotNull(loc.get("wf:infile"));
+		
+		// via REST API
+		BaseServiceClient fileList = client.getFileList();
+		JSONObject files = fileList.getProperties();
+		System.out.println(files.toString(2));
+		Assert.assertNotNull(files.getString("wf:infile"));
+		
 	}
 	
-	private RESTClient createWorkflow(String wfFileName) throws Exception {
-		String url = kernel.getContainerProperties().getContainerURL()+"/rest";
-		RESTClient client = new RESTClient(url,kernel.getClientConfiguration());
-		String resource  = url+"/workflows";
-		client.setURL(resource);
+	private WorkflowClient createWorkflow(String wfFileName) throws Exception {
+		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
+		WorkflowFactoryClient client = new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
 		
 		JSONObject wf = wfFileName==null ? 
 				new JSONObject() : 
 				new JSONObject(FileUtils.readFileToString(new File(wfFileName), "UTF-8"));
-		wf.put("name","test123");
+		try{
+			wf.put("name", wfFileName.substring(wfFileName.lastIndexOf("/")+1));
+		}catch(Exception ex) {
+			wf.put("name", "n/a");
+		}
 		wf.put("storageURL","https://somestorage");
 		
-		HttpResponse res = client.post(wf);
-		String newWF = res.getFirstHeader("Location").getValue();
-		System.out.println("Created new workflow "+newWF);
-		EntityUtils.consumeQuietly(res.getEntity());
-		client.setURL(newWF);
-		return client;
+		return client.submitWorkflow(wf);
 	}
 	
 	
 	
-	protected JSONObject waitWhileRunning(RESTClient client) throws Exception {
+	protected JSONObject waitWhileRunning(WorkflowClient client) throws Exception {
 		String status ="UNDEFINED";
-		JSONObject wfProps = client.getJSON();
+		JSONObject wfProps = client.getProperties();
 		int c=0;
 		do{
 			Thread.sleep(1000);
-			wfProps = client.getJSON();
+			wfProps = client.getProperties();
 			status = wfProps.getString("status");
 		}while(c<60 && ("RUNNING".equals(status) || "UNDEFINED".equals(status)));
 		return wfProps;

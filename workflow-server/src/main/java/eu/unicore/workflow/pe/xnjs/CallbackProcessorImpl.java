@@ -34,7 +34,7 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 	}
 
 	@Override
-	public void handleCallback(String wfID, String jobURL, String statusMessage, boolean success) {
+	public void handleCallback(String wfID, String jobURL, final String statusMessage, boolean success) {
 		Runnable r=new Runnable(){
 			public void run(){
 				try{
@@ -55,6 +55,11 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 								a.setStatus(ActionStatus.POSTPROCESSING);
 								if(success) {
 									a.setResult(new ActionResult(ActionResult.SUCCESSFUL));
+								}
+								else {
+									a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, statusMessage);
+									a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "JOB_FAILED");
+									
 								}
 							}
 						};

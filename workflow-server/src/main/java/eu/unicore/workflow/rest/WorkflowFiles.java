@@ -1,12 +1,12 @@
 package eu.unicore.workflow.rest;
 
-import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,12 +17,15 @@ import org.apache.log4j.Logger;
 import org.chemomentum.dsws.WorkflowInstance;
 import org.json.JSONObject;
 
+import de.fzj.unicore.uas.json.JSONUtil;
 import de.fzj.unicore.wsrflite.Kernel;
 import eu.unicore.services.rest.Link;
 import eu.unicore.services.rest.RESTUtils;
 import eu.unicore.services.rest.impl.RESTRendererBase;
 import eu.unicore.util.ConcurrentAccess;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.files.Locations;
 
 /**
  * A very simplistic file catalog that stores names and physical locations for files used in a 
@@ -54,35 +57,45 @@ public class WorkflowFiles extends RESTRendererBase {
 	@ConcurrentAccess(allow=true)
 	public Response query(@PathParam("path")String path) 
 			throws Exception {
-		InputStream is = null;
 		try{
 			if(path==null || path.isEmpty())path="/";
-			
-			
-			throw new Exception("not yet");
+			Locations locations = PEConfig.getInstance().getLocationStore().read(wf.getUniqueID());
+			// TODO filter according to path parameter
+			JSONObject o = JSONUtil.asJSON(locations.getLocations());
+			return Response.ok(o.toString(), MediaType.APPLICATION_JSON).build();
 		}catch(Exception ex){
-			de.fzj.unicore.xnjs.util.IOUtils.closeQuietly(is);
-			return handleError("Error downloading from '"+path+"'", ex, logger);
+			return handleError("Error listing workflow files matching'"+path+"'", ex, logger);
 		}
 	}
 
 	/**
-	 * create new record(s)
+	 * register location
 	 */
-	@POST
+	@PUT
 	@Path("/register")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response register(@PathParam("path")String path, String jsonString) 
+	public Response register(String jsonString) 
 			throws Exception {
-
-		if(path == null || path.isEmpty())path="/";
-		try{
-			JSONObject j = new JSONObject(jsonString);
-			
+		Locations locations = null;
+		try {
+			locations = PEConfig.getInstance().getLocationStore().read(wf.getUniqueID());
+			JSONObject o = new JSONObject(jsonString);
+			@SuppressWarnings("unchecked")
+			Iterator<String> keys = (Iterator<String>)o.keys();
+			while(keys.hasNext()) {
+				String key = keys.next();
+				String loc = o.getString(key);
+				if(!key.startsWith("wf:"))key="wf:"+key;
+				locations.getLocations().put(key, loc);
+			}
 			return Response.ok().build();
 		}
 		catch(Exception e){
-			return handleError("Cannot create record <"+path+">", e, logger);
+			return handleError("Cannot register file(s)", e, logger);
+		}finally {
+			if(locations!=null) {
+				PEConfig.getInstance().getLocationStore().write(locations);
+			}
 		}
 	}
 
@@ -96,7 +109,7 @@ public class WorkflowFiles extends RESTRendererBase {
 
 	@Override
 	protected void updateLinks() {
-		links.add(new Link("parentStorage",RESTUtils.makeHref(kernel, "workflows/", wf.getUniqueID()),
+		links.add(new Link("parent",RESTUtils.makeHref(kernel, "workflows/", wf.getUniqueID()),
 				"Parent Workflow"));
 	}
 

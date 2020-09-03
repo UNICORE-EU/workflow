@@ -5,6 +5,7 @@ import java.util.Map;
 import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
+import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
@@ -50,4 +51,15 @@ public class WorkflowClient extends BaseServiceClient {
 		executeAction("abort", null);
 	}
 	
+	public EnumerationClient getJobList() throws Exception {
+		return new EnumerationClient(endpoint.cloneTo(getLinkUrl("jobs")), 
+				getSecurityConfiguration(), 
+				getAuth());
+	}
+
+	public BaseServiceClient getFileList() throws Exception {
+		return new BaseServiceClient(endpoint.cloneTo(getLinkUrl("files")), 
+				getSecurityConfiguration(), 
+				getAuth());
+	}
 }

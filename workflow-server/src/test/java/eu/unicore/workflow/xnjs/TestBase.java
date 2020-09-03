@@ -35,6 +35,9 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.xnjs.NullECM;
 import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
 
+/**
+ * starts an XNJS for workflow processing
+ */
 public class TestBase {
 
 	protected static XNJS xnjs;

@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ import eu.unicore.services.rest.impl.ServicesBase;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.json.Delegate;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 
 /**
@@ -105,21 +107,42 @@ public class Workflows extends ServicesBase {
 			
 			id = factory.createNewWorkflow(name, tt, storageURL, tags);
 
-			boolean haveWFSubmission = !Boolean.parseBoolean(j.optString("createOnly",null));
-			if(haveWFSubmission) {
-				newWF = (WorkflowInstance)kernel.getHome("WorkflowManagement").getForUpdate(id);
-				ConversionResult cr = newWF.submit(dialect, j, storageURL);
-				if(cr.hasConversionErrors()) {
-					StringBuilder msg = new StringBuilder();
-					msg.append("Could not submit workflow. Workflow contains errors.\n");
-					int i = 1;
-					for (String s : cr.getConversionErrors()) {
-						msg.append(i + ": " + s + "\n");
-						i++;
+			newWF = (WorkflowInstance)kernel.getHome("WorkflowManagement").getForUpdate(id);
+			
+			// register inputs
+			JSONObject inputs = j.optJSONObject("inputs");
+			String inputError = null;
+			if(inputs!=null) {
+				try {
+					Locations locations = PEConfig.getInstance().getLocationStore().getForUpdate(id);
+					@SuppressWarnings("unchecked")
+					Iterator<String> names = (Iterator<String>)inputs.keys();
+					while(names.hasNext()) {
+						String logicalName = names.next();
+						String location = inputs.getString(logicalName);
+						locations.getLocations().put(logicalName, location);
 					}
-					return createErrorResponse(HttpStatus.SC_BAD_REQUEST, msg.toString());
+					PEConfig.getInstance().getLocationStore().write(locations);
+				}catch(Exception ex) {
+					inputError = Log.createFaultMessage("Could not register inputs.", ex);
 				}
 			}
+			
+			ConversionResult cr = newWF.submit(dialect, j, storageURL);
+			if(cr.hasConversionErrors() || inputError!=null) {
+				StringBuilder msg = new StringBuilder();
+				msg.append("Could not submit workflow. Workflow contains errors.\n");
+				if(inputError!=null) {
+					msg.append(inputError).append("\n");
+				}
+				int i = 1;
+				for (String s : cr.getConversionErrors()) {
+					msg.append(i + ": " + s + "\n");
+					i++;
+				}
+				return createErrorResponse(HttpStatus.SC_BAD_REQUEST, msg.toString());
+			}
+
 			String location = getBaseURL()+"/"+id;
 			return Response.created(new URI(location)).build();
 		}catch(Exception ex){
@@ -145,7 +168,7 @@ public class Workflows extends ServicesBase {
 	}
 
 	/**
-	 * job list as separate sub-resource
+	 * job list
 	 */
 	@GET
 	@Path("/{uniqueID}/jobs")
@@ -305,6 +328,7 @@ public class Workflows extends ServicesBase {
 		links.add(new Link("action:continue",getBaseURL()+"/"+resource.getUniqueID()+"/actions/continue","Continue"));
 		links.add(new Link("action:callback",getBaseURL()+"/"+resource.getUniqueID()+"/actions/callback","Job status callback"));
 		links.add(new Link("jobs",getBaseURL()+"/"+resource.getUniqueID()+"/jobs","Job list"));
+		links.add(new Link("files",getBaseURL()+"/"+resource.getUniqueID()+"/files","File list"));
 	}
 
 	synchronized WorkflowFactoryImpl getFactory() throws PersistenceException {
