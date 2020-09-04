@@ -95,7 +95,7 @@ public class TestConversion {
 		
 		assert ((ActivityGroup)body).getActivities().size()==1; 
 		
-		assert "ForEachIterator".equals(((Iteration)body.getIterate()).getIteratorName());
+		assert "IT".equals(((Iteration)body.getIterate()).getIteratorName());
 	}
 	
 	@Test

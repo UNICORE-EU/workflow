@@ -44,10 +44,6 @@
       <groupId>eu.unicore</groupId>
       <artifactId>uas-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>eu.unicore.uftp</groupId>
-      <artifactId>uftp-core</artifactId>
-    </dependency>
   </dependencies>
 
   <repositories>
