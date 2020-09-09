@@ -25,7 +25,7 @@ public class TestFileSetIterator {
 	}
 	
 	static long size = 0l;
-	static int total = 10;
+	static int total = 100;
 	static boolean random=false;
 	static Random r=new Random();
 	
@@ -49,13 +49,12 @@ public class TestFileSetIterator {
 	public void testIterator()throws Exception{
 		ResolverFactory.clear();
 		ResolverFactory.registerResolver(R1.class);
-		
 		FileSet fs=new FileSet("test/", null, null, false, false);
 		FileSetIterator fsi=new FileSetIterator("wf",fs);
 		ProcessVariables vars=new ProcessVariables();
 		fsi.reset(vars);
 		fsi.next(vars);
-		assert 100==fsi.values.length;
+		assert 100==fsi.values.length: "got "+fsi.values.length;
 	}
 	
 	
@@ -73,7 +72,6 @@ public class TestFileSetIterator {
 	@Test
 	public void testChunkedFileSetIterator()throws Exception{
 		ResolverFactory.clear();
-		total=100;
 		ResolverFactory.registerResolver(R1.class);
 		
 		FileSet fs=new FileSet("test/", null, null, false,false);
@@ -120,7 +118,7 @@ public class TestFileSetIterator {
 		int max=2048;
 		//this iterator should return chunks that are either not bigger than  "max" kbytes 
 		//or contain exactly a single file
-		ChunkedFileIterator iter=new ChunkedFileIterator(fsi, max, true);
+		ChunkedFileIterator iter=new ChunkedFileIterator(fsi, max, ChunkedFileIterator.Type.SIZE);
 		iter.reset(vars);
 		iter.next(vars);
 		iter.fillContext(vars);

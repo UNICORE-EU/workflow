@@ -15,6 +15,12 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 
 	private static final long serialVersionUID=1L; 
 	
+	
+	public static enum Type {
+		NUMBER, 
+		SIZE
+	}
+	
 	/**
 	 * Process variables flag (=Boolean.TRUE) to indicate that chunking is active
 	 */
@@ -68,12 +74,9 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	
 	private String chunkSizeExpression;
 	
-	/**
-	 * if <code>true</code> the chunkSize is interpreted as an actual aggregated file size...
-	 */
-	private final boolean isActualDataSize;
+	private final Type type;
 	
-	private int currentChunk=-1;
+	private int currentChunk = -1;
 	
 	public static final String DEFAULT_FORMAT="{0,number}_{1}{2}";
 	
@@ -81,9 +84,9 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	
 	// only used by persistence
 	ChunkedFileIterator(){
-		this.source=null;
-		this.chunkSize=0;
-		this.isActualDataSize=true;
+		this.source = null;
+		this.chunkSize = 0;
+		this.type = Type.SIZE;
 	}
 	
 	/**
@@ -94,7 +97,7 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 * @throws IllegalArgumentException if chunksize is < 2
 	 */
 	public ChunkedFileIterator(FileSetIterator source, int chunkSize){
-		this(source,chunkSize,false);
+		this(source, chunkSize, Type.NUMBER);
 	}
 
 	/**
@@ -106,11 +109,11 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 *        interpreted as aggregated file size in kbytes
 	 * @throws IllegalArgumentException if chunksize is < 2
 	 */
-	public ChunkedFileIterator(FileSetIterator source, int chunkSize, boolean isAggregatedFileSize){
+	public ChunkedFileIterator(FileSetIterator source, int chunkSize, Type type){
 		this.source=source;
 		this.chunkSize=chunkSize;
-		this.isActualDataSize=isAggregatedFileSize;
-		if(chunkSize<2 && !isAggregatedFileSize){
+		this.type = type;
+		if(chunkSize<2 && Type.NUMBER.equals(type)){
 			throw new IllegalArgumentException("Chunk size must be larger than 1!");
 		}
 	}
@@ -124,10 +127,10 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 * @param isAggregatedFileSize - if <code>true</code>, the chunk size is 
 	 *        interpreted as aggregated file size in kbytes
 	 */
-	public ChunkedFileIterator(FileSetIterator source, String chunkSizeExpression, boolean isAggregatedFileSize){
+	public ChunkedFileIterator(FileSetIterator source, String chunkSizeExpression, Type type){
 		this.source=source;
 		this.chunkSizeExpression=chunkSizeExpression;
-		this.isActualDataSize=isAggregatedFileSize;
+		this.type = type;
 		if(chunkSizeExpression==null)throw new IllegalArgumentException("Expression cannot be null");
 	}
 	
@@ -162,7 +165,7 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 		}
 		vars.put(PV_IS_CHUNKED, Boolean.TRUE);
 		
-		if(isActualDataSize){
+		if(Type.SIZE.equals(type)){
 			fillContextFileSizeLimited(vars);
 		}
 		else{

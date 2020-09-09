@@ -34,7 +34,7 @@ public class TestRepeatLoopProcessing extends TestBase {
 		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
 		ConversionResult res = new Converter(true).convert(wfID, json);
 		printErrors(res);
-		assert !res.hasConversionErrors();
+		assert !res.hasConversionErrors(): res.getConversionErrors();
 		
 		PEWorkflow wf = res.getConvertedWorkflow();
 		doProcess(wf);

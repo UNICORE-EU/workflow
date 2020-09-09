@@ -38,7 +38,7 @@ import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
 /**
  * starts an XNJS for workflow processing
  */
-public class TestBase {
+public abstract class TestBase {
 
 	protected static XNJS xnjs;
 

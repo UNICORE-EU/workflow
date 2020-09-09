@@ -1,6 +1,7 @@
 package eu.unicore.workflow.builder;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.fzj.unicore.uas.json.JSONUtil;
@@ -86,7 +87,7 @@ public class ForEach extends Loop {
 						array.put(s);
 				}
 			}
-			JSONUtil.putQuietly(json, "includes", array);
+			JSONUtil.putQuietly(json, "include", array);
 			return this;
 		}
 		
@@ -97,7 +98,7 @@ public class ForEach extends Loop {
 						array.put(s);
 				}
 			}
-			JSONUtil.putQuietly(json, "excludes", array);
+			JSONUtil.putQuietly(json, "exclude", array);
 			return this;
 		}
 		
@@ -106,8 +107,50 @@ public class ForEach extends Loop {
 			return this;
 		}
 		
+		public ChunkSpec chunking() {
+			ChunkSpec cs = new ChunkSpec();
+			JSONUtil.putQuietly(json, "chunking", cs.getJSON());
+			return cs;
+		}
+		
 		public JSONObject getJSON() {
 			return json;
 		}
 	}
+	
+	public static class ChunkSpec {
+		
+		protected JSONObject json = new JSONObject();
+		
+		public ChunkSpec size(int size) {
+			try{ json.put("chunksize", size); } catch (JSONException e) {}
+			return this;
+		}
+		
+		/**
+		 * NUMBER or SIZE (aggregated file size in kBytes)
+		 */
+		public ChunkSpec type(String type) {
+			JSONUtil.putQuietly(json, "type", type);
+			return this;
+		}
+		
+		/**
+		 * expression to compute chunk size dynamically
+		 */
+		public ChunkSpec expression(String expression) {
+			JSONUtil.putQuietly(json, "expression", expression);
+			return this;
+		}
+		
+		public ChunkSpec filename_format(String format) {
+			JSONUtil.putQuietly(json, "filename_format", format);
+			return this;
+		}
+		
+		public JSONObject getJSON() {
+			return json;
+		}
+	}
+	
 }

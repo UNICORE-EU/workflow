@@ -44,7 +44,7 @@
          {
            "id": "increment-counter",
            "type": "MODIFY_VARIABLE",
-           "variableName": "COUNTER",
+           "variable_name": "COUNTER",
            "expression": "COUNTER++",
          }
          

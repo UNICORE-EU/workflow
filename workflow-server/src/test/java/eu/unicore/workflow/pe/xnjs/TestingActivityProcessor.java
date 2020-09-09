@@ -3,6 +3,7 @@ package eu.unicore.workflow.pe.xnjs;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -17,6 +18,7 @@ import eu.unicore.workflow.pe.util.TestActivity;
  * to simulate a bit the real-life conditions in the workflow engine 
  * @author schuller
  */
+@Ignore
 public class TestingActivityProcessor extends ProcessorBase implements Constants{
 
 	private static final Logger logger=Log.getLogger(Log.SERVICES,TestingActivityProcessor.class);

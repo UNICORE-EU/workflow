@@ -267,16 +267,14 @@ public class Converter {
 				fileSets.add(new FileSet(base,incl,excl,recurse,indirection));
 			}
 			JSONObject chunk = wf.optJSONObject("chunking");
-			boolean isAggregatedFileSize = false;
+			ChunkedFileIterator.Type chunkType = ChunkedFileIterator.Type.NUMBER;
 			if(chunk!=null){
 				chunked=true;
-				chunkSize = chunk.optInt("chunksize", 1);
-				isAggregatedFileSize = chunk.optBoolean("is_kbytes", false);
+				chunkSize = chunk.optInt("chunksize", -1);
+				chunkType = ChunkedFileIterator.Type.valueOf(chunk.optString("type", "NUMBER"));
 				expression = chunk.optString("expression", null);
-				if(chunkSize==1 && !isAggregatedFileSize){
-					chunked=false;
-				}
-				else if(chunkSize<1 && !isAggregatedFileSize){
+				
+				if(chunkSize<0){
 					result.addError("For-each loop '"+id+"': chunk size  must be an integer value larger than 0. Got: "+chunkSize);
 					chunked=false;
 				}
@@ -294,10 +292,10 @@ public class Converter {
 			//add chunking
 			if(chunked){
 				if(expression!=null) {
-					iterate=new ChunkedFileIterator(fileSetIterator, expression, isAggregatedFileSize);
+					iterate=new ChunkedFileIterator(fileSetIterator, expression, chunkType);
 				}
 				else {
-					iterate=new ChunkedFileIterator(fileSetIterator, chunkSize, isAggregatedFileSize);
+					iterate=new ChunkedFileIterator(fileSetIterator, chunkSize, chunkType);
 				}
 				if(formatString!=null)((ChunkedFileIterator)iterate).setFormatString(formatString);
 			}
