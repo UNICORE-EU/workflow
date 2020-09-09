@@ -13,7 +13,6 @@ public class TestSMSResolver {
 		String u1=r.extractStorageURL(b1);
 		assert "http://localhost:8080/site/rest/core/storages/WORK".equals(u1);
 		String baseDir=r.extractBaseDir(b1);
-		System.out.println(baseDir);
 		assert "/basedir".equals(baseDir);
 	}
 	
