@@ -577,14 +577,14 @@ certain total size.
 --------------
  "chunking": {
   "chunksize": ... ,
-  "is_kbytes": "true|false",
+  "type": "NORMAL|SIZE",
   "filename_format": "...,
   "chunksize_formula": "expression",
 }
 --------------
 
 The +chunksize+ element is either the number of files in a chunk, or
-(if +is_kbytes+ is set to "true") the total size of a chunk in kbytes.
+(if +type+ is set to "SIZE") the total size of a chunk in kbytes.
 
 For example:
 
@@ -602,7 +602,7 @@ To process 2000 kBytes of data per iteration:
 "chunking":
 {
   "chunksize": "2000",
-  "is_kbytes": "true"
+  "type": "SIZE"
 }
 --------------
 
@@ -611,9 +611,8 @@ given in the optional +expression+ element. In the expression, two
 special variables may be used.  The +TOTAL_NUMBER+ variable holds the
 total number of files iterated over, while the +TOTAL_SIZE+ variable
 holds the aggregated size of all files in kbytes.  The script must
-return an integer-valued result. The +is_kbytes+ element is used to
-choose whether the chunk size is interpreted as data size or as number
-of files.
+return an integer-valued result. The +type+ element is used to choose
+whether the chunk size is interpreted as number of files or data size.
 
 For example:
 
@@ -622,7 +621,7 @@ To choose a larger chunksize if a certain total file size is exceeded:
 -------------
 "chunking": {
   "expression": "if(TOTAL_SIZE>50*1024)return 5*1024 else return 2048;"  
-  "is_kbytes": "true"
+  "type": "SIZE"
 }
 -------------
 
