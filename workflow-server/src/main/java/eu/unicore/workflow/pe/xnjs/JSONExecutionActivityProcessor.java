@@ -174,6 +174,14 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				PEConfig.getInstance().getAuthCallback(user), 
 				builder, 
 				defaultStrategy);
+		JSONObject prefs = work.optJSONObject("User preferences");
+		if(prefs!=null) {
+			for(String attr: new String[]{"uid", "xlogin", "role",
+					"group", "pgid", "supgids", "supplementaryGroups" }) {
+				String value = prefs.optString(attr, null);
+				if(value!=null)sc.getUserPreferences().put(attr,value);
+			}
+		}
 		JobClient jc = sc.submitJob(work);
 		String wd = jc.getLinkUrl("workingDirectory");
 		action.getProcessingContext().put(WD_REF, wd);

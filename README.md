@@ -8,6 +8,9 @@ and control constructs.
 
  * JSON workflow description
 
+ * Full range of UNICORE user authentication options and AAI
+   integration
+
 ## Prerequisites
 
  * Java 8 or later

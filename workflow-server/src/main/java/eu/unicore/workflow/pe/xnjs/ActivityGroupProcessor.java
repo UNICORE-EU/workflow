@@ -372,9 +372,9 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		try{
 			Kernel kernel = PEConfig.getInstance().getKernel();
 			final JSONObject msg = new JSONObject();
-			if(failureReason!=null)msg.put("reason", failureReason);
 			ProcessState ps = PEConfig.getInstance().getProcessEngine().getProcessState(wfID);
 			msg.put("status", String.valueOf(ps.getState()));
+			msg.put("statusMessage", failureReason!=null? failureReason : "");
 			msg.put("href", kernel.getContainerProperties().getContainerURL()+"/rest/workflows/"+wfID);
 			msg.put("group_id", ag.getID());
 			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(wfID);

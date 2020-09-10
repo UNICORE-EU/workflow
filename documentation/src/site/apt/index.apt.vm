@@ -1,25 +1,23 @@
    ------
-UNICORE Workflow System
+UNICORE Workflow service
    ------
    
-UNICORE Workflow System release ${project.version}
+UNICORE Workflow service release ${project.version}
 
-  The UNICORE Workflow System provides advanced
-workflow processing capabilities using UNICORE Grid resources.
-Its main components are the Workflow Engine and the 
-Service Orchestrator. While the Workflow Engine provides high-level
-control constructs (for-each, while, if-then-else, etc), the
-Service Orchestrator contains a powerful, extensible resource
-broker, and deals with execution of single UNICORE jobs.
+  The UNICORE Workflow service provides advanced workflow processing
+capabilities using UNICORE resources.  The Workflow service provides
+graphs of activities including high-level control constructs
+(for-each, while, if-then-else, etc), and submits and manages the
+execution of single UNICORE jobs.
 
   For more information about UNICORE visit http://www.unicore.eu
 
-Prerequisites for running the UNICORE Workflow system
+Prerequisites for running the UNICORE Workflow service
     
- * Java 8 (or later) runtime environment or SDK
+ * Java 8 (or later)
  
- * A UNICORE installation including shared registry, storage
-   and one or more execution sites.
+ * A UNICORE installation including a shared Registry, and one or more
+   execution sites.
 
 Full manual
 

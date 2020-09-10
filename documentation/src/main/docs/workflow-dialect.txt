@@ -1,6 +1,6 @@
 [[wf_dialect]]
-The default workflow description language
------------------------------------------
+The workflow description language
+---------------------------------
 
 Introduction
 ~~~~~~~~~~~~
@@ -11,7 +11,7 @@ workflows "by hand", i.e. without using tools such as the Java or
 Python APIs.
 
 After presenting all the constructs individually, several complete
-xref:wf_examples[] are given.
+examples are given in xref:wf_examples[].
 
 Overview and simple constructs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,9 +38,21 @@ The overall workflow document has the following form:
 
 Two special elements are
 
- * "notification" (optional) denotes an URL to where UNICORE Workflow server
-   will send a POST notification (authenticated via a JWT token) when the workflow
-   has finished processing.
+ * "notification" (optional) denotes an URL to where UNICORE Workflow
+   server will send a POST notification (authenticated via a JWT token
+   signed by the Workflow server) when the workflow has finished
+   processing. Notification messages have the following content
+----
+{
+  "href" : "workflow_url",
+
+  "group_id": "id of the workflow or sub-workflow",
+
+  "status": "...",
+
+  "statusMessage": "..."
+}
+----
 
  * "tags" is an optional list of initial tags, that can later be used to conveniently
    filter the list of workflows.
@@ -140,20 +152,62 @@ embedded JSON job definition will be sent to an execution site
 
  },
 
+ "options": { ... },
+
 }
 ----
 
-The processing of the job can be influenced using Option sub-elements.
-Currently the following options can be used
+The processing of the job can be influenced using the (optional)
+"option" sub-element.  Currently the following options (key-value) can
+be used
 
- * +IGNORE_FAILURE+ if set to "true", the workflow engine will ignore any
-failure of the task and continue processing as if the activity had been completed
-successfully. NOTE: this has nothing to do with the exit code of the actual UNICORE 
-job! Failure means for example data staging failed, or the service orchestrator did
-not find a matching target system for the job.
+ * +IGNORE_FAILURE+ if set to "true", the workflow engine will ignore
+any failure of the task and continue processing as if the activity had
+been completed successfully. NOTE: this has nothing to do with the
+exit code of the actual UNICORE job! Failure means for example data
+staging failed, or no matching target system for the job could be found.
+
  * +MAX_RESUBMITS+ set to an integer value to control the number of times the activity
 will be retried. By default, the workflow engine will re-try three times (except in those
 cases where it makes no sense to retry).
+
+For example
+----
+{
+ "id": "unique_id",
+
+ "job" : {
+ 
+  ... standard UNICORE job ...
+
+ },
+
+ "options": { "IGNORE_FAILURE": "true",  },
+
+}
+----
+
+If you need to pass on user preferences to the site, e.g. for selecting your primary group,
+or choosing between multiple user IDs, you can specify this in the "job" element like this
+
+----
+
+ ...
+
+ "job": {
+
+    "User prefences": {
+      "uid":   "hpcuser21",
+      "group": "hpc",
+  }
+ 
+ }
+ ...
+ 
+}
+----
+
+where the allowed field names are "role", "uid", "group" and "supplementaryGroups".
 
 ==== Transitions and conditions
 
