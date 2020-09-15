@@ -5,7 +5,7 @@
   <packaging>pom</packaging>
   <description>UNICORE Workflow System documentation</description>
   <inceptionYear>2009</inceptionYear>
-  <version>8.0.0</version>
+  <version>8.0.1</version>
   <name>Workflow System Documentation</name>
 
   <properties>
