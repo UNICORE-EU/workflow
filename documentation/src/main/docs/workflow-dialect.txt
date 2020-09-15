@@ -157,6 +157,30 @@ embedded JSON job definition will be sent to an execution site
 }
 ----
 
+
+The execution site is specified by the optional "Site name" element in
+the job
+
+----
+{
+ "id": "unique_id", "type" : "job",
+
+ "job" : {
+ 
+   "Site name": "DEMO-SITE",
+
+    ...
+ },
+
+}
+----
+
+NOTE that there is currently no form of "brokering" in place, it is up to
+the user to select an execution site
+
+The job description is covered in detail here:
+https://sourceforge.net/p/unicore/wiki/Job_Description[https://sourceforge.net/p/unicore/wiki/Job_Description]
+
 The processing of the job can be influenced using the (optional)
 "option" sub-element.  Currently the following options (key-value) can
 be used
