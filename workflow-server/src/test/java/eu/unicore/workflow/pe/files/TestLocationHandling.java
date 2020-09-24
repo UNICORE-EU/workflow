@@ -26,7 +26,7 @@ public class TestLocationHandling extends WSSTestBase {
 		String wfFile = "wf:date1/out";
 		
 		Map<String,String> locMap = new HashMap<>();
-		locMap.put(wfFile, storageURL + "/WORK/files/1/date/out");
+		locMap.put(wfFile, storageURL + "/files/1/date/out");
 		Locations loc = new Locations();
 		loc.setWorkflowID(wfID);
 		loc.getLocations().putAll(locMap);
@@ -41,7 +41,7 @@ public class TestLocationHandling extends WSSTestBase {
 		StagingPreprocessor sip = new StagingPreprocessor(wfID);
 		JSONArray in_processed = sip.processImports(in);
 		
-		assert in_processed.getJSONObject(0).getString("From").equals(storageURL + "/WORK/files/1/date/out");
+		assert in_processed.getJSONObject(0).getString("From").equals(storageURL + "/files/1/date/out");
 	}
 	
 	@Test
@@ -51,6 +51,7 @@ public class TestLocationHandling extends WSSTestBase {
 		loc.setWorkflowID(wfID);
 		PEConfig.getInstance().getLocationStore().write(loc);
 		
+		FileUtils.deleteQuietly(new File("target/data/WORK"));
 		
 		FileUtils.writeStringToFile(new File("target/data/WORK/test1.dat"), "test 1", "UTF-8");
 		FileUtils.writeStringToFile(new File("target/data/WORK/test2.dat"), "test 2", "UTF-8");
@@ -81,7 +82,8 @@ public class TestLocationHandling extends WSSTestBase {
 		Locations loc = new Locations();
 		loc.setWorkflowID(wfID);
 		PEConfig.getInstance().getLocationStore().write(loc);
-
+		
+		FileUtils.deleteQuietly(new File("target/data/WORK"));
 		for(int i = 0 ; i<5; i++) {
 			FileUtils.writeStringToFile(new File("target/data/WORK/test"+i+".dat"), "test "+i, "UTF-8");
 			FileUtils.writeStringToFile(new File("target/data/WORK/subdir/sub"+i+".dat"), "sub "+i, "UTF-8");
@@ -112,7 +114,7 @@ public class TestLocationHandling extends WSSTestBase {
 		
 		Map<String,String> locMap = new HashMap<>();
 		for(int i=0; i<5; i++) {
-			locMap.put(wfFile+"file"+i, storageURL + "/WORK/files/out"+i);
+			locMap.put(wfFile+"file"+i, storageURL + "/files/out"+i);
 		}
 		
 		Locations loc = new Locations();
@@ -129,6 +131,7 @@ public class TestLocationHandling extends WSSTestBase {
 		StagingPreprocessor sip = new StagingPreprocessor(wfID);
 		JSONArray in_processed = sip.processImports(in);
 		System.out.println(in_processed);
-		assert in_processed.getJSONObject(0).getString("From").equals(storageURL + "/files/out1");
+		assert in_processed.length()==5;
+		assert in_processed.getJSONObject(0).getString("From").contains(storageURL + "/files/out");
 	}
 }
