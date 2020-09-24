@@ -50,6 +50,9 @@ public class StagingPreprocessor {
 					in.put("From", resolve(source));
 					results.put(in);
 				}
+			}else {
+				// normal stage-in, don't mess with it
+				results.put(in);
 			}
 		}
 		return results;
