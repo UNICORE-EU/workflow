@@ -233,6 +233,108 @@ or choosing between multiple user IDs, you can specify this in the "job" element
 
 where the allowed field names are "role", "uid", "group" and "supplementaryGroups".
 
+
+=== Files
+
+Data management is one of the most important aspects of workflow
+definition and execution.
+
+The Workflow service offers an additional tool for referencing data
+that is produced and consumed during workflow execution, which is
+workflow files.
+
+A "workflow file" is a named reference to a physical file location, that
+can be generated at at any time during a workflow's lifetime.
+
+Such a reference is an URI of the form +wf:...+ which you can use in
+a job's "Imports" section or in For-Each file sets (see below).
+
+In a Job you can use them as if they were a normal remote file:
+
+-----------
+{
+
+ "Executable": "ls -l",
+
+ "Imports":[
+   { "From": "wf:infile1", "To": "infile1" }
+   { "From": "wf:infile2", "To": "infile2" }
+ ],
+
+}
+
+-----------
+
+The Workflow engine will resolve these at runtime, and the job will
+thus import the file at the registered physical location.
+
+
+There are several ways to define these workflow files.
+
+==== Defining inputs
+
+You can define inputs as part of your workflow
+
+------------
+{
+  "inputs": {
+     "wf:infile1" : "https://remote_url_1",
+     "wf:infile2" : "https://remote_url_2",
+  },
+}
+------------
+
+(see the UCC manual for an example how a client might make use of this
+feature)
+
+
+==== Defining workflow files as outputs
+
+If your job / workflow step produces output, you can register these output files
+as workflow files, simply by "exporting" them.
+
+
+-----------
+{
+
+ "Executable": "my_similation_code",
+
+ "Exports":[
+   { "From": "output.dat", "To": "wf:my_sim_output/output.dat" }
+   { "From": "simlog.txt", "To": "wf:my_sim_output/log.txt" }
+ ],
+
+}
+
+-----------
+
+The Workflow service will not move the file, just register its
+location under the "wf:..." name, so you can reference it later.
+
+==== Wildcard support
+
+The workflow file registration and resolution mechanisms support
+wildcards.
+
+For example
+
+-----------
+{
+
+ "Executable": "my_similation_code",
+
+ "Imports":[
+     { "From": "wf:/stage1/*", "To": "/" }
+ ],
+
+ "Exports":[
+     { "From": "output*", "To": "wf:my_sim_output/" }
+ ],
+
+}
+
+-----------
+
 ==== Transitions and conditions
 
 The basic flow of control in a workflow is handled using +transition+
@@ -542,7 +644,7 @@ named "unused*.pdf") in a certain directory on a storage:
 "file_sets": [
 
  {
-    "base": "https://mysite/rest/core/storages/my_storage/files/pdf/</s:Base>
+    "base": "https://mysite/rest/core/storages/my_storage/files/pdf/",
     "include": [ "*.pdf" ],
     "exclude": [ "unused1.pdf", "unused2.pdf", ],
     "recurse": "true"
@@ -550,6 +652,20 @@ named "unused*.pdf") in a certain directory on a storage:
 
 ]
 ------
+
+Of course you can use workflow files in the file sets as well. For example:
+
+------
+"file_sets": [
+
+ {
+    "base": "wf:/stage1/outputs/",
+    "include": [ "*" ],
+  }
+
+]
+------
+
 
 The following variables are set where +ITERATOR_NAME+ is the loop
 +iterator_name+ defined in the +for+ group as shown above.
@@ -582,7 +698,7 @@ and the fileset
 -----
 {
    "indirection": "true",
-   "base": "https://someserver/rest/core/storages/mystorage/files/</s:Base>
+   "base": "https://someserver/rest/core/storages/mystorage/files/"
    "include": [ "filelist.txt" ],
 }
 ------

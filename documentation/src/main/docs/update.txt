@@ -1,14 +1,14 @@
 [[wf_update]]
-Updating an existing UNICORE workflow installation
-----------------------------------------------------
+Updating an existing UNICORE Workflow service
+---------------------------------------------
 
 This chapter covers the steps required to update an
-existing workflow installation (v7.x).
+existing workflow installation (v8.x).
 
-Stop the servers
-++++++++++++++++
+Stop the server
++++++++++++++++
 
-Stop the workflow and servorch servers now.
+Stop the workflow server.
 
 Backup
 ++++++
@@ -31,5 +31,5 @@ to config files.
 Restart the servers
 +++++++++++++++++
 
-Restart the workflow and servorch servers, and check the logs for any
+Restart the workflow server, and check the logs for any
 suspicious error messages!

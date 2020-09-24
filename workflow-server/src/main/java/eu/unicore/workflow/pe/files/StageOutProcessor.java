@@ -1,9 +1,7 @@
 package eu.unicore.workflow.pe.files;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -11,7 +9,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.fzj.unicore.persist.Persist;
+import de.fzj.unicore.uas.impl.sms.SMSBaseImpl;
+import de.fzj.unicore.xnjs.io.FileSet;
+import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.client.Endpoint;
+import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.workflow.Constants;
 import eu.unicore.workflow.pe.PEConfig;
@@ -35,6 +37,12 @@ public class StageOutProcessor {
 
 	private final String user;
 
+	private FileListEntry remote;
+
+	private FileSet fileSet;
+
+	private StorageClient storageClient;
+	
 	public StageOutProcessor(String wfID, String workingDirectoryURL, String user) {
 		this.workflowID = wfID;
 		this.workingDirectoryURL = workingDirectoryURL;
@@ -87,15 +95,20 @@ public class StageOutProcessor {
 				JSONObject in = outputs.getJSONObject(i);
 				String target = in.getString("To");
 				String source = in.getString("From");
-				List<String>resolved = resolve(source);
-				boolean hasWildcards = hasWildcards(source);
-				for(String r: resolved) {
-					if(hasWildcards) {
-						locationMap.put(target+"/"+(new File(r).getName()), r);
-					}
-					else {
-						locationMap.put(target, r);
-					}
+				
+				getRemoteInfo(source);
+
+				Map<String,String>toRegister = new HashMap<>();
+				
+				if(remote.isDirectory) {
+					doCollectOutputs(toRegister, remote, target, remote.path);
+				}
+				else {
+					if(!source.startsWith("/"))source="/"+source;
+					toRegister.put(target, workingDirectoryURL+"/files"+source);
+				}
+				for(Map.Entry<String, String> e: toRegister.entrySet()) {
+					locationMap.put(e.getKey(), e.getValue());
 				}
 			}
 		}		
@@ -105,37 +118,55 @@ public class StageOutProcessor {
 			}
 		}
 	}
-
-	private StorageClient storageClient;
 	
-	protected List<String> resolve(String source) throws Exception {
+	protected void doCollectOutputs(Map<String,String> collection, FileListEntry sourceFolder, 
+			String targetFolder, String baseDirectory) throws Exception {
+		for (FileListEntry child : storageClient.getFiles(sourceFolder.path).list(0, SMSBaseImpl.MAX_LS_RESULTS)) {
+			String relative = IOUtils.getRelativePath(child.path, sourceFolder.path);
+			String target = IOUtils.getNormalizedPath(targetFolder+relative);
+			if(child.isDirectory && fileSet.isRecurse())
+			{
+				doCollectOutputs(collection, child, target, baseDirectory);
+			}
+			else 
+			{
+				if(remote.isDirectory && fileSet.matches(child.path)){
+					collection.put(target, workingDirectoryURL+"/files"+child.path);
+				}
+			}
+		}
+	}
+
+	protected void getRemoteInfo(String source) throws Exception {
 		if(storageClient==null) {
 			storageClient = new StorageClient(new Endpoint(workingDirectoryURL), 
 					PEConfig.getInstance().getKernel().getClientConfiguration(), 
 					PEConfig.getInstance().getAuthCallback(user));
 		}
 		
-		List<String> resolved = new ArrayList<>();
-		if(!source.startsWith("/"))source="/"+source;
-		
-		if(hasWildcards(source)) {
-			// TBD
+		if(!FileSet.hasWildcards(source)){
+			remote = storageClient.stat(source);
+			boolean dir = remote.isDirectory;
+			if(dir){
+				fileSet = new FileSet(source,true);
+			}
+			else{
+				fileSet = new FileSet(source);
+			}
 		}
-		else {
-			resolved.add(workingDirectoryURL+"/files"+source);
+		else{
+			// have wildcards
+			fileSet = new FileSet(source);
+			remote = storageClient.stat(fileSet.getBase());
 		}
-		if(resolved.size()==0)throw new FileNotFoundException("No files matching <"+source+">!");
-		return resolved;
+		if(remote == null){
+			throw new FileNotFoundException("No files found for: "+source);
+		}
 	}
-
+	
 	public static boolean isLogicalFileName(String uri)
 	{
 		return uri.startsWith(Constants.LOGICAL_FILENAME_PREFIX);
-	}
-
-	public static boolean hasWildcards(String expr) 
-	{
-		return expr.contains("*")|| expr.contains("?");
 	}
 
 }

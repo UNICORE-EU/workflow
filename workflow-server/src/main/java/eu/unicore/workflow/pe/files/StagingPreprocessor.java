@@ -3,8 +3,10 @@ package eu.unicore.workflow.pe.files;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,9 +34,23 @@ public class StagingPreprocessor {
 			JSONObject in = imports.getJSONObject(i);
 			String source = in.getString("From");
 			if(isLogicalFileName(source)) {
-				in.put("From", resolve(source));
+				String path = new URI(source).getSchemeSpecificPart();
+				String file = new File(path).getName();
+				String targetDir = in.getString("To");
+				if(hasWildcards(file)){
+					Map<String,String>toImport = resolveWildcards(source, targetDir);
+					for(Map.Entry<String, String>e: toImport.entrySet()) {
+						JSONObject o = new JSONObject(in.toString());
+						o.put("From", e.getKey());
+						o.put("To", e.getValue());
+						results.put(o);
+					}
+				}
+				else {
+					in.put("From", resolve(source));
+					results.put(in);
+				}
 			}
-			results.put(in);
 		}
 		return results;
 	}
@@ -65,16 +81,23 @@ public class StagingPreprocessor {
 		if(locationMap==null) {
 			locationMap = PEConfig.getInstance().getLocationStore().read(workflowID).getLocations();
 		}
-		String resolved = null;
-		String path = new URI(source).getSchemeSpecificPart();
-		String file = new File(path).getName();
-		if(!hasWildcards(file)) {
-			resolved = locationMap.get(source);
-		}
-		else {
-			// TBD
-		}
+		String resolved = locationMap.get(source);
 		if(resolved==null)throw new FileNotFoundException("Workflow file <"+source+"> can not be resolved");
+		return resolved;
+	}
+	
+	protected Map<String,String> resolveWildcards(String source, String targetDir) throws Exception {
+		if(locationMap==null) {
+			locationMap = PEConfig.getInstance().getLocationStore().read(workflowID).getLocations();
+		}
+		Map<String,String> resolved = new HashMap<>();
+		for(String key: locationMap.keySet()) {
+			// TODO this is very basic
+			if(FilenameUtils.wildcardMatch(key, source)) {
+				resolved.put(locationMap.get(key), targetDir+"/"+new File(key).getName());
+			}
+		}
+		if(resolved.size()==0)throw new FileNotFoundException("Workflow file(s) <"+source+"> can not be resolved");
 		return resolved;
 	}
 	
