@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe.xnjs;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.wsrflite.Kernel;

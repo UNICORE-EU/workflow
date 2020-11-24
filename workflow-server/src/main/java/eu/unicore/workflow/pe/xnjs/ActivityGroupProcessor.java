@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.http.HttpResponse;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -45,8 +45,6 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 public class ActivityGroupProcessor extends GroupProcessorBase{
 
 	private static final Logger logger=Log.getLogger(Log.SERVICES,ActivityGroupProcessor.class);
-	
-	private static final Logger usage=Logger.getLogger(Log.SERVICES+".USAGE");
 	
 	public ActivityGroupProcessor(XNJS configuration) {
 		super(configuration);
@@ -327,7 +325,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	 * log usage for a toplevel workflow
 	 */
 	protected void logUsage(){
-		if(!usage.isInfoEnabled())return;
+		if(!logger.isInfoEnabled())return;
 		
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
 		String wfID=ag.getWorkflowID();
@@ -340,13 +338,13 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		String client=action.getClient()!=null?action.getClient().getDistinguishedName():"n/a";
 		Statistics stats=getStatistics();
 		StringBuilder sb=new StringBuilder();
-		sb.append("[").append(wfID).append("]");
+		sb.append("USAGE [").append(wfID).append("]");
 		sb.append("[").append(client).append("]");
 		sb.append("[").append(success? "SUCCESSFUL":"FAILED").append("]");
 		sb.append("[Runtime: ").append(stats.getTotalRuntime()).append("secs.");
 		sb.append(" Total jobs: ").append(stats.getTotalJobs());
 		sb.append("]");
-		usage.info(sb.toString());
+		logger.info(sb.toString());
 	}
 	
 	@Override

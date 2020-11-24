@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe.xnjs;
 
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 
 import de.fzj.unicore.xnjs.XNJS;

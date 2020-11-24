@@ -6,8 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -312,7 +310,6 @@ public class TestForLoopProcessing extends TestBase {
 	public void testLargeSet()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
-		Logger.getLogger("unicore.services").setLevel(Level.INFO);
 
 		String wfID=UUID.randomUUID().toString();
 

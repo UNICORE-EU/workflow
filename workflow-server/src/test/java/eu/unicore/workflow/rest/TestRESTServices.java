@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 
 import eu.unicore.client.Endpoint;
@@ -12,7 +13,6 @@ import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.pe.PEConfig;
-import junit.framework.Assert;
 
 public class TestRESTServices extends WSSTestBase {
 

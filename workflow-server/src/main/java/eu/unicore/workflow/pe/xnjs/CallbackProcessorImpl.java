@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe.xnjs;
 
 import java.util.concurrent.ExecutorService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.wsrflite.Kernel;
 import de.fzj.unicore.xnjs.XNJS;

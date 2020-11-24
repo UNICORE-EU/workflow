@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import eu.unicore.workflow.EvaluationFunctions;
 import eu.unicore.workflow.Constants;
 

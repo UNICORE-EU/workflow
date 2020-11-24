@@ -7,13 +7,13 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>http://www.unicore.eu</url>
-  <version>3.0.1</version>
+  <version>3.1.0</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>1.22</version>
+    <version>1.23</version>
   </parent>
 
   <repositories>
@@ -27,12 +27,13 @@
   <scm>
     <connection>scm:git:https://www.github.com/UNICORE-EU/workflow</connection>
     <developerConnection>scm:git:https://www.github.com/UNICORE-EU/workflow</developerConnection>
+    <url>https://github.com/UNICORE-EU/xuudb</url>
     <tag>HEAD</tag>
   </scm>
 
   <properties>
-    <uas.version>2.0.5</uas.version>
-    <use.version>4.0.4</use.version>
+    <uas.version>2.1.0</uas.version>
+    <use.version>4.1.0</use.version>
     <groovy.version>2.4.16</groovy.version>
     <spring.version>3.2.3.RELEASE</spring.version>
   </properties>
@@ -102,11 +103,6 @@
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>apache-log4j-extras</artifactId>
-        <version>1.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

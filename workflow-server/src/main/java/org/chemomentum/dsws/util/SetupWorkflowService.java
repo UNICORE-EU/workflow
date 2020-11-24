@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.ConsolidateWorkflowOwners;
 import org.chemomentum.dsws.WorkflowFactoryHomeImpl;
 import org.chemomentum.dsws.WorkflowFactoryImpl;
@@ -71,8 +71,6 @@ import eu.unicore.workflow.rest.WorkflowServices;
 public class SetupWorkflowService implements Runnable{
 
 	private final static Logger logger=Log.getLogger(Log.SERVICES,SetupWorkflowService.class);
-
-	public static final String XNJS_CONFIGFILE="workflow.xnjs.configfile";
 
 	public static final String VERSION = UAS.getVersion(WorkflowFactoryImpl.class);
 
