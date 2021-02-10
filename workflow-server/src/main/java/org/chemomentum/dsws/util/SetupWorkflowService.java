@@ -115,7 +115,6 @@ public class SetupWorkflowService implements Runnable{
 		ConfigurationSource cs = new ConfigurationSource();
 		cs.getProperties().putAll(kernel.getContainerProperties().getRawProperties());
 		cs.setMetricRegistry(registry);
-		cs.setMetricReporter(kernel.getMetricReporter());
 		cs.addModule(new WFEngineModule(cs.getProperties(), kernel));
 		
 		XNJS xnjs=new XNJS(cs);
