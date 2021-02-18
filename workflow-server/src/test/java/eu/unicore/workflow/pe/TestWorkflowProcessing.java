@@ -45,96 +45,16 @@ public class TestWorkflowProcessing extends TestBase {
 		assert(Validate.before("a1", "a2"));
 	}
 	
-	/*
-	 * builds and runs a diamond shaped graph, where one branch takes longer than the other.
-	 */
 	@Test
-	public void testDiamondGraph()throws Exception{
+	public void testDiamond()throws Exception{
 		Validate.clear();
 		String wfID=UUID.randomUUID().toString();
 		PEWorkflow job=new PEWorkflow(wfID);
 		List<Activity>as=new ArrayList<Activity>();
 		as.add(new TestActivity("s",wfID));
-		as.add(new TestActivity("a1",wfID,50));
-		as.add(new TestActivity("a2",wfID,500));
-		as.add(new TestActivity("e",wfID));
-		Transition t=new Transition("s->a1",wfID,"s","a1");
-		Transition t2=new Transition("s->a2",wfID,"s","a2");
-		Transition t3=new Transition("a2->e",wfID,"a2","e");
-		Transition t4=new Transition("a1->e",wfID,"a1","e");
-		job.setActivities(as);
-		job.setTransitions(t,t2,t3,t4);
-		job.init();
-		PEConfig.getInstance().getProcessEngine().process(job, null);
-		waitForDone(wfID);
-		
-		assert(Validate.wasInvoked("s"));
-		assert(Validate.wasInvoked("a1"));
-		assert(Validate.wasInvoked("a2"));
-		assert(Validate.wasInvoked("e"));
-		assert(Validate.before("s", "a1"));
-		assert(Validate.before("s", "a2"));
-		assert(Validate.before("a1", "e"));
-		assert(Validate.before("a2", "e"));
-		//check that "e" was executed once only
-		assert(Validate.getInvocations("e").intValue()==1);
-	}
-	
-	/*
-	 * builds and runs a diamond shaped graph, where one branch takes longer than the other.
-	 */
-	@Test
-	public void testDiamondWithTwoActivitiesOnOneBranch()throws Exception{
-		Validate.clear();
-		String wfID=UUID.randomUUID().toString();
-		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
-		as.add(new TestActivity("s",wfID));
-		as.add(new TestActivity("a1",wfID,50));
-		as.add(new TestActivity("a2",wfID,500));
-		as.add(new TestActivity("a2b",wfID,50));
-		as.add(new TestActivity("e",wfID));
-		Transition t=new Transition("s->a1",wfID,"s","a1");
-		Transition t2=new Transition("s->a2",wfID,"s","a2");
-		Transition t3=new Transition("a2->a2b",wfID,"a2","a2b");
-		Transition t3b=new Transition("a2b->e",wfID,"a2b","e");
-		Transition t4=new Transition("a1->e",wfID,"a1","e");
-		job.setActivities(as);
-		job.setTransitions(t,t2,t3,t3b,t4);
-		job.init();
-		PEConfig.getInstance().getProcessEngine().process(job, null);
-		waitForDone(wfID);
-		
-		assert(Validate.wasInvoked("s"));
-		assert(Validate.wasInvoked("a1"));
-		assert(Validate.wasInvoked("a2"));
-		assert(Validate.wasInvoked("a2b"));
-		assert(Validate.wasInvoked("e"));
-		
-		assert(Validate.before("s", "a1"));
-		assert(Validate.before("s", "a2"));
-		assert(Validate.before("s", "a2b"));
-		assert(Validate.before("a1", "e"));
-		assert(Validate.before("a2", "a2b"));
-		assert(Validate.before("a2", "e"));
-		assert(Validate.before("a2b", "e"));
-		
-		assert(Validate.getInvocations("e").intValue()==1);
-	}
-	
-	/*
-	 * builds and runs a diamond shaped graph, with an additional side branch
-	 */
-	@Test
-	public void testDiamondWithSideBranch()throws Exception{
-		Validate.clear();
-		String wfID=UUID.randomUUID().toString();
-		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
-		as.add(new TestActivity("s",wfID));
-		as.add(new TestActivity("a1",wfID,50));
-		as.add(new TestActivity("a2",wfID,500));
-		as.add(new TestActivity("a3",wfID,50));
+		as.add(new TestActivity("a1",wfID));
+		as.add(new TestActivity("a2",wfID));
+		as.add(new TestActivity("a3",wfID));
 		as.add(new TestActivity("e",wfID));
 		Transition t=new Transition("s->a1",wfID,"s","a1");
 		Transition t2=new Transition("s->a2",wfID,"s","a2");
@@ -155,57 +75,55 @@ public class TestWorkflowProcessing extends TestBase {
 		assert(Validate.before("s", "a1"));
 		assert(Validate.before("s", "a2"));
 		assert(Validate.before("a1", "e"));
+		assert(Validate.before("a1", "a3"));
 		assert(Validate.before("a2", "e"));
 		
 		assert(Validate.getInvocations("e").intValue()==1);
 	}
 
 	@Test
-	public void testRouting()throws Exception{
-		Validate.clear();
-		String wfID=UUID.randomUUID().toString();
-		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
-		as.add(new RoutingActivity("r1",wfID));
-		as.add(new TestActivity("a1",wfID,50));
-		as.add(new RoutingActivity("r2",wfID));
-		as.add(new TestActivity("e",wfID));
-		Transition t=new Transition("r1->a1",wfID,"r1","a1");
-		Transition t3=new Transition("a1->r2",wfID,"a1","r2");
-		Transition t4=new Transition("r2->e",wfID,"r2","e");
-		job.setActivities(as);
-		job.setTransitions(t,t3,t4);
-		job.init();
-		PEConfig.getInstance().getProcessEngine().process(job, null);
-		waitForDone(wfID);
-		
-		assert(Validate.wasInvoked("a1"));
-		assert(Validate.wasInvoked("e"));
-		assert(Validate.before("a1", "e"));
-		assert(Validate.getInvocations("e").intValue()==1);
-	}
-	
-	@Test
 	@SuppressWarnings("unchecked")
-	public void testHoldTask()throws Exception{
+	public void testHelperActivities()throws Exception{
 		Validate.clear();
 		String wfID=UUID.randomUUID().toString();
 		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
+		List<Activity>as=new ArrayList<>();
+		List<Transition>tr=new ArrayList<>();
+		
+		// routing
+		as.add(new RoutingActivity("r1",wfID));
 		as.add(new TestActivity("a1",wfID));
+		as.add(new RoutingActivity("r2",wfID));
+		as.add(new TestActivity("e1",wfID));
+		
+		tr.add(new Transition("r1->a1",wfID,"r1","a1"));
+		tr.add(new Transition("a1->r2",wfID,"a1","r2"));
+		tr.add(new Transition("r2->e1",wfID,"r2","e1"));
+		
+		// hold
 		as.add(new HoldActivity("hold", wfID));
-		as.add(new TestActivity("a2",wfID));
-		Transition t1=new Transition("a1->hold",wfID,"a1","hold");
-		Transition t2=new Transition("hold->a2",wfID,"hold","a2");
+		as.add(new TestActivity("e2",wfID));
+		tr.add(new Transition("e1->hold",wfID,"e1","hold"));
+		tr.add(new Transition("hold->e2",wfID,"hold","e2"));
+		
+		// pause
+		PauseActivity pause = new PauseActivity("pause", wfID);
+		pause.setSleepTime(1);
+		as.add(pause);
+		as.add(new TestActivity("end",wfID));
+		tr.add(new Transition("e2->pause",wfID,"e2","pause"));
+		tr.add(new Transition("pause->end",wfID,"pause","end"));
+		
+		
 		job.setActivities(as);
-		job.setTransitions(t1,t2);
+		job.setTransitions(tr.toArray(new Transition[tr.size()]));
 		job.init();
 		PEConfig.getInstance().getProcessEngine().process(job, null);
-		Persist<WorkflowContainer>persist=PEConfig.getInstance().getPersistence();
 		
 		//wait for hold
+		Persist<WorkflowContainer>persist=PEConfig.getInstance().getPersistence();
 		int c=0;
-		while(!persist.read(wfID).isHeld() && c<10){
+		while(!persist.read(wfID).isHeld() && c<20){
 			c++;
 			Thread.sleep(1000);
 		}
@@ -220,33 +138,11 @@ public class TestWorkflowProcessing extends TestBase {
 		waitForDone(wfID);
 		
 		assert(Validate.wasInvoked("a1"));
-		assert(Validate.wasInvoked("a2"));
-		assert(Validate.before("a1", "a2"));
-	}
-	
-	@Test
-	public void testPauseTask()throws Exception{
-		Validate.clear();
-		String wfID=UUID.randomUUID().toString();
-		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
-		as.add(new TestActivity("a1",wfID));
-		PauseActivity pause = new PauseActivity("pause", wfID);
-		pause.setSleepTime(5);
-		as.add(pause);
-		as.add(new TestActivity("a2",wfID));
-		Transition t1=new Transition("a1->pause",wfID,"a1","pause");
-		Transition t2=new Transition("pause->a2",wfID,"pause","a2");
-		job.setActivities(as);
-		job.setTransitions(t1,t2);
-		job.init();
-		PEConfig.getInstance().getProcessEngine().process(job, null);
+		assert(Validate.wasInvoked("e1"));
+		assert(Validate.wasInvoked("e2"));
+		assert(Validate.wasInvoked("end"));
 		
-		waitForDone(wfID);
-		
-		assert(Validate.wasInvoked("a1"));
-		assert(Validate.wasInvoked("a2"));
-		assert(Validate.before("a1", "a2"));
+		assert(Validate.getInvocations("end").intValue()==1);
 	}
 	
 	@Test

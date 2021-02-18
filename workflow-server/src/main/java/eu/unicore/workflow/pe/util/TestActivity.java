@@ -15,8 +15,6 @@ public class TestActivity extends JSONExecutionActivity {
 
 	private static final long serialVersionUID=1;
 	
-	private final int delay;
-	
 	private boolean useCallback=false;
 
 	private boolean waitForExternalCallback=false;
@@ -25,27 +23,15 @@ public class TestActivity extends JSONExecutionActivity {
 		super(id,workflowID);
 		iteration=new Wrapper<Iterate>(iter);
 		status=ActivityStatus.CREATED;
-		delay=-1;
 	}
 
 	public TestActivity(String id, String workflowID){
 		super(id,workflowID);
 		status=ActivityStatus.CREATED;
-		delay=-1;
-	}
-
-	public TestActivity(String id, String workflowID, int delay){
-		super(id,workflowID);
-		status=ActivityStatus.CREATED;
-		this.delay=delay;
 	}
 
 	public String getType(){
 		return "TESTING";
-	}
-
-	public int getDelay(){
-		return delay;
 	}
 
 	public boolean waitForExternalCallback() {

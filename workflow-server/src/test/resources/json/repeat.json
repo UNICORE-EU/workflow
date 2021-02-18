@@ -9,7 +9,7 @@
    
   "subworkflows" : [
 
-   { "id": "while", type: "REPEAT_UNTIL", 
+   { "id": "repeat", type: "REPEAT_UNTIL", 
    
     "variables": [
 	  {
@@ -59,7 +59,7 @@
   ],
 
   "transitions":[
-          {"from": "start", "to": "while",},
+          {"from": "start", "to": "repeat",},
         ],
 
 }

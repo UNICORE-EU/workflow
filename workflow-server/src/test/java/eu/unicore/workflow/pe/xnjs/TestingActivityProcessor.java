@@ -1,7 +1,5 @@
 package eu.unicore.workflow.pe.xnjs;
 
-import java.util.Random;
-
 import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 
@@ -25,8 +23,6 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 
 	public static final String ACTION_TYPE="TESTING";
 
-	private final static Random rand = new Random();
-
 	public TestingActivityProcessor(XNJS configuration) {
 		super(configuration);
 	}
@@ -49,7 +45,6 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 		TestActivity activity=(TestActivity)action.getAjd();
 		
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
-		int n=activity.getDelay()>-1? activity.getDelay() : rand.nextInt(500);
 		StringBuilder sb = new StringBuilder();
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars!=null){
@@ -58,18 +53,13 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 			}
 		}
 		logger.info("Processing activity <"+activity.getID()+"> in iteration <"
-				+myIteration+">, waiting <"+n+"> millis, state <"+sb+">");
+				+myIteration+">, state <"+sb+">");
 
 		Validate.invoked(activity.getID());
 		Validate.actionCreated(action.getUUID());
 		action.setStatus(ActionStatus.RUNNING);
 		if(activity.waitForExternalCallback()){
 			action.setWaiting(true);
-		}
-		else{
-			//compute wait time
-			Long waitUntil=System.currentTimeMillis()+n;
-			action.getProcessingContext().put("wait",waitUntil);
 		}
 	}
 
@@ -100,20 +90,17 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 		}catch(Exception ex){
 			throw new ProcessingException(ex);
 		}
-		Long waitUntil=(Long)action.getProcessingContext().get("wait");
 		TestActivity activity=(TestActivity)action.getAjd();
-		if(System.currentTimeMillis()>waitUntil){
-			if(activity.useCallback()){
-				String workAssignmentID=action.getUUID()+"/someiteration";
-				try{
-					PEConfig.getInstance().getCallbackProcessor().handleCallback(activity.getWorkflowID(), workAssignmentID, "", true);
-				}catch(Exception e){
-					throw new ProcessingException(e);
-				}
+		if(activity.useCallback()){
+			String workAssignmentID=action.getUUID()+"/someiteration";
+			try{
+				PEConfig.getInstance().getCallbackProcessor().handleCallback(activity.getWorkflowID(), workAssignmentID, "", true);
+			}catch(Exception e){
+				throw new ProcessingException(e);
 			}
-			else{
-				setToDoneSuccessfully();
-			}
+		}
+		else{
+			setToDoneSuccessfully();
 		}
 	}
 

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.fzj.unicore.xnjs.util.IOUtils;
@@ -41,6 +42,7 @@ public class TestRepeatLoopProcessing extends TestBase {
 	}
 	
 	@Test
+	@Ignore
 	public void testRepeatLoop()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
