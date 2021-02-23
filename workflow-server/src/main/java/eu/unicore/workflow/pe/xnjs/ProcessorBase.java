@@ -171,8 +171,7 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 	/*
 	 * set the action (unit testing use)
 	 */
-	@SuppressWarnings("all")
-	void setAction(Action a){
+	public void setAction(Action a){
 		this.action=a;
 	}
 }

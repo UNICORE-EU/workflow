@@ -5,7 +5,7 @@
   <packaging>pom</packaging>
   <description>UNICORE Workflow System documentation</description>
   <inceptionYear>2009</inceptionYear>
-  <version>8.0.5</version>
+  <version>8.1.0</version>
   <name>Workflow System Documentation</name>
 
   <properties>
@@ -23,7 +23,7 @@
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.0.1</version>
+    <version>3.1.0</version>
   </parent>
 
   <dependencies>
