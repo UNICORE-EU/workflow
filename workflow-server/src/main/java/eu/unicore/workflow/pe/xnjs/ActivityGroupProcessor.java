@@ -15,8 +15,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.fzj.unicore.persist.PersistenceException;
-import de.fzj.unicore.wsrflite.Kernel;
-import de.fzj.unicore.wsrflite.utils.TimeoutRunner;
+import eu.unicore.services.Kernel;
+import eu.unicore.services.utils.TimeoutRunner;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;

@@ -11,7 +11,7 @@ import eu.unicore.workflow.EvaluationFunctions;
 import eu.unicore.workflow.Constants;
 
 import de.fzj.unicore.persist.PersistenceException;
-import de.fzj.unicore.wsrflite.Kernel;
+import eu.unicore.services.Kernel;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.JobClient;

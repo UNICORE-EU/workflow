@@ -1,7 +1,7 @@
 package org.chemomentum.dsws;
 
-import de.fzj.unicore.wsrflite.Resource;
-import de.fzj.unicore.wsrflite.impl.DefaultHome;
+import eu.unicore.services.Resource;
+import eu.unicore.services.impl.DefaultHome;
 import eu.unicore.util.Log;
 
 public class WorkflowHome extends DefaultHome {

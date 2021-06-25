@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.wsrflite.Kernel;
+import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList;

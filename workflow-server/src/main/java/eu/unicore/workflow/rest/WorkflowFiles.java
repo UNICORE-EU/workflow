@@ -18,7 +18,7 @@ import org.chemomentum.dsws.WorkflowInstance;
 import org.json.JSONObject;
 
 import de.fzj.unicore.uas.json.JSONUtil;
-import de.fzj.unicore.wsrflite.Kernel;
+import eu.unicore.services.Kernel;
 import eu.unicore.services.rest.Link;
 import eu.unicore.services.rest.RESTUtils;
 import eu.unicore.services.rest.impl.RESTRendererBase;

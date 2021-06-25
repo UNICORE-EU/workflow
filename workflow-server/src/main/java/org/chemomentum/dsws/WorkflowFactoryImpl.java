@@ -7,10 +7,10 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.uas.impl.BaseResourceImpl;
-import de.fzj.unicore.wsrflite.Home;
-import de.fzj.unicore.wsrflite.InitParameters;
-import de.fzj.unicore.wsrflite.messaging.PullPoint;
-import de.fzj.unicore.wsrflite.utils.Utilities;
+import eu.unicore.services.Home;
+import eu.unicore.services.InitParameters;
+import eu.unicore.services.messaging.PullPoint;
+import eu.unicore.services.utils.Utilities;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.json.Delegate;
 

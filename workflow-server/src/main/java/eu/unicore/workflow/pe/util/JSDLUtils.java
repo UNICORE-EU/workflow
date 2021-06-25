@@ -3,13 +3,13 @@ package eu.unicore.workflow.pe.util;
 import javax.xml.namespace.QName;
 
 import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlCursor.TokenType;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationDocument;
 
-import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
+import eu.unicore.services.ws.WSUtilities;
 
 public class JSDLUtils {
 	

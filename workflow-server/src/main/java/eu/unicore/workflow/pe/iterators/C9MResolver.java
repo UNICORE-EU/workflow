@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.wsrflite.Kernel;
+import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.util.Log;

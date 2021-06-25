@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.wsrflite.Kernel;
+import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionResult;

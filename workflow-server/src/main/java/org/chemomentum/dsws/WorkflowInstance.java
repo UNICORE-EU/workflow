@@ -9,8 +9,8 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.uas.impl.BaseResourceImpl;
-import de.fzj.unicore.wsrflite.InitParameters;
-import de.fzj.unicore.wsrflite.messaging.Message;
+import eu.unicore.services.InitParameters;
+import eu.unicore.services.messaging.Message;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;

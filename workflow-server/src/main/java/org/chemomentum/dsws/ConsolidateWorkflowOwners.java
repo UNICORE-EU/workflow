@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.wsrflite.Home;
-import de.fzj.unicore.wsrflite.Kernel;
-import de.fzj.unicore.wsrflite.impl.ResourceImpl;
+import eu.unicore.services.Home;
+import eu.unicore.services.Kernel;
+import eu.unicore.services.impl.ResourceImpl;
 import eu.unicore.util.Log;
 
 
