@@ -39,7 +39,7 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 	public String createNewWorkflow(String name, Calendar tt, String storageURL, String...tags) throws Exception {
 		String uid = Utilities.newUniqueID();
 		String clientName = getClient().getDistinguishedName();
-		logger.info("Creating new workflow instance <"+uid+"> for client "+clientName);
+		logger.info("Creating new workflow instance <{}> for <{}>", uid, clientName);
 		Home workflowHome = kernel.getHome(WorkflowHome.SERVICE_NAME);
 		WorkflowInitParameters init = new WorkflowInitParameters(uid, tt);
 		init.parentUUID = getUniqueID();
@@ -70,10 +70,10 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 		try{
 			while(p.hasNext()){
 				String m=(String)p.next().getBody();
-				logger.trace("Read: "+m);
+				logger.trace("Read: {}", m);
 				if(m.startsWith("deleted:")){
 					String id=m.substring(m.indexOf(":")+1);
-					logger.debug("Removing workflow instance with ID "+id+"...");
+					logger.debug("Removing workflow instance <{}>", id);
 					getModel().removeChild(id);
 					getModel().owners.remove(id);
 				}

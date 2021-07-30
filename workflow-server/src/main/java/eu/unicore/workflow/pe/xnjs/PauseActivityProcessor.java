@@ -32,18 +32,14 @@ public class PauseActivityProcessor extends ProcessorBase{
 		PauseActivity work=(PauseActivity )action.getAjd();
 		String iteration=getCurrentIteration();
 		long sleepTime = work.getSleepTime();
-		logger.info("Entering PAUSE task <"+work.getID()+"> in iteration <"+iteration
-				+">, will sleep for <"+sleepTime+"> seconds.");
-		
+		logger.debug("Entering PAUSE task <{}> in iteration <{}> pause for <{}> seconds.", work.getID(), iteration, sleepTime);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars==null){
 			vars=new ProcessVariables();
 			action.getProcessingContext().put(ProcessVariables.class,vars);
 		}
-		
 		vars.put(VAR_KEY_CURRENT_TOTAL_ITERATION,iteration);
 		action.setWaiting(true);
-		
 		scheduleWakeupCall(sleepTime);
 	}
 
@@ -71,17 +67,16 @@ public class PauseActivityProcessor extends ProcessorBase{
 	 */
 	@Override
 	protected void handleRunning()throws ProcessingException{
-		logger.debug("Handling running action <"+action.getUUID()+">");
-
+		logger.debug("Handling running action <{}>", action.getUUID());
 		try{
 			if(!isTopLevelWorkflowStillRunning()){
 				setToDoneAndFailed("Parent workflow was aborted or failed");
 				reportError("PARENT_FAILED","Parent aborted or failed.");
 				return;
 			}
-			logger.info("Exiting PAUSE task <"+action.getUUID()+">");
-				setToDoneSuccessfully();
-				return;
+			logger.debug("Exiting PAUSE task <{}>", action.getUUID());
+			setToDoneSuccessfully();
+			return;
 		}catch(Exception ex){
 			throw new ProcessingException(ex);
 		}

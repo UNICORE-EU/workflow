@@ -27,7 +27,7 @@ public class DeclarationActivityProcessor extends ProcessorBase{
 		action.addLogTrace("Status set to RUNNING.");
 		DeclareVariableActivity activity=(DeclareVariableActivity)action.getAjd();
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
-		logger.info("Start processing activity <"+activity.getID()+"> in iteration <"+myIteration+">");
+		logger.info("Start processing activity <{}> in iteration <{}>", activity.getID(), myIteration);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars==null){
 			vars=new ProcessVariables();

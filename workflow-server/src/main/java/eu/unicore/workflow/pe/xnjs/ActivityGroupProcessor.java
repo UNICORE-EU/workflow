@@ -63,10 +63,10 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		
 		ag.init(vars);
 		if(ag.getID().equals(ag.getWorkflowID())){
-			logger.info("Processing workflow <"+ag.getWorkflowID()+">");
+			logger.info("Processing workflow <{}>", ag.getWorkflowID());
 		}
 		else{
-			logger.info("Processing group <"+ag.getID()+"> in workflow <"+ag.getWorkflowID()+"> iteration <"+getCurrentIteration()+">");
+			logger.info("Processing group <{}> in workflow <{}> iteration <{}<", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 		}
 
 		if(vars==null){
@@ -92,11 +92,10 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	
 	protected void performCoBrokering() throws ProcessingException{
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
-		logger.info("Co-brokering activities for <"+ag.getID()+">");
+		logger.info("Co-brokering activities for <{}>", ag.getID());
 		// first collect all Job activities
 		Map<String,JSONObject>jobs = new HashMap<>();
 		addJobs(jobs, ag, false);
-		
 		try {
 			// TODO - this is just a temporary thing
 			String host = null;
@@ -150,7 +149,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		List<Activity>activities=ag.getDueActivities();
 		if(!subActionsStillRunning && activities.size()==0){
 			action.addLogTrace("No more transitions left to follow.");
-			logger.info("ActivityGroup "+action.getUUID()+": No more transitions left to follow.");
+			logger.info("ActivityGroup {}: No more transitions left to follow.", action.getUUID());
 			setToDoneSuccessfully();
 			return;
 		}
@@ -215,13 +214,13 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	 */
 	@Override
 	protected void handlePreProcessing() throws ProcessingException {
-		if(logger.isTraceEnabled())logger.trace("Handle pre-processing for "+action.getUUID());
+		logger.trace("Handle pre-processing for {}", action.getUUID());
 		performCoBrokering();
 	}
 	
 	@Override
 	protected void handleRunning() throws ProcessingException {
-		if(logger.isTraceEnabled())logger.trace("Handle running for "+action.getUUID());
+		logger.trace("Handle running for {}", action.getUUID());
 		boolean stillRunning=false;
 		
 		boolean stopProcessingThisGroup=false;
@@ -253,10 +252,8 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 				}
 				else{
 					int status=sub.getStatus();
-					if(logger.isTraceEnabled()){
-						logger.trace("Sub-Action <"+subActionID+"> is "+ActionStatus.toString(status));
-					}
-
+					logger.trace("Sub-Action <{}> is ", subActionID, ActionStatus.toString(status));
+					
 					if(ActionStatus.DONE!=status){
 						stillRunning=true;
 						continue subActionLoop;
@@ -396,7 +393,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			if(res==null)throw new TimeoutException("Timeout waiting for notification send/reply");
 			
 		}catch(Exception ex) {
-			logger.warn("Could not send success/failure notification for workflow <"+wfID+"> to <"+url+">");
+			logger.warn("Could not send success/failure notification for workflow <{}> to <{}>", wfID, url);
 		}
 		
 	}

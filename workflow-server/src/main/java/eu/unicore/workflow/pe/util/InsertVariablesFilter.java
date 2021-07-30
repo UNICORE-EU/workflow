@@ -2,11 +2,9 @@ package eu.unicore.workflow.pe.util;
 
 import java.text.MessageFormat;
 
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
@@ -17,8 +15,6 @@ import eu.unicore.workflow.pe.xnjs.ProcessVariables;
  * @author schuller
  */
 public class InsertVariablesFilter {
-
-	private static final Logger logger=Log.getLogger(Log.SERVICES,InsertVariablesFilter.class);
 
 	private final ProcessVariables context;
 
@@ -34,16 +30,12 @@ public class InsertVariablesFilter {
 	public JSONObject filter(JSONObject wa) {
 		try{
 			JSONObject job = new JSONObject(wa.toString());
-
 			Boolean chunked = (Boolean)context.get(ChunkedFileIterator.PV_IS_CHUNKED);
-			if(Boolean.TRUE.equals(chunked)){
+			if(chunked!=null && chunked){
 				handleChunkedInputs(job);
 			}
-
 			return replaceVariables(job);
-
 		}catch(Exception e){
-			logger.warn("Can't process workassignment document",e);
 			return wa;
 		}
 	}

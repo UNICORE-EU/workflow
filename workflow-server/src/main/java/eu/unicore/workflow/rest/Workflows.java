@@ -215,9 +215,7 @@ public class Workflows extends ServicesBase {
 				String jobURL = params.get("href");
 				String status = params.get("status");
 				String statusMessage = params.get("statusMessage");
-				if(logger.isDebugEnabled()) {
-					logger.debug("["+resourceID+"] job <"+jobURL+"> is <"+status+">");
-				}
+				logger.debug("[{}] job <{}> is <{}>", resourceID, jobURL, status);
 				if("RUNNING".equals(status))return;
 				else {
 					boolean success = "SUCCESSFUL".equals(status);

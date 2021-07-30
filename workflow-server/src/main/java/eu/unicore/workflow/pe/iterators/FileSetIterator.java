@@ -62,9 +62,7 @@ public class FileSetIterator extends ValueSetIterator {
 		}
 		fillValuesArray(results);
 
-		logger.info("["+getWorkflowID()+"] Iterating over "
-					+values.length+" files, total size "
-					+totalSize+" kB.");
+		logger.info("[{}] Iterating over {} files, total size {} kB.", getWorkflowID(), values.length, totalSize);
 		if(logger.isDebugEnabled()){
 			StringBuilder sb=new StringBuilder();
 			sb.append("Filenames:\n");

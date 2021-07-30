@@ -143,13 +143,13 @@ public class Iteration implements Serializable, Iterate{
 			String value=val!=null?String.valueOf(vars.get(key)):"";
 			resolvedBase=resolvedBase.replace(m.group(), value);
 		}
-		if(logger.isDebugEnabled())logger.debug("Resolved base <"+base+"> as <"+resolvedBase+">");
+		logger.debug("Resolved base <{}> as <{}>", base, resolvedBase);
 	}
 
 	protected void resolveIterator(ProcessVariables vars){
 		String value=String.valueOf(vars.get(iteratorName));
 		resolvedIteratorName=value;
-		if(logger.isDebugEnabled())logger.debug("Resolved iterator <"+iteratorName+"> as <"+resolvedIteratorName+">");
+		logger.debug("Resolved iterator <{}> as <{}>", iteratorName, resolvedIteratorName);
 	}
 
 	protected void resolve(final ProcessVariables vars){

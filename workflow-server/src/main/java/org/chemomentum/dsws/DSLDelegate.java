@@ -31,5 +31,5 @@ public interface DSLDelegate {
 	/**
 	 * get a representation of the workflow status suitable for clients
 	 */
-	public Map<String,Object> getStatus(String uniqueID);
+	public Map<String,Object> getStatus(String uniqueID) throws Exception;
 }

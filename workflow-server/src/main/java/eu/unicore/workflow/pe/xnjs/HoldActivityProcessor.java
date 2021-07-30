@@ -39,7 +39,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 		action.addLogTrace("Status set to RUNNING.");
 		HoldActivity work=(HoldActivity )action.getAjd();
 		String iteration=getCurrentIteration();
-		logger.info("Entering hold task <"+work.getID()+"> in iteration <"+iteration+">");
+		logger.debug("Workflow <{}> entering hold task <{}> in iteration <{}>", work.getWorkflowID(), work.getID(), iteration);
 		long sleepTime = work.getSleepTime();
 		boolean hold = sleepTime<=0;
 		
@@ -87,7 +87,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 	 */
 	@Override
 	protected void handleRunning()throws ProcessingException{
-		logger.debug("Handling running action <"+action.getUUID()+">");
+		logger.debug("Handling running action <{}>", action.getUUID());
 
 		try{
 			if(!isTopLevelWorkflowStillRunning()){
@@ -97,7 +97,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 			}
 			Pair<Boolean, Map<String,String>>resume=isHeld(getParentWorkflowID(),getActivityID());
 			if(!resume.getM1()){
-				logger.info("Exiting HOLD task <"+action.getUUID()+">");
+				logger.debug("Exiting HOLD task <{}>", action.getUUID());
 				Map<String,String>resumeParams = resume.getM2();
 				if(resumeParams!=null){
 					try{
@@ -123,7 +123,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 	}
 
 	private void updateProcessVariables(Map<String,String>resumeParams){
-		logger.info("Updating <"+resumeParams.size()+"> variable(s) for <"+action.getUUID()+">");
+		logger.debug("Updating <{}> variable(s) for <{}>", resumeParams.size(), action.getUUID());
 		ProcessVariables vars = action.getProcessingContext().get(ProcessVariables.class);
 		for(String name : resumeParams.keySet()){
 			Object current = vars.get(name);

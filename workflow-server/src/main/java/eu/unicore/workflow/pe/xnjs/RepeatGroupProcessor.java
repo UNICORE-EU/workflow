@@ -43,8 +43,7 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		RepeatGroup ag=(RepeatGroup)action.getAjd();
-		logger.info("Processing repeat group <"+ag.getID()+"> in workflow <"+ag.getWorkflowID()+"> iteration <"+getCurrentIteration()+">");
-
+		logger.debug("Processing repeat group <{}> in workflow <{}> iteration <{}>", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		addDeclarations(ag, vars);
 		try{
@@ -129,7 +128,7 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 
 	@Override
 	protected void handleRunning() throws ProcessingException {
-		if(logger.isTraceEnabled())logger.trace("Handle running for "+action.getUUID());
+		logger.trace("Handle running for {}", action.getUUID());
 		boolean subTasksStillRunning=false;
 
 		try{
@@ -157,18 +156,12 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 				}
 				else{
 					int status=sub.getStatus();
-					if(logger.isTraceEnabled()){
-						logger.trace("Sub-Action <"+subActionID+"> is "+ActionStatus.toString(status));
-					}
-
-					//check status
-
+					logger.trace("Sub-Action <{}> is <{}>", subActionID, ActionStatus.toString(status));
 					if(ActionStatus.DONE!=status){
 						subTasksStillRunning=true;
 						continue subActionLoop;
 					}
-
-					if(ActionStatus.DONE==status){
+					else{
 						action.setDirty();
 						//check result
 						if(!sub.getResult().isSuccessful()){

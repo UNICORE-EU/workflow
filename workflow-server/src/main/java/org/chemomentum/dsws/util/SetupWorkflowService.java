@@ -143,13 +143,13 @@ public class SetupWorkflowService implements Runnable{
 			}
 			if(url.contains("/services/Registry")){
 				url = convertToREST(url);
-				logger.info("Using converted Registry URL "+url);
+				logger.info("Using converted Registry URL {}", url);
 			}
 
 			eu.unicore.client.registry.IRegistryClient registry = 
 					new eu.unicore.client.registry.RegistryClient(url, kernel.getClientConfiguration(), null);
 			PEConfig.getInstance().setRegistry(registry);
-			logger.info("Using "+type+" registry <"+url+">");
+			logger.info("Using {} registry <{}>", type, url);
 		}
 		
 
@@ -230,7 +230,7 @@ public class SetupWorkflowService implements Runnable{
 		for(int i=0;i<types.length;i++){
 			if(!xnjs.haveProcessingFor(types[i])){
 				xnjs.setProcessingChain(types[i],null , new String[]{procs[i]});
-				logger.debug("XNJS config file fix: added XNJS processor definition for "+types[i]);
+				logger.debug("XNJS config file fix: added XNJS processor definition for {}", types[i]);
 			}	
 		}
 
@@ -269,7 +269,7 @@ public class SetupWorkflowService implements Runnable{
 			}
 		}
 		else{
-			logger.error("The <"+WorkflowFactoryHomeImpl.SERVICE_NAME+"> service is not deployed. Could not add a default workflow service instance.");
+			logger.error("The <{}> service is not deployed. Could not add a default workflow service instance.", WorkflowFactoryHomeImpl.SERVICE_NAME);
 		}
 		return new HashMap<String, String>();
 	}
@@ -278,7 +278,7 @@ public class SetupWorkflowService implements Runnable{
 		Home h=kernel.getHome(WorkflowFactoryHomeImpl.SERVICE_NAME);
 		InitParameters init = new InitParameters(WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID, TerminationMode.NEVER);
 		h.createResource(init);
-		logger.info("Added "+WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID+" resource to workflow submission service.");
+		logger.info("Added {} resource to workflow submission service.", WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
 	}
 	
 }

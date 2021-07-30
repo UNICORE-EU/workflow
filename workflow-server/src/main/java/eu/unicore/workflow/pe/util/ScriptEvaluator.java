@@ -1,8 +1,5 @@
 package eu.unicore.workflow.pe.util;
 
-import org.apache.logging.log4j.Logger;
-
-import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 import groovy.lang.GroovyShell;
@@ -13,8 +10,6 @@ import groovy.lang.GroovyShell;
  * @author schuller
  */
 public class ScriptEvaluator {
-
-	private static final Logger logger=Log.getLogger(Log.SERVICES,ScriptEvaluator.class);
 
 	private final ScriptSandbox sandbox; 
 	
@@ -38,7 +33,6 @@ public class ScriptEvaluator {
 		}
 		GroovyShell interpreter = new GroovyShell();
 		prepareInterpreter(interpreter, processVariables);
-		logger.debug("Evaluating expression: "+script);
 		Object o=sandbox.eval(interpreter,script);
 		if(o instanceof Boolean){
 			return ((Boolean)o).booleanValue();
@@ -64,9 +58,6 @@ public class ScriptEvaluator {
 		}
 		GroovyShell interpreter = new GroovyShell();
 		prepareInterpreter(interpreter, processVariables);
-		if(logger.isDebugEnabled()){
-			logger.debug("Evaluating expression: "+script+" with context "+processVariables);
-		}
 		sandbox.eval(interpreter,script);
 		return interpreter.getVariable(variableName);
 	}
@@ -82,9 +73,6 @@ public class ScriptEvaluator {
 	public Object evaluateDirect(String script, ProcessVariables processVariables){
 		GroovyShell interpreter = new GroovyShell();
 		prepareInterpreter(interpreter, processVariables);
-		if(logger.isDebugEnabled()){
-			logger.debug("Evaluating expression: "+script+" with context "+processVariables);
-		}
 		return sandbox.eval(interpreter,script);
 	}
 
@@ -98,10 +86,8 @@ public class ScriptEvaluator {
 
 
 	private void prepareInterpreter(GroovyShell interpreter, ProcessVariables vars){
-		logger.debug("Context has "+vars.size()+" entries");
 		for(String key: vars.keySet()){
 			Object val=vars.get(key);
-			logger.debug("Context: "+key+"="+String.valueOf(val)+" variableType="+val.getClass().getName());
 			interpreter.setVariable(key, val);
 		}
 		interpreter.setProperty(Constants.VAR_KEY_CURRENT_TOTAL_ITERATION, null);

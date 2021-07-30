@@ -71,9 +71,6 @@ public class C9MResolver extends SMSResolver {
 					String physicalLocation = locations.getLocations().get(logicalName);
 					if(smsClient==null || !physicalLocation.contains(smsClient.getEndpoint().getUrl())){
 						smsClient = getSMSClient(extractStorageURL(physicalLocation), workflowID, getClientConfiguration(kernel, workflowID));
-						if(logger.isDebugEnabled() && smsClient!=null){
-							logger.debug("Retrieving file sizes from "+smsClient.getEndpoint().getUrl());
-						}
 					}
 					results.add(new Pair<String,Long>(physicalLocation,getFileSize(smsClient, physicalLocation)));
 				}

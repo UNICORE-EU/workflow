@@ -41,12 +41,12 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 					String jobID = jobURL.substring(jobURL.lastIndexOf("/")+1);
 					WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(wfID);
 					if(wfc==null){
-						logger.info("No parent workflow found for job <"+jobURL+">");
+						logger.info("No parent workflow found for job <{}>", jobURL);
 						return;
 					}
 					String actionID = wfc.getJobMap().get(jobID);
 					if(actionID==null){
-						logger.info("No action found for job <"+jobURL+">");
+						logger.info("No action found for job <{}>", jobURL);
 						return;
 					}
 					try{ 

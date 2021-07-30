@@ -83,12 +83,12 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 		action.addLogTrace("Status set to DONE.");
 		action.setResult(new ActionResult(ActionResult.SUCCESSFUL,"Success.",0));
 		action.addLogTrace("Result: Success.");
-		logger.info(getActivityName()+" "+action.getUUID()+ " SUCCESSFUL.");
+		logger.info("{} {} SUCCESSFUL", getActivityName(), action.getUUID());
 	}
 
 	protected void setToDoneAndFailed(String reason){
 		action.fail();
-		logger.info(getActivityName()+" "+action.getUUID()+ " FAILED. "+reason);
+		logger.info("{} {} FAILED. {}", getActivityName(), action.getUUID(), reason);
 	}
 
 	protected String getParentWorkflowID(){
@@ -121,10 +121,7 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 			if(workflowID.equals(activityID))return;
 			
 			String iteration=getCurrentIteration();
-			if(logger.isDebugEnabled()){
-				logger.debug("Reporting error: <"+errorDescription+"> for activity <"
-					+activityID+"> in iteration <"+iteration+">");
-			}
+			logger.debug("Reporting error: <{}> for activity <{}> in iteration <{}>", errorDescription, activityID, iteration);
 			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
 			if(wfc==null){
 				logger.error("No parent workflow found for activity <"+activityID+">");
@@ -139,8 +136,8 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 					status.setActivityStatus(ActivityStatus.FAILED);
 				}
 				else{
-					logger.warn("No status reporting possible for workflow <"+workflowID
-							+"> activity <"+activityID+"> in iteration <"+iteration+">");
+					logger.warn("No status reporting possible for workflow <{}> activity <{}> in iteration <{}>",
+							workflowID, activityID, iteration);
 				}
 			}
 			finally{
@@ -167,10 +164,7 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 			}
 		}, N, TimeUnit.SECONDS);
 	}
-	
-	/*
-	 * set the action (unit testing use)
-	 */
+
 	public void setAction(Action a){
 		this.action=a;
 	}

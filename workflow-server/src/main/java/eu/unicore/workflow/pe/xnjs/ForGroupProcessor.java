@@ -46,7 +46,7 @@ public class ForGroupProcessor extends GroupProcessorBase{
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		ForGroup ag=(ForGroup)action.getAjd();
-		logger.info("Processing for-each group <"+ag.getID()+"> in workflow <"+ag.getWorkflowID()+"> iteration <"+getCurrentIteration()+">");
+		logger.info("Processing for-each group <{}> in workflow <{}> iteration <{}>",ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		try{
@@ -71,13 +71,11 @@ public class ForGroupProcessor extends GroupProcessorBase{
 		boolean haveMore=iterate.hasNext();
 		if(!haveMore && (subTasks.size()==0)){
 			action.addLogTrace("All iterations processed.");
-			logger.info("ForGroup "+action.getUUID()+": All iterations processed.");
+			logger.info("ForGroup <{}>: All iterations processed.", action.getUUID());
 			setToDoneSuccessfully();
 		}
 		else{
-
 			//process some more iterations of the loop
-
 			WorkflowContainer workflowInfo=null;
 			try{
 				workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
@@ -100,9 +98,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 					while(iterate.hasNext()){
 						//limit the number of concurrent loop iterations
 						if(subTasks.size()>=maxConcurrent){
-							if(logger.isDebugEnabled()){
-								logger.debug("Limit of <"+maxConcurrent+"> concurrent loop iterations reached, not submitting new actions");
-							}
 							break;
 						}
 						Activity a=ag.getBody();
@@ -146,17 +141,14 @@ public class ForGroupProcessor extends GroupProcessorBase{
 
 	@Override
 	protected void handleRunning() throws ProcessingException {
-		if(logger.isTraceEnabled())logger.trace("Handle running for "+action.getUUID());
+		logger.trace("Handle running for {}", action.getUUID());
 		boolean subTasksStillRunning=false;
-
 		try{
-
 			if(!isTopLevelWorkflowStillRunning()){
 				setToDoneAndFailed("Parent workflow was aborted or failed");
 				reportError("PARENT_FAILED","Parent aborted or failed.");
 				return;
 			}
-
 			ForGroup ag=(ForGroup)action.getAjd();
 			//check substates ...
 			List<String>subTasks=getOrCreateSubTasks();
@@ -178,17 +170,11 @@ public class ForGroupProcessor extends GroupProcessorBase{
 				}
 				else{
 					int status=sub.getStatus();
-					if(logger.isTraceEnabled()){
-						logger.trace("Sub-Action <"+subActionID+"> is "+ActionStatus.toString(status));
-					}
-
-					//check status
-
+					logger.trace("Sub-Action <{}> is {}", subActionID, ActionStatus.toString(status));
 					if(ActionStatus.DONE!=status){
 						subTasksStillRunning=true;
 						continue subActionLoop;
 					}
-
 					if(ActionStatus.DONE==status){
 						action.setDirty();
 						//check result

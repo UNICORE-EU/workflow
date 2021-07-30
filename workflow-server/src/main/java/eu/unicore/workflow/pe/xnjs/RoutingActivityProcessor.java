@@ -30,7 +30,7 @@ public class RoutingActivityProcessor extends DefaultProcessor implements Consta
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
 		if(logger.isDebugEnabled()){
 			Activity activity=(Activity)action.getAjd();
-			logger.debug("Processed routing activity <"+activity.getID()+"> in iteration <"+myIteration+">");
+			logger.debug("Processed routing activity <{}> in iteration <{}>", activity.getID(), myIteration);
 		}
 	}
 	

@@ -70,7 +70,6 @@ public class FileIndirectionHelper {
 		while(sourceIterator.hasNext()){
 			Pair<String,Long>currentVal=sourceIterator.next();
 			String currentFile=currentVal.getM1();
-			logger.debug("Opening File: " + currentFile);
 			currentOpenFile = getContentsOfUrl(workflowID,currentFile);
 			currentFileScanner = new Scanner(currentOpenFile);
 
@@ -81,8 +80,7 @@ public class FileIndirectionHelper {
 				String[] files = iterLine.split(" ");
 
 				//now we need to resolve these files and that's it.
-				logger.debug("Filenames included for staging from FileListIterator: " + iterLine);
-
+			
 				//This filename will mostly look like this:
 				//BFT:https://......#/abc/def/ABC
 				//or even more likely, like this:
@@ -170,11 +168,11 @@ public class FileIndirectionHelper {
 				url_base = url;
 			}
 			StorageClient sms = getStorageClientForFileSet(workflowID, url_base);
-			logger.debug("Trying to read: " + url_without_base);
+			logger.debug("Trying to read: {}", url_without_base);
 			fts = sms.createExport(url_without_base,"BFT",null);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			((FiletransferOptions.Read)fts).readAllData(baos);
-			logger.debug("Content of " + resolved_url + " is: " + baos.toString());
+			logger.debug("Content of {} is: {}", resolved_url, baos.toString());
 			output = baos.toString();
 		} catch (Exception ex) {
 			logger.error("Exception while retrieving ContentsOfUrl " + ex.getMessage() + " " +ex.toString());

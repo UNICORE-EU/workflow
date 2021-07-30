@@ -44,8 +44,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		WhileGroup ag=(WhileGroup)action.getAjd();
-		logger.info("Processing WhileGroup <"+ag.getID()+"> in workflow <"+ag.getWorkflowID()+"> iteration <"+getCurrentIteration()+">");
-
+		logger.debug("Processing WhileGroup <{}> in workflow <{}> iteration <{}>", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		addDeclarations(ag, vars);
 		try{
@@ -68,7 +67,6 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 	}
 
 	protected void submitAllEligibleActivities()throws ProcessingException{
-		
 		WhileGroup ag=(WhileGroup)action.getAjd();
 		Condition cond=ag.getCondition();
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
@@ -147,7 +145,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 
 	@Override
 	protected void handleRunning() throws ProcessingException {
-		if(logger.isTraceEnabled())logger.trace("Handle running for "+action.getUUID());
+		logger.trace("Handle running for {}", action.getUUID());
 		boolean subTasksStillRunning=false;
 
 		try{
@@ -174,18 +172,13 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 				}
 				else{
 					int status=sub.getStatus();
-					if(logger.isTraceEnabled()){
-						logger.trace("Sub-Action <"+subActionID+"> is "+ActionStatus.toString(status));
-					}
-
-					//check status
-
+					logger.trace("Sub-Action <{}> is <{}>", subActionID, ActionStatus.toString(status));
+					
 					if(ActionStatus.DONE!=status){
 						subTasksStillRunning=true;
 						continue subActionLoop;
 					}
-
-					if(ActionStatus.DONE==status){
+					else{
 						action.setDirty();
 						//check result
 						if(!sub.getResult().isSuccessful()){

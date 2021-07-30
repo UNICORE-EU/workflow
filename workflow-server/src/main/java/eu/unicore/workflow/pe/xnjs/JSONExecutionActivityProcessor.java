@@ -72,7 +72,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		action.addLogTrace("Status set to RUNNING.");
 		JSONExecutionActivity work = getWork();
 		String iteration=getCurrentIteration();
-		logger.info("Start processing work assignment execution for activity <"+work.getID()+"> in iteration <"+iteration+">");
+		logger.info("Start processing Job execution activity <{}> in iteration <{}>", work.getID(), iteration);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars==null){
 			vars=new ProcessVariables();
@@ -82,7 +82,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		submitJob();
 		//callback will wake it up again... 
 		action.setWaiting(true);
-		//set to wakeup after some seconds (in case we miss a message from the SO)
+		//set to wakeup after some seconds (in case we miss a callback)
 		scheduleWakeupCall();
 		action.setDirty();
 	}
@@ -135,14 +135,14 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			if(imports!=null && imports.length()>0) {
 				JSONArray filtered = new StagingPreprocessor(workflowID).processImports(imports);
 				wa.put("Imports", filtered);
-				if(logger.isDebugEnabled())logger.debug("Filtered stage ins for "+getWork().getID()+": "+filtered.toString(2));
+				if(logger.isDebugEnabled())logger.debug("Filtered stage ins for {}: {}", getWork().getID(), filtered.toString(2));
 			}
 
 			// since we replace stuff like iterations, variables in the job,
 			// we need to store the version we have submitted, to be able
 			// to correctly register the outputs later
 			JSONArray exports = wa.optJSONArray("Exports");
-			if(logger.isDebugEnabled())logger.debug(exports);
+			logger.debug(exports);
 			if(exports!=null && exports.length()>0) {
 				JSONArray filtered = new StagingPreprocessor(workflowID).processExports(exports);
 				wa.put("Exports", filtered);
@@ -198,7 +198,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 		WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
 		if(wfc==null){
-			logger.error("No parent workflow found for activity <"+activityID+">");
+			logger.error("No parent workflow found for activity <{}>", activityID);
 			return;
 		}
 		wfc.getJobMap().put(jobID, action.getUUID());
@@ -209,8 +209,8 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				status.setJobURL(jobURL);
 			}
 			else{
-				logger.warn("No status reporting possible for workflow <"+workflowID
-						+"> activity <"+activityID+"> in iteration <"+iteration+">");
+				logger.warn("No status reporting possible for workflow <{}> activity <{}> iteration <{}>",
+						workflowID, activityID, iteration);
 			}
 		}
 		finally{
@@ -227,7 +227,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 */
 	@Override
 	protected void handleRunning()throws ProcessingException{
-		logger.debug("Handling running action <"+action.getUUID()+">");
+		logger.debug("Handling running action <{}>", action.getUUID());
 
 		// check last send instant to SO
 		Long lastSend = (Long)action.getProcessingContext().get(SEND_INSTANT);
@@ -350,7 +350,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		String errorDescription = (String)action.getProcessingContext().get(LAST_ERROR_DESCRIPTION);
 		action.getProcessingContext().remove(LAST_ERROR_CODE);
 		action.getProcessingContext().remove(LAST_ERROR_DESCRIPTION);
-		logger.debug("Handling failure of <"+work.getID()+">, error code was <"+errorCode+">");
+		logger.debug("Handling failure of <{}> error code was <{}>", work.getID(), errorCode);
 		int submitted = work.getSubmissionCounter();
 
 		int maxOption = properties.getResubmissionLimit();
@@ -382,7 +382,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 				if(resubmit){
 					int attempt=submitted+1;
-					logger.info("Re-submitting <"+work.getID()+"> this is attempt <"+attempt+"> of <"+max+">");
+					logger.debug("Re-submitting <{}> this is attempt <{}> of <{}>", work.getID(), attempt, max);
 
 					action.addLogTrace("Re-submitting, attempt <"+attempt+"> of <"+max+">");
 					if(shouldAddBlacklistEntry(errorCode)){
@@ -393,7 +393,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 					action.setWaiting(true);
 				}
 				else{
-					logger.debug("Not resubmitting <"+work.getID()+">");
+					logger.debug("Not resubmitting <{}>", work.getID());
 					setToDoneAndFailed("Not resubmitting.");
 					reportError(errorCode,errorDescription);
 				}
@@ -466,7 +466,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			//first, find current submission host
 			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(work.getWorkflowID());
 			if(wfc==null){
-				logger.info("No parent workflow found for activity <"+work.getID()+">");
+				logger.info("No parent workflow found for activity <{}>", work.getID());
 				return;
 			}
 			PEStatus status=wfc.findSubFlowContainingActivity(work.getID()).getActivityStatus(work.getID(),getCurrentIteration());

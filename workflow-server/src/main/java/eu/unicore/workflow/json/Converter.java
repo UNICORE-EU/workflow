@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,16 +48,9 @@ import eu.unicore.workflow.pe.xnjs.Constants;
 
 public class Converter {
 
-	private static final Logger logger = Log.getLogger(Log.SERVICES,Converter.class);
-
 	//understood activity option names
-	public static final Set<String>CONVERTER_OPTIONS;
-
-	static{
-		HashSet<String> s = new HashSet<String>();
-
-		CONVERTER_OPTIONS=Collections.unmodifiableSet(s);
-	}
+	public static final Set<String> CONVERTER_OPTIONS = 
+			Collections.unmodifiableSet(new HashSet<String>());
 
 	private final boolean unitTesting;
 
@@ -79,7 +71,6 @@ public class Converter {
 	 * @return the {@link ConversionResult} for the workflow instance
 	 */
 	public ConversionResult convert(String wfUUID, JSONObject wf) throws Exception {
-		if(logger.isDebugEnabled())logger.debug("Converting workflow "+wf.toString(2));
 		List<String>outputFiles = new ArrayList<String>();
 		ConversionResult result = new ConversionResult();
 		result.setWorkflowID(wfUUID);
@@ -118,7 +109,6 @@ public class Converter {
 		if(workflowInfo.isLoop()){
 			parentLoopID=workflowInfo.getIteratorName();
 			converted.setLoopIteratorName(parentLoopID);
-			logger.debug("(Sub)Flow <"+subID+"> is a loop: "+converted.isLoop());
 		}
 
 		addVariableDeclarations(workflowInfo, converted, result);
@@ -148,7 +138,6 @@ public class Converter {
 					if(sub!=null)activities.add(sub);
 				}catch(Exception ex){
 					String msg="Subgroup '"+id+"': got an exception during conversion";
-					Log.logException(msg, ex,logger);
 					result.addError(Log.createFaultMessage(msg, ex));
 				}
 			}
@@ -590,9 +579,7 @@ public class Converter {
 			activities.add(work);
 		}
 		catch(Exception e){
-			String msg=Log.createFaultMessage("Activity '"+id+"': error converting.",e);
-			Log.logException("Error converting activity "+a.toString(),e, logger);
-			result.addError(msg);
+			result.addError(Log.createFaultMessage("Activity '"+id+"': error converting.",e));
 		}
 	}
 
@@ -653,9 +640,7 @@ public class Converter {
 			activities.add(modVar);
 		}
 		catch(Exception e){
-			String msg=Log.createFaultMessage("Error converting activity <"+id+">",e);
-			Log.logException("Error converting activity "+a.toString(),e, logger);
-			result.addError(msg);
+			result.addError(Log.createFaultMessage("Error converting activity <"+id+">",e));
 		}
 	}
 

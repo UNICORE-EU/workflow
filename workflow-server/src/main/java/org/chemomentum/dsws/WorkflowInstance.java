@@ -103,9 +103,7 @@ public class WorkflowInstance extends BaseResourceImpl {
 		model.setSubmittedWorkflow(String.valueOf(wf));
 
 		if (conversionResult.hasConversionErrors()) {
-			logger.info("Submitted workflow <"
-					+ getUniqueID()
-					+ "> contains errors, not submitting to process engine.");
+			logger.info("Submitted workflow <{}> contains errors, not submitting to process engine.", getUniqueID());
 		} else {
 			Calendar tt = getHome().getTerminationTime(getUniqueID());
 			startProcessing(conversionResult, tt);
@@ -127,10 +125,9 @@ public class WorkflowInstance extends BaseResourceImpl {
 
 	protected void startProcessing(ConversionResult conversionResult, Calendar terminationTime)
 			throws Exception {
-		logger.info("Start processing of workflow <" + getUniqueID() + ">");
+		logger.info("Start processing of workflow <{}>", getUniqueID());
 		PEWorkflow peWorkflow = conversionResult.getConvertedWorkflow();
-		PEConfig.getInstance()
-		.getProcessEngine()
+		PEConfig.getInstance().getProcessEngine()
 		.process(peWorkflow, getSecurityTokens(), getModel().storageURL, terminationTime);
 	}
 
@@ -166,8 +163,7 @@ public class WorkflowInstance extends BaseResourceImpl {
 		}
 		try {
 			Message m = new Message("deleted:" + getUniqueID());
-			kernel.getMessaging().getChannel(getModel().getParentUID())
-			.publish(m);
+			kernel.getMessaging().getChannel(getModel().getParentUID()).publish(m);
 		} catch (Exception e) {
 			Log.logException("Could not send internal message.", e, logger);
 		}
@@ -205,8 +201,7 @@ public class WorkflowInstance extends BaseResourceImpl {
 						sc.delete();
 					}
 				} catch (Exception ex) {
-					logger.info("Could not remove storage for workflow "
-							+ getUniqueID());
+					logger.info("Could not remove storage for workflow {}", getUniqueID());
 				}
 			}
 
@@ -216,18 +211,13 @@ public class WorkflowInstance extends BaseResourceImpl {
 				public void run() {
 					if (destroy) {
 						if (jobCleanup)
-							logger.info("Will delete <" + jobs.size()
-							+ "> jobs from workflow " + getUniqueID());
+							logger.info("Will delete <{}> jobs from workflow <{}>", jobs.size(), getUniqueID());
 					} else {
-						logger.info("Will abort <" + jobs.size()
-						+ "> jobs from workflow " + getUniqueID());
+						logger.info("Will abort <{}> from workflow <{}>", jobs.size(), getUniqueID());
 					}
 					String operation = destroy ? "destroy" : "abort";
 					for (String job : jobs) {
 						try {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Will " + operation + " job: "+ job);
-							}
 							JobClient b = new JobClient(new Endpoint(job), sec, auth);
 							if (destroy) {
 								if (jobCleanup)
@@ -257,8 +247,7 @@ public class WorkflowInstance extends BaseResourceImpl {
 			// more?
 
 		} catch (Exception e) {
-			Log.logException("Could not cleanup workflow <" + getUniqueID()
-			+ ">", e);
+			Log.logException("Could not cleanup workflow <" + getUniqueID() + ">", e);
 		}
 	}
 

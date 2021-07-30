@@ -37,7 +37,7 @@ public class WorkflowFactoryHomeImpl extends DefaultHome {
 				}
 			}
 		}catch(Exception ex){
-			Log.logException("Error running port-server start code", ex);
+			Log.logException("Error running post-server-start code", ex);
 		}
 	}
 	

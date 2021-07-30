@@ -30,7 +30,7 @@ public class ModificationActivityProcessor extends ProcessorBase{
 		ModifyVariableActivity activity=(ModifyVariableActivity)action.getAjd();
 		String name = activity.getVariableName();
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
-		logger.info("Start processing activity <"+activity.getID()+"> in iteration <"+myIteration+">");
+		logger.debug("Start processing activity <{}> in iteration <{}>", activity.getID(), myIteration);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars==null){
 			vars=new ProcessVariables();
@@ -39,7 +39,7 @@ public class ModificationActivityProcessor extends ProcessorBase{
 		try{
 			GroovyShell interpreter = new GroovyShell();
 			prepareInterpreter(interpreter, vars, myIteration);
-			logger.debug("Executing script "+activity.getScript());
+			logger.debug("Executing script {}", activity.getScript());
 	        new ScriptSandbox().eval(interpreter, activity.getScript());
 	        readResults(interpreter, vars, name);
 			setToDoneSuccessfully();
@@ -53,10 +53,8 @@ public class ModificationActivityProcessor extends ProcessorBase{
 	}
 
 	private void prepareInterpreter(GroovyShell interpreter, ProcessVariables vars, String myIteration){
-		logger.debug("Context has "+vars.size()+" entries");
 		for(String key: vars.keySet()){
 			Object val=vars.get(key);
-			logger.debug("Context: "+key+"="+String.valueOf(val)+" variableType="+val.getClass().getName());
 			interpreter.setVariable(key, val);
 		}
 		interpreter.setVariable(VAR_KEY_CURRENT_TOTAL_ITERATION,myIteration);

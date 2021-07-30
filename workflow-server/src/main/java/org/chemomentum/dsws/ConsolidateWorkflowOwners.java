@@ -55,7 +55,7 @@ public class ConsolidateWorkflowOwners implements Runnable {
 			storeChanges();
 		}
 		catch(Exception ex){
-			logger.error("Error updating workflow owners for factory instance <"+workflowFactoryID+">",ex);
+			Log.logException("Error updating workflow owners for factory instance "+workflowFactoryID, ex, logger);
 		}
 	}
 	

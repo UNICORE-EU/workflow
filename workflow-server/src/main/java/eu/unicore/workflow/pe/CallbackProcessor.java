@@ -6,6 +6,7 @@ package eu.unicore.workflow.pe;
 public interface CallbackProcessor {
 	
 	/**
+	 * @oaram wfID
 	 * @param jobURL
 	 * @param statusMessage
 	 * @param success

@@ -94,9 +94,7 @@ public class Evaluator implements EvaluationFunctions {
 	@Override
 	public int exitCode(String activityID)throws Exception{
 		try{
-			if(logger.isDebugEnabled()){
-				logger.debug("Getting exit code for activity <"+activityID+"> in iteration <"+iteration+">");
-			}
+			logger.debug("Getting exit code for activity <{}> in iteration <{}>", activityID, iteration);
 			JobClient jc=getJobClient(activityID,iteration);
 			Integer exitCode=jc.getExitCode();
 			if(exitCode!=null){
@@ -267,9 +265,7 @@ public class Evaluator implements EvaluationFunctions {
 			List<PEStatus> activityStatus=ac.getActivityStatus(activityID);
 			if(activityStatus.size()>0){
 				PEStatus res=activityStatus.get(activityStatus.size()-1);
-				if(logger.isDebugEnabled()){
-					logger.debug("Found latest status for activity <"+activityID+">: "+res);
-				}
+				logger.debug("Found latest status for activity <{}>: {}", activityID, res);
 				return res;
 			}
 		}
@@ -293,9 +289,7 @@ public class Evaluator implements EvaluationFunctions {
 	
 	protected EvaluationException errorReport(String activityID, String message, Throwable cause) {
 		String exc = Log.createFaultMessage(message, cause);
-		if(logger.isDebugEnabled()){
-			logger.debug("For workflow <"+workflowID+">, activity <"+activityID+"> in iteration <"+iteration+"> error occurred: "+exc);
-		}
+		logger.debug("For workflow <{}>, activity <{}> in iteration <{}> error occurred: ", workflowID, activityID, exc);
 		return new EvaluationException("Error: "+exc+" for activity ID "+activityID+"> in iteration <"+iteration+">");
 	}
 	
