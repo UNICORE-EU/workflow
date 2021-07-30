@@ -73,6 +73,11 @@
       </dependency>
       <dependency>
         <groupId>eu.unicore</groupId>
+        <artifactId>xnjs</artifactId>
+        <version>${uas.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>eu.unicore</groupId>
         <artifactId>uas-core</artifactId>
         <version>${uas.version}</version>
       </dependency>
