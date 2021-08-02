@@ -53,10 +53,10 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	public static final String WD_REF = JSONExecutionActivityProcessor.class.getName()+"_workdir";
 
 	public static final String USER = JSONExecutionActivityProcessor.class.getName()+"_user";
-	
+
 	public static final String EXPORTS = JSONExecutionActivityProcessor.class.getName()+"_exports";
 
-	
+
 	public JSONExecutionActivityProcessor(XNJS configuration) {
 		super(configuration);
 	}
@@ -68,8 +68,6 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	@Override
 	protected void handleCreated() throws ProcessingException {
 		super.handleCreated();
-		action.setStatus(ActionStatus.RUNNING);
-		action.addLogTrace("Status set to RUNNING.");
 		JSONExecutionActivity work = getWork();
 		String iteration=getCurrentIteration();
 		logger.info("Start processing Job execution activity <{}> in iteration <{}>", work.getID(), iteration);
@@ -79,12 +77,20 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			action.getProcessingContext().put(ProcessVariables.class,vars);
 		}
 		vars.put(VAR_KEY_CURRENT_TOTAL_ITERATION,iteration);
-		submitJob();
-		//callback will wake it up again... 
-		action.setWaiting(true);
-		//set to wakeup after some seconds (in case we miss a callback)
-		scheduleWakeupCall();
-		action.setDirty();
+		try {
+			submitJob();
+			action.setStatus(ActionStatus.RUNNING);
+			action.addLogTrace("Status set to RUNNING.");
+			//callback will wake it up again...
+			action.setWaiting(true);
+			//set to wakeup after some seconds (in case we miss a callback)
+			scheduleWakeupCall();
+		}catch(Exception e){
+			String msg = Log.createFaultMessage("Problem creating/sending job to UNICORE/X", e);
+			action.setStatus(ActionStatus.POSTPROCESSING);
+			action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, msg);
+			action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "SUBMIT_FAILED");
+		}
 	}
 
 	/**
@@ -106,7 +112,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		xnjs.getScheduledExecutor().schedule(r, wakeUpPeriod, TimeUnit.SECONDS);
 	}
 
-	private void submitJob(){
+	private void submitJob() throws Exception {
 		JSONExecutionActivity work = getWork();
 		getStatistics().incrementJobs();
 		String workflowID = work.getWorkflowID();
@@ -115,52 +121,41 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		ProcessVariables vars = action.getProcessingContext().get(ProcessVariables.class);
 		JSONObject wa = new InsertVariablesFilter(vars).filter(work.getJobDefinition());
 
-		try{
-			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(workflowID);
-			if(wfc==null){
-				setToDoneAndFailed("Parent workflow information not found.");
-				return;
-			}
-			String user = wfc.getUserDN();
+		WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(workflowID);
+		if(wfc==null){
+			setToDoneAndFailed("Parent workflow information not found.");
+			return;
+		}
+		String user = wfc.getUserDN();
 
-			// TODO?!
-			//Calendar lifetime=wfc.getLifetime();
+		// TODO?!
+		//Calendar lifetime=wfc.getLifetime();
 
-			if(!Boolean.parseBoolean(work.getOption(JSONExecutionActivity.OPTION_NO_NOTIFICATIONS))){
-				String cbUrl = getBaseURL()+workflowID+"/actions/callback";
-				wa.put("Notification", cbUrl);
-			}
-			
-			JSONArray imports = wa.optJSONArray("Imports");
-			if(imports!=null && imports.length()>0) {
-				JSONArray filtered = new StagingPreprocessor(workflowID).processImports(imports);
-				wa.put("Imports", filtered);
-				if(logger.isDebugEnabled())logger.debug("Filtered stage ins for {}: {}", getWork().getID(), filtered.toString(2));
-			}
-
-			// since we replace stuff like iterations, variables in the job,
-			// we need to store the version we have submitted, to be able
-			// to correctly register the outputs later
-			JSONArray exports = wa.optJSONArray("Exports");
-			logger.debug(exports);
-			if(exports!=null && exports.length()>0) {
-				JSONArray filtered = new StagingPreprocessor(workflowID).processExports(exports);
-				wa.put("Exports", filtered);
-				action.getProcessingContext().put(EXPORTS, exports.toString());
-			}
-
-			String jobURL = doSubmit(wa, user);
-			storeJobURL(jobURL);
-						
-			action.getProcessingContext().put(SEND_INSTANT, System.currentTimeMillis());
-			action.setDirty();
-
-		}catch(Exception e){
-			String msg="Problem creating/sending job to UNICORE/X";
-			Log.logException(msg,e,logger);
-			setToDoneAndFailed(msg);
+		if(!Boolean.parseBoolean(work.getOption(JSONExecutionActivity.OPTION_NO_NOTIFICATIONS))){
+			String cbUrl = getBaseURL()+workflowID+"/actions/callback";
+			wa.put("Notification", cbUrl);
 		}
 
+		JSONArray imports = wa.optJSONArray("Imports");
+		if(imports!=null && imports.length()>0) {
+			JSONArray filtered = new StagingPreprocessor(workflowID).processImports(imports);
+			wa.put("Imports", filtered);
+			if(logger.isDebugEnabled())logger.debug("Filtered stage ins for {}: {}", getWork().getID(), filtered.toString(2));
+		}
+
+		// since we replace stuff like iterations, variables in the job,
+		// we need to store the version we have submitted, to be able
+		// to correctly register the outputs later
+		JSONArray exports = wa.optJSONArray("Exports");
+		logger.debug(exports);
+		if(exports!=null && exports.length()>0) {
+			JSONArray filtered = new StagingPreprocessor(workflowID).processExports(exports);
+			wa.put("Exports", filtered);
+			action.getProcessingContext().put(EXPORTS, exports.toString());
+		}
+		String jobURL = doSubmit(wa, user);
+		storeJobURL(jobURL);
+		action.getProcessingContext().put(SEND_INSTANT, System.currentTimeMillis());
 	}
 
 	public static SiteSelectionStrategy defaultStrategy = new RandomSelection();
@@ -376,27 +371,31 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		// 1. it is not switched off, OR the user explicitly wants it
 		// 2. the resubmit count is not exceeded
 		// 3. the error is recoverable
-		boolean resubmit = (!configNoResubmit || userWantsResubmit) 
-				&& max>submitted 
-				&& shouldResubmit(errorCode);
+		boolean resubmit = (!configNoResubmit || userWantsResubmit) && max>submitted && shouldResubmit(errorCode);
 
-				if(resubmit){
-					int attempt=submitted+1;
-					logger.debug("Re-submitting <{}> this is attempt <{}> of <{}>", work.getID(), attempt, max);
-
-					action.addLogTrace("Re-submitting, attempt <"+attempt+"> of <"+max+">");
-					if(shouldAddBlacklistEntry(errorCode)){
-						addToBlackList();
-					}
-					action.setStatus(ActionStatus.RUNNING);
-					submitJob();
-					action.setWaiting(true);
-				}
-				else{
-					logger.debug("Not resubmitting <{}>", work.getID());
-					setToDoneAndFailed("Not resubmitting.");
-					reportError(errorCode,errorDescription);
-				}
+		if(resubmit){
+			int attempt=submitted+1;
+			logger.debug("Re-submitting <{}> this is attempt <{}> of <{}>", work.getID(), attempt, max);
+			action.addLogTrace("Re-submitting, attempt <"+attempt+"> of <"+max+">");
+			if(shouldAddBlacklistEntry(errorCode)){
+				addToBlackList();
+			}
+			try {
+				submitJob();
+				action.setStatus(ActionStatus.RUNNING);
+				action.setWaiting(true);
+			}catch(Exception e){
+				String msg = Log.createFaultMessage("Problem creating/sending job to UNICORE/X", e);
+				action.setStatus(ActionStatus.POSTPROCESSING);
+				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, msg);
+				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "SUBMIT_FAILED");
+			}
+		}
+		else{
+			logger.debug("Not resubmitting <{}>", work.getID());
+			setToDoneAndFailed("Not resubmitting.");
+			reportError(errorCode,errorDescription);
+		}
 	}
 
 	/**
@@ -406,20 +405,20 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 */
 	protected boolean shouldResubmit(String errorCode){
 		if(errorCode==null)return false;
-		
+
 		//TODO check workflow and job setting
 
 		ErrorCode ect = null;
-		
+
 		try{
 			ect = ErrorCode.valueOf(errorCode);
 			if(ect==null)return false;
 		}catch(Exception ex) {
 			return false;
 		}
-		
+
 		// TODO!!
-		
+
 		switch(ect){
 
 		default: return false;
@@ -488,8 +487,10 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 	public static enum ErrorCode {
 		OK,
+		SUBMIT_FAILED,
 		FILE_IMPORT_FAILED,
 		FILE_EXPORT_FAILED,
+		JOB_FAILED,
 		SECURITY_ERROR,
 		OTHER,
 	}
