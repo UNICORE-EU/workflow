@@ -8,7 +8,7 @@
      "ApplicationName": "Date",
     },
     "options": {
-     "IGNORE_FAILURE" : false,
+     "IGNORE_FAILURE" : true,
      "MAX_RESUBMITS": 10,
     },
  },
