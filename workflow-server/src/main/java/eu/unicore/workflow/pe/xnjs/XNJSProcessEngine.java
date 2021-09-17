@@ -116,17 +116,10 @@ public class XNJSProcessEngine implements ProcessEngine {
 		xnjs.get(Manager.class).destroy(workflowID, null);
 	}
 
-	public void resume(String workflowID, Map<String,String>params) 
-			throws Exception {
-		WorkflowContainer wfc = null;
-		try{
-			wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
+	public void resume(String workflowID, Map<String,String>params) throws Exception {
+		try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
+			wfc.setDirty();
 			doResume(wfc,params);
-		}
-		finally{
-			if(wfc!=null){
-				PEConfig.getInstance().getPersistence().write(wfc);
-			}
 		}
 	}
 

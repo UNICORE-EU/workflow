@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.chemomentum.dsws.ConversionResult;
 
+import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.persist.annotations.ID;
 import de.fzj.unicore.persist.annotations.Table;
 import de.fzj.unicore.persist.util.JSON;
 import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.workflow.pe.PEConfig;
 
 /**
  * persistent information about a top-level workflow
@@ -18,7 +20,7 @@ import de.fzj.unicore.persist.util.Wrapper;
  */
 @Table(name="WORKFLOWS")
 @JSON(customHandlers={Wrapper.WrapperConverter.class})
-public class WorkflowContainer extends SubflowContainer {
+public class WorkflowContainer extends SubflowContainer implements AutoCloseable {
 	
 	private static final long serialVersionUID=1;
 	
@@ -34,6 +36,8 @@ public class WorkflowContainer extends SubflowContainer {
 
 	// maps job IDs to activity IDs
 	private final Map<String,String>jobMap = new HashMap<>();
+
+	private transient boolean dirty = false;
 
 	@ID
 	@Override
@@ -89,4 +93,19 @@ public class WorkflowContainer extends SubflowContainer {
 		return jobMap;
 	}
 
+	public void setDirty() {
+		this.dirty = true;
+	}
+
+	@Override
+	public void close() throws PersistenceException {
+		if(dirty){
+			PEConfig.getInstance().getPersistence().write(this);
+		}
+		else{
+			PEConfig.getInstance().getPersistence().unlock(this);
+		}
+	}
+	
+	
 }

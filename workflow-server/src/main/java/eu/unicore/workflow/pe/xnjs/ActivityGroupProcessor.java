@@ -145,7 +145,6 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	protected void submitAllEligibleActivities(boolean subActionsStillRunning)throws ProcessingException{
 		List<String>subTasks=getOrCreateSubTasks();
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
-		boolean dirty=false;
 		List<Activity>activities=ag.getDueActivities();
 		if(!subActionsStillRunning && activities.size()==0){
 			action.addLogTrace("No more transitions left to follow.");
@@ -154,9 +153,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			return;
 		}
 		else{
-			WorkflowContainer workflowInfo=null;
-			try{
-				workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
+			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
 				if(workflowInfo==null){
 					String msg="No workflow info for <"+ag.getWorkflowID()+">";
 					logger.debug(msg);
@@ -167,7 +164,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 				if(attr==null)throw new PersistenceException("Persistent information about <"+ag.getID()+"> is missing");
 				try{
 					for(Activity a: activities){
-						dirty=true;
+						workflowInfo.setDirty();
 						String id;
 						if(a instanceof ActivityGroup){
 							String loopIteratorName=((ActivityGroup)a).getLoopIteratorName();
@@ -191,20 +188,6 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 
 			}catch(Exception ex){
 				throw new ProcessingException(ex);
-			}
-			finally{
-				if(workflowInfo!=null){
-					try{
-						if(dirty){
-							PEConfig.getInstance().getPersistence().write(workflowInfo);
-						}
-						else{
-							PEConfig.getInstance().getPersistence().unlock(workflowInfo);
-						}
-					}catch(Exception ex){
-						throw new ProcessingException(ex);
-					}
-				}
 			}
 		}
 	}

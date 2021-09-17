@@ -191,25 +191,22 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		String iteration = getCurrentIteration();
 		String jobID = jobURL.substring(jobURL.lastIndexOf("/")+1);
 
-		WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
-		if(wfc==null){
-			logger.error("No parent workflow found for activity <{}>", activityID);
-			return;
-		}
-		wfc.getJobMap().put(jobID, action.getUUID());
-		try{
+		try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
+			if(wfc==null){
+				logger.error("No parent workflow found for activity <{}>", activityID);
+				return;
+			}
+			wfc.getJobMap().put(jobID, action.getUUID());
 			SubflowContainer sfc=wfc.findSubFlowContainingActivity(activityID);
 			if(sfc!=null){
 				PEStatus status = sfc.getActivityStatus(activityID,iteration);
 				status.setJobURL(jobURL);
+				wfc.setDirty();
 			}
 			else{
 				logger.warn("No status reporting possible for workflow <{}> activity <{}> iteration <{}>",
 						workflowID, activityID, iteration);
 			}
-		}
-		finally{
-			if(wfc!=null)PEConfig.getInstance().getPersistence().write(wfc);
 		}
 	}
 

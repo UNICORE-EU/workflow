@@ -12,8 +12,6 @@ import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.PEConfig;
-import eu.unicore.workflow.pe.model.Activity;
-import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.Condition;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.RepeatGroup;
@@ -63,19 +61,14 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 	protected void submitAllEligibleActivities()throws ProcessingException{
 		List<String>subTasks=getOrCreateSubTasks();
 		RepeatGroup ag=(RepeatGroup)action.getAjd();
-		boolean dirty=false;
 		Iterate iterate=ag.getBody().getIterate();
 		boolean haveMore=iterate.hasNext();
 		if(!haveMore && (subTasks.size()==0)){
 			setToDoneSuccessfully();
 		}
 		else{
-
 			//process another iteration of the loop
-
-			WorkflowContainer workflowInfo=null;
-			try{
-				workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
+			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
 				if(workflowInfo==null){
 					String msg="No workflow info for <"+ag.getWorkflowID()+">";
 					logger.debug(msg);
@@ -87,17 +80,8 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 
 				try{
 					if(iterate.hasNext()){
-						Activity a=ag.getBody();
-						dirty=true;
-						String id;
-						if(a instanceof ActivityGroup){
-							ActivityGroup grp=(ActivityGroup)a;
-							id=submit(grp,attr);
-						}
-						else { //TODO to simplify, we might force that loop body is a group
-							id=submit(a,attr);
-						}
-						subTasks.add(id);
+						workflowInfo.setDirty();
+						subTasks.add(submit(ag.getBody(), attr));
 					}
 				}catch(Exception ex){
 					setToDoneAndFailed(Log.createFaultMessage("Exception occured", ex));
@@ -106,21 +90,6 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 
 			}catch(Exception ex){
 				throw new ProcessingException(ex);
-			}
-			finally{
-				if(workflowInfo!=null){
-					try{
-						if(dirty){
-							PEConfig.getInstance().getPersistence().write(workflowInfo);
-							action.setDirty();
-						}
-						else{
-							PEConfig.getInstance().getPersistence().unlock(workflowInfo);
-						}
-					}catch(Exception ex){
-						throw new ProcessingException(ex);
-					}
-				}
 			}
 		}
 	}

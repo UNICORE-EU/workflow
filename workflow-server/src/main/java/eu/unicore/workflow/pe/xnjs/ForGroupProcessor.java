@@ -15,7 +15,6 @@ import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.Activity;
-import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.ActivityStatus;
 import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.Iterate;
@@ -66,7 +65,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 	protected void submitAllEligibleActivities()throws ProcessingException{
 		List<String>subTasks=getOrCreateSubTasks();
 		ForGroup ag=(ForGroup)action.getAjd();
-		boolean dirty=false;
 		Iterate iterate=ag.getBody().getIterate();
 		boolean haveMore=iterate.hasNext();
 		if(!haveMore && (subTasks.size()==0)){
@@ -76,9 +74,7 @@ public class ForGroupProcessor extends GroupProcessorBase{
 		}
 		else{
 			//process some more iterations of the loop
-			WorkflowContainer workflowInfo=null;
-			try{
-				workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
+			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
 				if(workflowInfo==null){
 					String msg="No workflow info for <"+ag.getWorkflowID()+">";
 					logger.debug(msg);
@@ -102,18 +98,8 @@ public class ForGroupProcessor extends GroupProcessorBase{
 						if(subTasks.size()>=maxConcurrent){
 							break;
 						}
-						Activity a=ag.getBody();
-						dirty=true;
-						String id;
-
-						if(a instanceof ActivityGroup){
-							ActivityGroup grp=(ActivityGroup)a;
-							id=submit(grp,attr);
-						}
-						else { //TODO to simplify, we might force that loop body is a group
-							id=submit(a,attr);
-						}
-						subTasks.add(id);
+						workflowInfo.setDirty();
+						subTasks.add(submit(ag.getBody(), attr));
 					}
 				}catch(Exception ex){
 					setToDoneAndFailed(Log.createFaultMessage("Exception occured", ex));
@@ -122,21 +108,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 
 			}catch(Exception ex){
 				throw new ProcessingException(ex);
-			}
-			finally{
-				if(workflowInfo!=null){
-					try{
-						if(dirty){
-							PEConfig.getInstance().getPersistence().write(workflowInfo);
-							action.setDirty();
-						}
-						else{
-							PEConfig.getInstance().getPersistence().unlock(workflowInfo);
-						}
-					}catch(Exception ex){
-						throw new ProcessingException(ex);
-					}
-				}
 			}
 		}
 	}
@@ -157,9 +128,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 			if(subTasks==null){
 				throw new IllegalStateException("Could not find list of sub-tasks.");
 			}
-
-			WorkflowContainer workflowInfo=null;
-			SubflowContainer attr;
 
 			Iterator<String>iterator=subTasks.iterator();
 			subActionLoop: while(iterator.hasNext()){
@@ -206,21 +174,13 @@ public class ForGroupProcessor extends GroupProcessorBase{
 						xnjs.get(Manager.class).destroy(subActionID, action.getClient());
 						iterator.remove();
 						//store activity status to global workflow info
-						try{
-							workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
-							attr=workflowInfo.findSubFlowAttributes(ag.getID());
+						try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
+							SubflowContainer attr = workflowInfo.findSubFlowAttributes(ag.getID());
 							String iteration=(String)sub.getProcessingContext().get(PV_KEY_ITERATION);
 							String subActivityID=((Activity)sub.getAjd()).getID();
 							PEStatus stat=attr.getActivityStatus(subActivityID, iteration);
 							stat.setActivityStatus(ActivityStatus.SUCCESS);
-						}finally{
-							if(workflowInfo!=null){
-								try{
-									PEConfig.getInstance().getPersistence().write(workflowInfo);
-								}catch(Exception ex){
-									throw new ProcessingException(ex);
-								}
-							}
+							workflowInfo.setDirty();
 						}
 					}
 				}

@@ -118,12 +118,9 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 			String activityID = getActivityID();
 			String workflowID = getParentWorkflowID();
 			if(workflowID.equals(activityID))return;
-			boolean dirty = false;
 			String iteration=getCurrentIteration();
 			logger.debug("Reporting error: <{}> for activity <{}> in iteration <{}>", errorDescription, activityID, iteration);
-			WorkflowContainer wfc = null;
-			try{
-				wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
+			try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
 				if(wfc==null){
 					logger.error("No parent workflow found for activity <"+activityID+">");
 					return;
@@ -134,21 +131,11 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 					status.setErrorCode(errorCode);
 					status.setErrorDescription(errorDescription);
 					status.setActivityStatus(ActivityStatus.FAILED);
-					dirty = true;
+					wfc.setDirty();
 				}
 				else{
 					logger.warn("No status reporting possible for workflow <{}> activity <{}> in iteration <{}>",
 							workflowID, activityID, iteration);
-				}
-			}
-			finally {
-				if(wfc!=null) {
-					if(dirty) {
-						PEConfig.getInstance().getPersistence().write(wfc);
-					}
-					else {
-						PEConfig.getInstance().getPersistence().unlock(wfc);
-					}
 				}
 			}
 		}catch(Exception ex){

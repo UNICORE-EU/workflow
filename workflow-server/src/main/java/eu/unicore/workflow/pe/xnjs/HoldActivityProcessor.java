@@ -166,13 +166,10 @@ public class HoldActivityProcessor extends ProcessorBase{
 	public void setToHold() throws PersistenceException, InterruptedException{
 		ModelBase ag=(ModelBase)action.getAjd();
 		String workflowID=ag.getWorkflowID();
-		WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(workflowID);
-		SubflowContainer sfc=wfc.findSubFlowContainingActivity(ag.getID());
-		try{
+		try(WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
+			SubflowContainer sfc = wfc.findSubFlowContainingActivity(ag.getID());
 			sfc.hold();	
-		}
-		finally{
-			PEConfig.getInstance().getPersistence().write(wfc);
+			wfc.setDirty();
 		}
 	}
 }
