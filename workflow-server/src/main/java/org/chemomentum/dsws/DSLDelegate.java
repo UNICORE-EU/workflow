@@ -21,7 +21,7 @@ public interface DSLDelegate {
 	 * @param securityTokens
 	 * @return an map containing attributes 
 	 */
-	public ConversionResult addNewWorkflow(String uniqueID, Object workflow, SecurityTokens securityTokens);
+	public ConversionResult convertWorkflow(String uniqueID, Object workflow, SecurityTokens securityTokens);
 	
 	/**
 	 * get the dialect understood by this delegate

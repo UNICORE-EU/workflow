@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import eu.unicore.security.SecurityTokens;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.model.ActivityStatus;
 import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
@@ -30,16 +31,18 @@ public class Delegate implements DSLDelegate {
 
 	public static final String DIALECT="https://www.unicore.eu/workflow/json";
 
-	public ConversionResult addNewWorkflow(String uniqueID, Object wf, SecurityTokens tokens) {
+	public ConversionResult convertWorkflow(String uniqueID, Object wf, SecurityTokens tokens) {
 		try{
-			return new Converter().convert(uniqueID, (JSONObject)wf);
+			ConversionResult cr =  new Converter().convert(uniqueID, (JSONObject)wf);
+			cr.setDialect(DIALECT);
+			return cr;
 		}catch(Exception e){
 			throw new IllegalArgumentException(Log.createFaultMessage("Can't process workflow", e), e);
 		}
 	}
 
 
-	public static String convertStatus(eu.unicore.workflow.pe.model.ActivityStatus val){
+	public static String convertStatus(ActivityStatus val){
 		boolean stillRunning=false;
 		boolean success=true;
 		switch(val){
@@ -99,10 +102,16 @@ public class Delegate implements DSLDelegate {
 				String iteration = s.getIteration();
 				ase.put("iteration", iteration);
 
-				if(s.getActivityStatus().equals(eu.unicore.workflow.pe.model.ActivityStatus.FAILED)){
+				if(s.getActivityStatus().equals(ActivityStatus.FAILED)){
 					String errorCode = s.getErrorCode();
 					String error = s.getErrorDescription();
 					ase.put("errorMessage", errorCode+": "+error);
+				}
+				if(s.getJobURL()!=null) {
+					ase.put("jobURL", s.getJobURL());
+					if(s.getElapsedTime()>0) {
+						ase.put("time", s.getElapsedTime());
+					}
 				}
 				ase.put("status", convertStatus(s.getActivityStatus()));
 				as.add(ase);

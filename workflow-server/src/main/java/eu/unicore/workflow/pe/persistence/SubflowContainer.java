@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityContainer;
+import eu.unicore.workflow.pe.model.ActivityStatus;
 
 /**
  * During runtime of the workflow the {@link SubflowContainer} class is used to store 
@@ -22,19 +24,19 @@ public class SubflowContainer implements Serializable{
 
 	private String workflowID;
 	
-	private final Map<String,List<PEStatus>> activityStati=new HashMap<String,List<PEStatus>>();
+	private final Map<String,List<PEStatus>> activityStati = new HashMap<>();
 	
-	private List<String> outputFiles=new ArrayList<String>();
+	private List<String> outputFiles = new ArrayList<>();
 
 	//in case this is a subflow, this is the subflow ID
 	private String id;
 
 	//attributes for subflows
-	private List<SubflowContainer> subFlowAttributes=new ArrayList<SubflowContainer>();
+	private List<SubflowContainer> subFlowAttributes = new ArrayList<>();
 	
 	private boolean isLoop=false;
 	
-	private List<String> parentIteratorNames=new ArrayList<String>();
+	private List<String> parentIteratorNames = new ArrayList<>();
 	
 	private String iteratorName;
 	
@@ -298,8 +300,8 @@ public class SubflowContainer implements Serializable{
 	}
 	
 	/**
-	 * recursively collect all job EPRs submitted for this sub-flow
-	 * @return job EPRs
+	 * recursively collect all job URLs submitted for this sub-flow
+	 * @return job URLs
 	 */
 	public Collection<String> collectJobs() {
 		List<String>jobs = new ArrayList<>();
@@ -315,5 +317,47 @@ public class SubflowContainer implements Serializable{
 		}
 		return jobs;
 	}
+	
+	/**
+	 * get number of stored PEStatus elements (recurse into subflows)
+	 */
+	public long getSize() {
+		long size = getSizeNoRecurse();
+		for(SubflowContainer sc: subFlowAttributes) {
+			size += sc.getSize();
+		}
+		return size;
+	}
+	
+	private long getSizeNoRecurse() {
+		long size = 0;
+		for(List<PEStatus> as: activityStati.values()) {
+			size += as.size();
+		}
+		return size;
+	}
 
+	/**
+	 * reduce size of stored information
+	 */
+	public void compact() {
+		compact(500);
+	}
+
+	public void compact(long sizeHint) {
+		if(getSizeNoRecurse()>sizeHint) {
+			for(List<PEStatus> as: activityStati.values()) {
+				Iterator<PEStatus> iter = as.iterator();
+				while(iter.hasNext()) {
+					PEStatus s = iter.next();
+					if(ActivityStatus.RUNNING!=s.getActivityStatus()) {
+						iter.remove();
+					}
+				}
+			}
+		}
+		for(SubflowContainer sc: subFlowAttributes) {
+			sc.compact(sizeHint);
+		}
+	}
 }

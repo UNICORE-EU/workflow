@@ -14,17 +14,19 @@ public class ForGroup extends SingleBodyContainer {
 	public static final String ACTION_TYPE="UNICORE_WORKFLOW_FOR_EACH";
 
 	/**
-	 * default maximum number of concurrent activities per for-each group
-	 */
-	public static int DEFAULT_MAX_CONCURRENT_ACTIVITIES=20;
-
-	/**
 	 * property for defining the maximum number of concurrent activities per for-each group
+	 * (hard limit)
 	 */
-	public static final String PROPERTY_MAX_CONCURRENT_ACTIVITIES="unicore.workflow.forEach.maxConcurrentActivities";
+	public static final String[] PROPERTY_MAX_CONCURRENT_ACTIVITIES =
+	  new String[] { "unicore.workflow.forEach.maxConcurrentActivities",
+			  "maxConcurrentActivities"
+	  };
 
-	private int maxConcurrentActivities=DEFAULT_MAX_CONCURRENT_ACTIVITIES;
+	private int maxConcurrentActivities = -1;
 	
+	/**
+	 * limit on concurrent activities
+	 */
 	public int getMaxConcurrentActivities() {
 		return maxConcurrentActivities;
 	}
@@ -32,12 +34,12 @@ public class ForGroup extends SingleBodyContainer {
 	public void setMaxConcurrentActivities(int maxConcurrentActivities) {
 		this.maxConcurrentActivities = maxConcurrentActivities;
 	}
-
-	public ForGroup(String id,String workflowID, Iterate iteration, Activity body) {
+	
+	public ForGroup(String id,String workflowID, Iterate iteration, ActivityGroup body) {
 		super(id,workflowID,iteration,body);
 	}
 	
-	public ForGroup(String id,String workflowID, Activity body) {
+	public ForGroup(String id,String workflowID, ActivityGroup body) {
 		super(id,workflowID,body);
 	}
 

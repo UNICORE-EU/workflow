@@ -9,11 +9,11 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.uas.impl.BaseResourceImpl;
-import eu.unicore.services.InitParameters;
-import eu.unicore.services.messaging.Message;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
+import eu.unicore.services.InitParameters;
+import eu.unicore.services.messaging.Message;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
@@ -21,7 +21,6 @@ import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.ProcessState;
 import eu.unicore.workflow.pe.ProcessState.State;
-import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
@@ -82,53 +81,27 @@ public class WorkflowInstance extends BaseResourceImpl {
 		if(tags!=null && tags.length>0){
 			model.getTags().addAll(Arrays.asList(tags));
 		}
+		model.dialect = (wfInit.cr.getDialect());
+		model.getDeclaredVariables().putAll(wfInit.cr.getDeclaredVariables());
+		model.setSubmittedWorkflow("{}");
+		PEConfig.getInstance().getLocationStore().write(wfInit.locations);
 		
-		Locations loc = new Locations();
-		loc.setWorkflowID(getUniqueID());
-		PEConfig.getInstance().getLocationStore().write(loc);
-		
+		startProcessing(wfInit.cr);
 	}
 
 
-	public ConversionResult submit(String dialect, Object wf, String storageURL)
+	private void startProcessing(ConversionResult conversionResult)
 			throws Exception {
-		WorkflowModel model = getModel();
-		ConversionResult conversionResult = null;
-		model.dialect = dialect;
-		if(storageURL!=null)model.setStorageURL(storageURL);
-
-		conversionResult = convert(dialect, wf);
-
-		model.getDeclaredVariables().putAll(conversionResult.getDeclaredVariables());
-		model.setSubmittedWorkflow(String.valueOf(wf));
-
 		if (conversionResult.hasConversionErrors()) {
 			logger.info("Submitted workflow <{}> contains errors, not submitting to process engine.", getUniqueID());
 		} else {
 			Calendar tt = getHome().getTerminationTime(getUniqueID());
-			startProcessing(conversionResult, tt);
+			logger.info("Start processing of workflow <{}>", getUniqueID());
+			PEWorkflow peWorkflow = conversionResult.getConvertedWorkflow();
+			PEConfig.getInstance().getProcessEngine()
+			.process(peWorkflow, getSecurityTokens(), getModel().storageURL, tt);
 
 		}
-		return conversionResult;
-	}
-
-	protected ConversionResult convert(String dialect, Object wf) {
-		WorkflowModel model = getModel();
-		DSLDelegate del = WorkflowFactoryImpl.getDelegate(model.dialect);
-		if (del == null) {
-			throw new IllegalArgumentException("Dialect <" + model.dialect
-					+ "> not understood");
-		}
-		return del.addNewWorkflow(getUniqueID(), wf, getSecurityTokens());
-	}
-
-
-	protected void startProcessing(ConversionResult conversionResult, Calendar terminationTime)
-			throws Exception {
-		logger.info("Start processing of workflow <{}>", getUniqueID());
-		PEWorkflow peWorkflow = conversionResult.getConvertedWorkflow();
-		PEConfig.getInstance().getProcessEngine()
-		.process(peWorkflow, getSecurityTokens(), getModel().storageURL, terminationTime);
 	}
 
 	public void doResume(Map<String, String> params) throws Exception {
@@ -252,14 +225,16 @@ public class WorkflowInstance extends BaseResourceImpl {
 	}
 
 	public Map<String,String> getVariableValues() {
+		Map<String,String> parameters= new HashMap<>();
 		Map<String,String> varNames = getModel().getDeclaredVariables();
 		ProcessVariables vars = getProcessState().getVariables();
-		Map<String,String> parameters= new HashMap<>();
-		// avoid null values
-		for(String name: varNames.keySet()){
-			Object value = vars.get(name);
-			if(value == null) continue;
-			parameters.put(name, String.valueOf(value));
+		if(vars!=null) {
+			// avoid null values
+			for(String name: varNames.keySet()){
+				Object value = vars.get(name);
+				if(value == null) continue;
+				parameters.put(name, String.valueOf(value));
+			}
 		}
 		return parameters;
 	}

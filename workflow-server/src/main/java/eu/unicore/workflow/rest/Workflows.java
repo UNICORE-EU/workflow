@@ -39,6 +39,7 @@ import de.fzj.unicore.uas.util.UnitParser;
 import eu.unicore.services.ExternalSystemConnector;
 import eu.unicore.services.Home;
 import eu.unicore.services.security.util.AuthZAttributeStore;
+import eu.unicore.services.utils.Utilities;
 import eu.unicore.security.AuthorisationException;
 import eu.unicore.security.Client;
 import eu.unicore.security.Role;
@@ -87,11 +88,11 @@ public class Workflows extends ServicesBase {
 		WorkflowInstance newWF = null;
 
 		try{
-			String id = null;
+			String newUID = Utilities.newUniqueID();
 
 			JSONObject j = new JSONObject(json);
-			String name = j.optString("name",null);
-			String ttDef = j.optString("terminationTime",null);
+			String name = j.optString("name", null);
+			String ttDef = j.optString("terminationTime", null);
 			String dialect = Delegate.DIALECT;
 
 			Calendar tt = null;
@@ -100,21 +101,19 @@ public class Workflows extends ServicesBase {
 				tt = Calendar.getInstance();
 				tt.setTime(d);
 			}
-			String storageURL = j.optString("storageURL",null);
+			String storageURL = j.optString("storageURL", null);
 			factory = getFactory();
-			
-			String[] tags = getTags(j);
-			
-			id = factory.createNewWorkflow(name, tt, storageURL, tags);
 
-			newWF = (WorkflowInstance)kernel.getHome("WorkflowManagement").getForUpdate(id);
-			
+			ConversionResult cr = WorkflowFactoryImpl.convert(dialect, j, newUID, AuthZAttributeStore.getTokens());
+
 			// register inputs
 			JSONObject inputs = j.optJSONObject("inputs");
 			String inputError = null;
-			if(inputs!=null) {
+			
+			Locations locations = new Locations();
+			locations.setWorkflowID(newUID);
+			if(!cr.hasConversionErrors() && inputs!=null) {
 				try {
-					Locations locations = PEConfig.getInstance().getLocationStore().getForUpdate(id);
 					@SuppressWarnings("unchecked")
 					Iterator<String> names = (Iterator<String>)inputs.keys();
 					while(names.hasNext()) {
@@ -128,7 +127,6 @@ public class Workflows extends ServicesBase {
 				}
 			}
 			
-			ConversionResult cr = newWF.submit(dialect, j, storageURL);
 			if(cr.hasConversionErrors() || inputError!=null) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("Could not submit workflow. Workflow contains errors.\n");
@@ -140,18 +138,19 @@ public class Workflows extends ServicesBase {
 					msg.append(i + ": " + s + "\n");
 					i++;
 				}
+				try{
+					PEConfig.getInstance().getLocationStore().remove(newUID);
+				}catch(Exception e){}
 				return createErrorResponse(HttpStatus.SC_BAD_REQUEST, msg.toString());
 			}
-
-			String location = getBaseURL()+"/"+id;
+			String[] tags = getTags(j);
+			factory.createNewWorkflow(newUID, cr, locations, name, tt, storageURL, tags);
+			String location = getBaseURL()+"/"+newUID;
 			return Response.created(new URI(location)).build();
 		}catch(Exception ex){
 			return handleError("Could not create workflow", ex, logger);
 		}
 		finally{
-			if(factory !=null){
-				kernel.getHome(WorkflowFactoryHomeImpl.SERVICE_NAME).persist(factory);
-			}
 			if(newWF !=null){
 				kernel.getHome(WorkflowHome.SERVICE_NAME).persist(newWF);
 			}
@@ -192,7 +191,7 @@ public class Workflows extends ServicesBase {
 			return handleError("Error", ex, logger);
 		}
 	}
-
+	
 	@Override
 	protected void doHandleAction(String action, JSONObject json) throws Exception {
 		WorkflowInstance job = getResource();
@@ -203,7 +202,7 @@ public class Workflows extends ServicesBase {
 			if(job.canResume()){
 				Map<String,String>params = JSONUtil.asMap(json);
 				job.doResume(params);
-				logger.info("Workflow <"+job.getUniqueID()+"> resumed with parameters "+params);
+				logger.debug("Workflow <{}> resumed with parameters {}", job.getUniqueID(), params);
 			}
 			else{
 				throw new WebApplicationException("Cannot resume workflow", HttpStatus.SC_CONFLICT);
@@ -337,7 +336,7 @@ public class Workflows extends ServicesBase {
 			throw new AuthorisationException("There are no accessible workflow factories for: " +client+
 					" Please check your security setup!");
 		}
-		return (WorkflowFactoryImpl)home.getForUpdate(factories.get(0));
+		return (WorkflowFactoryImpl)home.get(factories.get(0));
 	}
 	
 	public String[] getTags(JSONObject json){

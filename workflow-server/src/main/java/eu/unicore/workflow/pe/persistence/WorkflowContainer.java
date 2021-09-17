@@ -10,7 +10,6 @@ import de.fzj.unicore.persist.annotations.ID;
 import de.fzj.unicore.persist.annotations.Table;
 import de.fzj.unicore.persist.util.JSON;
 import de.fzj.unicore.persist.util.Wrapper;
-import de.fzj.unicore.xnjs.persistence.GSONUtils;
 
 /**
  * persistent information about a top-level workflow
@@ -18,8 +17,8 @@ import de.fzj.unicore.xnjs.persistence.GSONUtils;
  * @author schuller
  */
 @Table(name="WORKFLOWS")
-@JSON(customHandlers={GSONUtils.XmlBeansConverter.class,Wrapper.WrapperConverter.class})
-public class WorkflowContainer extends SubflowContainer{
+@JSON(customHandlers={Wrapper.WrapperConverter.class})
+public class WorkflowContainer extends SubflowContainer {
 	
 	private static final long serialVersionUID=1;
 	
@@ -35,7 +34,7 @@ public class WorkflowContainer extends SubflowContainer{
 
 	// maps job IDs to activity IDs
 	private final Map<String,String>jobMap = new HashMap<>();
-	
+
 	@ID
 	@Override
 	public String getWorkflowID(){
@@ -89,4 +88,5 @@ public class WorkflowContainer extends SubflowContainer{
 	public Map<String,String> getJobMap() {
 		return jobMap;
 	}
+
 }

@@ -1,0 +1,19 @@
+{
+
+"activities" : [
+ {
+   "id": "fail-on-missing-file",
+   "type": "JOB",
+   "job": {
+     "Executable": "cat",
+     "Arguments": ["input.txt"],
+     "Imports": [
+       {"From": "wf:this_does_not_exist", "To": "input.txt"}
+     ],
+    },
+    
+ },
+
+],
+
+}

@@ -19,7 +19,7 @@ public class ProcessVariables implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private HashMap<String,Wrapper<Serializable>>entries = new HashMap<String, Wrapper<Serializable>>();
+	private HashMap<String,Wrapper<Serializable>>entries = new HashMap<>();
 	
 	private Collection<String>modifiedVariables = new HashSet<>();
 	

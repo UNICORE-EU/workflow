@@ -90,6 +90,8 @@ public class TestConversion {
 		assert a1 instanceof ForGroup;
 		
 		ForGroup fg=(ForGroup)a1;
+		assert fg.getMaxConcurrentActivities()==17;
+		
 		Activity body=fg.getBody();
 		assert body instanceof ActivityGroup;
 		

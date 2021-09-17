@@ -7,12 +7,13 @@ import java.util.Map;
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.uas.impl.BaseResourceImpl;
+import eu.unicore.security.SecurityTokens;
 import eu.unicore.services.Home;
 import eu.unicore.services.InitParameters;
 import eu.unicore.services.messaging.PullPoint;
-import eu.unicore.services.utils.Utilities;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.json.Delegate;
+import eu.unicore.workflow.pe.files.Locations;
 
 /**
  * Implementation of the workflow submission service
@@ -36,8 +37,7 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 		super();
 	}
 	
-	public String createNewWorkflow(String name, Calendar tt, String storageURL, String...tags) throws Exception {
-		String uid = Utilities.newUniqueID();
+	public String createNewWorkflow(String uid, ConversionResult cr, Locations locations, String name, Calendar tt, String storageURL, String...tags) throws Exception {
 		String clientName = getClient().getDistinguishedName();
 		logger.info("Creating new workflow instance <{}> for <{}>", uid, clientName);
 		Home workflowHome = kernel.getHome(WorkflowHome.SERVICE_NAME);
@@ -46,9 +46,9 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 		init.workflowName = name;
 		init.storageURL = storageURL;
 		init.initialTags = tags;
-		String id=workflowHome.createResource(init);
-		getModel().owners.put(id, clientName);
-		return id;
+		init.cr = cr;
+		init.locations = locations;
+		return workflowHome.createResource(init);
 	}
 
 	@Override
@@ -75,16 +75,11 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 					String id=m.substring(m.indexOf(":")+1);
 					logger.debug("Removing workflow instance <{}>", id);
 					getModel().removeChild(id);
-					getModel().owners.remove(id);
 				}
 			}
 		}catch(Exception e){
 			Log.logException("Error in customPostActivate()",e,logger);
 		}
-	}
-
-	public String getOwnerForWorkflow(String workflowID){
-		return getModel().owners.get(workflowID);
 	}
 
 	public static void addDelegate(String dialect, DSLDelegate delegate){
@@ -98,5 +93,13 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 	public static String[] getDialects(){
 		return (String[])dslDelegates.keySet().toArray(new String[0]);
 	}
-
+	
+	public static ConversionResult convert(String dialect, Object wf, String wfUID, SecurityTokens tokens) {
+		DSLDelegate del = WorkflowFactoryImpl.getDelegate(dialect);
+		if (del == null) {
+			throw new IllegalArgumentException("Dialect <" + dialect
+					+ "> not understood");
+		}
+		return del.convertWorkflow(wfUID, wf, tokens);
+	}
 }

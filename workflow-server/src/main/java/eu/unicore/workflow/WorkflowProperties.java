@@ -54,10 +54,11 @@ public class WorkflowProperties extends PropertiesHelper {
 	public static final String CLEANUP_JOBS="cleanupJobs";
 
 	/**
-	 * property for defining the maximum number of concurrent activities per for-each group,
+	 * property for defining the maximum number of concurrent activities (hard limit) per for-each group,
 	 */
 	public static final String FOR_EACH_MAX_CONCURRENT_ACTIVITIES="forEachMaxConcurrentActivities";
 
+	public static final String FOR_EACH_CONCURRENT_ACTIVITIES="forEachConcurrentActivities";
 
 	/**
 	 * property key for defining the period for "slow" job status polling  
@@ -83,8 +84,10 @@ public class WorkflowProperties extends PropertiesHelper {
 		
 		META.put(MAX_ACTIVITIES_PER_GROUP, new PropertyMD(String.valueOf("1000")).setInt().setPositive().
 				setDescription("Maximum number of workflow activities per activity group."));
-		META.put(FOR_EACH_MAX_CONCURRENT_ACTIVITIES, new PropertyMD(String.valueOf("100")).setInt().setPositive().
-				setDescription("Maximum number of concurrent for-each iterations."));
+		META.put(FOR_EACH_MAX_CONCURRENT_ACTIVITIES, new PropertyMD(String.valueOf("200")).setInt().setPositive().
+				setDescription("Hard limit on the number of concurrent for-each iterations."));
+		META.put(FOR_EACH_CONCURRENT_ACTIVITIES, new PropertyMD(String.valueOf("100")).setInt().setPositive().
+				setDescription("Default maximum number of concurrent for-each iterations (user can increase this)."));
 		META.put(CLEANUP_STORAGES, new PropertyMD("false").setBoolean().
 				setDescription("Whether to cleanup the workflow storage when the workflow is destroyed."));
 		META.put(CLEANUP_JOBS, new PropertyMD("true").setBoolean().

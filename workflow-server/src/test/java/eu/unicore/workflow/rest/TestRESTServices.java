@@ -124,6 +124,18 @@ public class TestRESTServices extends WSSTestBase {
 		return client.submitWorkflow(wf);
 	}
 	
+	@Test
+	public void testErrorMissingImport()throws Exception{
+		WorkflowClient client = createWorkflow("src/test/resources/errors/missing-import.json");
+		waitWhileRunning(client);
+		JSONObject wfProps = client.getProperties();
+		JSONObject status = wfProps.getJSONObject("detailedStatus").
+				getJSONObject("activities").
+				getJSONArray("fail-on-missing-file").
+				getJSONObject(0);
+		Assert.assertTrue(status.getString("errorMessage").contains("SUBMIT_FAILED"));
+		Assert.assertTrue(status.getString("status").equals("FAILED"));
+	}
 	
 	
 	protected JSONObject waitWhileRunning(WorkflowClient client) throws Exception {

@@ -26,6 +26,9 @@ public class PEStatus implements Serializable{
 	
 	private ActivityStatus activityStatus;
 
+	private long startTime = 0;
+	private long elapsedTime = -1;
+
 	public String getErrorDescription() {
 		return errorDescription;
 	}
@@ -48,6 +51,12 @@ public class PEStatus implements Serializable{
 
 	public void setActivityStatus(ActivityStatus activityStatus) {
 		this.activityStatus = activityStatus;
+		if(ActivityStatus.RUNNING==activityStatus && startTime==0) {
+			startTime = System.currentTimeMillis()/1000;
+		}
+		if(ActivityStatus.SUCCESS==activityStatus && startTime>0) {
+			elapsedTime = System.currentTimeMillis()/1000 - startTime;
+		}
 	}
 
 	public String getIteration() {
@@ -56,6 +65,10 @@ public class PEStatus implements Serializable{
 
 	public void setIteration(String iteration) {
 		this.iterationValue = iteration;
+	}
+	
+	public long getElapsedTime() {
+		return elapsedTime;
 	}
 	
 	public String toString(){

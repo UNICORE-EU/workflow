@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 
 import org.apache.logging.log4j.Logger;
-import org.chemomentum.dsws.ConsolidateWorkflowOwners;
 import org.chemomentum.dsws.WorkflowFactoryHomeImpl;
 import org.chemomentum.dsws.WorkflowFactoryImpl;
 
@@ -18,12 +17,6 @@ import de.fzj.unicore.persist.PersistenceFactory;
 import de.fzj.unicore.persist.PersistenceProperties;
 import de.fzj.unicore.persist.impl.LockSupport;
 import de.fzj.unicore.uas.UAS;
-import eu.unicore.services.Home;
-import eu.unicore.services.InitParameters;
-import eu.unicore.services.InitParameters.TerminationMode;
-import eu.unicore.services.Kernel;
-import eu.unicore.services.exceptions.ResourceUnknownException;
-import eu.unicore.services.registry.RegistryHandler;
 import de.fzj.unicore.xnjs.ConfigurationSource;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.BasicManager;
@@ -32,6 +25,12 @@ import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.Manager;
 import de.fzj.unicore.xnjs.persistence.IActionStoreFactory;
 import de.fzj.unicore.xnjs.persistence.JDBCActionStoreFactory;
+import eu.unicore.services.Home;
+import eu.unicore.services.InitParameters;
+import eu.unicore.services.InitParameters.TerminationMode;
+import eu.unicore.services.Kernel;
+import eu.unicore.services.exceptions.ResourceUnknownException;
+import eu.unicore.services.registry.RegistryHandler;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
@@ -239,9 +238,8 @@ public class SetupWorkflowService implements Runnable{
 	public void run() {
 		try{
 			init();
-			Map<String,String>owners=addDefaultWorkflow();
+			addDefaultWorkflow();
 			WorkflowServices.publish(kernel);
-			new ConsolidateWorkflowOwners(WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID, owners, kernel).run();
 		}catch(Exception ex){
 			throw new RuntimeException(ex);
 		}
@@ -257,8 +255,7 @@ public class SetupWorkflowService implements Runnable{
 				try{
 					//check if instance already exists
 					try{
-						WorkflowFactoryImpl wf=(WorkflowFactoryImpl)h.get(WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
-						return wf.getModel().getOwners();
+						h.get(WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
 					}catch(ResourceUnknownException e){
 						//does not exist, so create it
 						doCreateWorkflowFactory();

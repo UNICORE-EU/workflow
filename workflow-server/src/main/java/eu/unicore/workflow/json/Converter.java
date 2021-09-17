@@ -655,6 +655,15 @@ public class Converter {
 		return sb.toString();
 	}
 
+	private static String getOption(JSONObject a, String[] optionNames){
+		String res = null;
+		for(String o: optionNames) {
+			res = getOption(a, o, null);
+			if(res!=null)return res;
+		}
+		return res;
+	}
+	
 	private static String getOption(JSONObject a, String optionName){
 		return getOption(a, optionName, null);
 	}

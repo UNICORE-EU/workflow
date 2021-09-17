@@ -23,11 +23,11 @@ public class ConversionResult implements Serializable{
 
 	private String dialect;
 	
-	private List<String> outputFiles=new ArrayList<String>();
+	private List<String> outputFiles = new ArrayList<>();
 	
-	private Map<String,String> declaredVariables=new HashMap<String, String>();
+	private Map<String,String> declaredVariables = new HashMap<>();
 	
-	private transient List<String> errors=new ArrayList<String>();
+	private transient List<String> errors = new ArrayList<>();
 	
 	private PEWorkflow convertedWorkflow;
 	

@@ -69,8 +69,10 @@ public class TestForLoopProcessing extends TestBase {
 		String[] iterationValues=new String[]{"a","b","c"};
 		PEWorkflow wf=new PEWorkflow(wfID);
 		Iterate iter=new ValueSetIterator(iterationValues);
-		TestActivity a1=new TestActivity("a1",wfID,iter);
-		ForGroup fl=new ForGroup(id,wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, iter);
+		TestActivity a1=new TestActivity("a1",wfID);
+		body.setActivities(a1);
+		ForGroup fl=new ForGroup(id, wfID, body);
 		wf.setActivities(fl);
 
 		doProcess(wf,id);
@@ -100,15 +102,17 @@ public class TestForLoopProcessing extends TestBase {
 				"C","0","C<5", "C++", "INTEGER");
 
 		VariableSetIterator iter=new VariableSetIterator(wfID, varSet);
-		TestActivity a1=new TestActivity("a1",wfID,iter);
-		ForGroup fl=new ForGroup(id,wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, iter);
+		TestActivity a1=new TestActivity("a1",wfID);
+		body.setActivities(a1);
+		ForGroup fl=new ForGroup(id,wfID,body);
 		wf.setActivities(fl);
 
 		doProcess(wf,id);
 
 		assert(Validate.wasInvoked("a1"));
 		Integer i=Validate.getInvocations("a1");
-		assert(5==i.intValue());
+		assert (5==i.intValue()) : "iterations: "+i;
 
 		//check final status
 
@@ -129,8 +133,10 @@ public class TestForLoopProcessing extends TestBase {
 		String wfID=UUID.randomUUID().toString();
 
 		PEWorkflow wf=new PEWorkflow(wfID);
-		TestActivity a1=new TestActivity("a1",wfID,fsi);
-		ForGroup fl=new ForGroup("for1",wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, fsi);
+		TestActivity a1 = new TestActivity("a1",wfID);
+		body.setActivities(a1);
+		ForGroup fl = new ForGroup("for1",wfID,body);
 		wf.setActivities(fl);
 
 		doProcess(wf);
@@ -175,8 +181,10 @@ public class TestForLoopProcessing extends TestBase {
 		String wfID=UUID.randomUUID().toString();
 
 		PEWorkflow wf=new PEWorkflow(wfID);
-		TestActivity a1=new TestActivity("a1",wfID,chunkedIterator);
-		ForGroup fl=new ForGroup("for1",wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, chunkedIterator);
+		TestActivity a1=new TestActivity("a1", wfID);
+		body.setActivities(a1);
+		ForGroup fl=new ForGroup("for1",wfID,body);
 		wf.setActivities(fl);
 
 		doProcess(wf);
@@ -207,8 +215,12 @@ public class TestForLoopProcessing extends TestBase {
 		String wfID=UUID.randomUUID().toString();
 
 		PEWorkflow wf=new PEWorkflow(wfID);
-		TestActivity a1=new TestActivity("a1",wfID,chunkedIterator);
-		ForGroup fl=new ForGroup("for1",wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, chunkedIterator);
+		TestActivity a1 = new TestActivity("a1",wfID);
+		body.setActivities(a1);
+		ForGroup fl = new ForGroup("for1",wfID,body);
+		
+		
 		wf.setActivities(fl);
 
 		doProcess(wf);
@@ -240,8 +252,10 @@ public class TestForLoopProcessing extends TestBase {
 		String wfID=UUID.randomUUID().toString();
 
 		PEWorkflow wf=new PEWorkflow(wfID);
-		TestActivity a1=new TestActivity("a1",wfID,chunkedIterator);
-		ForGroup fl=new ForGroup("for1",wfID,a1);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, chunkedIterator);
+		TestActivity a1 = new TestActivity("a1",wfID );
+		body.setActivities(a1);
+		ForGroup fl = new ForGroup("for1",wfID,body);
 		wf.setActivities(fl);
 
 		doProcess(wf);
@@ -271,39 +285,19 @@ public class TestForLoopProcessing extends TestBase {
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
 		String wfID=UUID.randomUUID().toString();
-
 		PEWorkflow wf=new PEWorkflow(wfID);
-		TestActivity a1=new TestActivity("a1",wfID,chunkedIterator);
-		ForGroup fl=new ForGroup("for1",wfID,a1);
+
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, chunkedIterator);
+		TestActivity a1 = new TestActivity("a1",wfID);
+		body.setActivities(a1);
+		ForGroup fl = new ForGroup("for1",wfID,body);
+		
 		wf.setActivities(fl);
 
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
 		assert total/chunkSize==Validate.getInvocations("a1");
-	}
-
-	@Test
-	public void testUseGroupAsForLoopBody()throws Exception{
-		Validate.clear();
-		PEConfig.getInstance().getPersistence().removeAll();
-
-		String wfID=UUID.randomUUID().toString();
-		String[] iterationValues=new String[]{"a","b","c"};
-		PEWorkflow wf=new PEWorkflow(wfID);
-		Iterate iter=new ValueSetIterator(iterationValues);
-		ActivityGroup ag=new ActivityGroup("grp1",wfID,iter);
-		TestActivity a1=new TestActivity("a1",wfID);
-		ag.setActivities(a1);
-		ForGroup fl=new ForGroup("for1", wfID, ag);
-		wf.setActivities(fl);
-
-		doProcess(wf);
-
-		Thread.sleep(2000);
-		assert(Validate.wasInvoked("a1"));
-		Integer i=Validate.getInvocations("a1");
-		assert(iterationValues.length==i.intValue());
 	}
 
 	@Test @Ignore

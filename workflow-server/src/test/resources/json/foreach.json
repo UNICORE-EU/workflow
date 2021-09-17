@@ -12,6 +12,7 @@
 
 {
    "id": "for1", "type": "FOR_EACH",
+   "options": { "maxConcurrentActivities": "17" },
 
    "body": {
      "id": "for1_body",

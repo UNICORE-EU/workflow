@@ -30,7 +30,7 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 		kernel = xnjs.get(Kernel.class);
 		es= kernel != null ? 
 				kernel.getContainerProperties().getThreadingServices().getExecutorService():
-				xnjs.getScheduledExecutor();
+					xnjs.getScheduledExecutor();
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 			public void run(){
 				try{
 					String jobID = jobURL.substring(jobURL.lastIndexOf("/")+1);
-					WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(wfID);
+					WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(wfID);
 					if(wfc==null){
 						logger.info("No parent workflow found for job <{}>", jobURL);
 						return;
@@ -49,25 +49,20 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 						logger.info("No action found for job <{}>", jobURL);
 						return;
 					}
-					try{ 
-						ContinueProcessingEvent cpe=new ContinueProcessingEvent(actionID){
-							public void callback(final Action a){
-								a.setStatus(ActionStatus.POSTPROCESSING);
-								if(success) {
-									a.setResult(new ActionResult(ActionResult.SUCCESSFUL));
-								}
-								else {
-									a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, statusMessage);
-									a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "JOB_FAILED");
-									
-								}
+					ContinueProcessingEvent cpe=new ContinueProcessingEvent(actionID){
+						public void callback(final Action a){
+							a.setStatus(ActionStatus.POSTPROCESSING);
+							if(success) {
+								a.setResult(new ActionResult(ActionResult.SUCCESSFUL));
 							}
-						};
-						xnjs.get(InternalManager.class).handleEvent(cpe);
-					}
-					finally{
-						if(wfc!=null)PEConfig.getInstance().getPersistence().write(wfc);
-					}
+							else {
+								a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, statusMessage);
+								a.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "JOB_FAILED");
+
+							}
+						}
+					};
+					xnjs.get(InternalManager.class).handleEvent(cpe);
 				}catch(Exception ex){
 					Log.logException("Error processing callback for workflow <"+wfID+" > from job <"+jobURL+">",ex,logger);
 				}
@@ -75,6 +70,6 @@ public class CallbackProcessorImpl implements CallbackProcessor{
 		};
 		es.execute(r);
 	}
-	
-	
+
+
 }

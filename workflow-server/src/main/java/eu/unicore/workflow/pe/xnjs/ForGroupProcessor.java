@@ -90,10 +90,12 @@ public class ForGroupProcessor extends GroupProcessorBase{
 
 				try{
 					//get the system limit for the maximum concurrent activities
-					int maxConcurrentSystem=properties.getIntValue(WorkflowProperties.FOR_EACH_MAX_CONCURRENT_ACTIVITIES);
-					int maxConcurrentFromUser=ag.getMaxConcurrentActivities();
-					//the maximum concurrent iterations specified by the user must not exceed the system limit
-					int maxConcurrent=Math.min(maxConcurrentFromUser, maxConcurrentSystem);
+					int maxConcurrentSystem = properties.getIntValue(WorkflowProperties.FOR_EACH_MAX_CONCURRENT_ACTIVITIES);
+					int concurrentFromUser = ag.getMaxConcurrentActivities();
+					if(concurrentFromUser<0) {
+						concurrentFromUser = properties.getIntValue(WorkflowProperties.FOR_EACH_CONCURRENT_ACTIVITIES);
+					}
+					int maxConcurrent = Math.min(concurrentFromUser, maxConcurrentSystem);
 
 					while(iterate.hasNext()){
 						//limit the number of concurrent loop iterations
