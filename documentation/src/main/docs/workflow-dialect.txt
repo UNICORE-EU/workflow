@@ -86,7 +86,7 @@ activity, which are distinguished by the "type" element.
    sub element holds the JSON job definition. (if a "job" element is
    present, you may leave out the "type")
 
- * "ModifyVariable" allows to modify a workflow variable. An option named "variableName" 
+ * "MODIFY_VARIABLE" allows to modify a workflow variable. An option named "variableName" 
    identifies the variable to be modified, and an option "expression" holds the
    modification expression in the Groovy programming language syntax. See also the variables
    section later
@@ -414,18 +414,18 @@ Workflow variables need to be declared using an entry in the
 
 Currently variables of type "STRING", "INTEGER" , "FLOAT" and "BOOLEAN" are supported.
 
-Variables can be modified using an activity of type +ModifyVariable+.
+Variables can be modified using an activity of type +MODIFY_VARIABLE+.
 
 For example, to increment the value of the "COUNTER" variable, the following Activity is used
 
 ------------
 {
 
- "type": "ModifyVariable",
+ "type": "MODIFY_VARIABLE",
  
  "id": "incrementCounter",
 
- "variableName": "COUNTER",
+ "variable_name": "COUNTER",
  
  "expression": "COUNTER += 1;"
 
@@ -477,8 +477,8 @@ A while loop looks like this
    {
    # this modifies the variable used in the 'while'
    # loop's exit condition
-  "id": "mod", "type": "ModifyVariable",
-  "variableName": "C",
+  "id": "mod", "type": "MODIFY_VARIABLE",
+  "variable_name": "C",
   "expression": "C++;",
    }
    ],
