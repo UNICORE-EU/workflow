@@ -58,7 +58,7 @@ public class SMSResolver implements Resolver{
 		String urlBase = //protocol+":"+
 				sms.getEndpoint().getUrl()+"/files";
 		List<Pair<String,Long>>result=new ArrayList<>();
-		FileList files = sms.getFiles(base);
+		FileList files = sms.ls(base);
 		for (FileListEntry file : files.list(0, 1000)) {
 			String name = file.path;
 			if(file.isDirectory && fileSet.recurse){

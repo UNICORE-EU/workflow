@@ -121,7 +121,7 @@ public class StageOutProcessor {
 	
 	protected void doCollectOutputs(Map<String,String> collection, FileListEntry sourceFolder, 
 			String targetFolder, String baseDirectory) throws Exception {
-		for (FileListEntry child : storageClient.getFiles(sourceFolder.path).list(0, SMSBaseImpl.MAX_LS_RESULTS)) {
+		for (FileListEntry child : storageClient.ls(sourceFolder.path).list(0, SMSBaseImpl.MAX_LS_RESULTS)) {
 			String relative = IOUtils.getRelativePath(child.path, sourceFolder.path);
 			String target = IOUtils.getNormalizedPath(targetFolder+relative);
 			if(child.isDirectory && fileSet.isRecurse())

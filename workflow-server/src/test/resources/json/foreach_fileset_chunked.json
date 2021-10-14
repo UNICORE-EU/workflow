@@ -29,6 +29,8 @@
 
     },
 
+    "chunking": { "chunksize": "2" }
+
     "filesets": [
       {
          "base": "https://localhost:8080/VENUS/rest/core/storages/projects/files/txt/",

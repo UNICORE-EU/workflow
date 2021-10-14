@@ -59,7 +59,7 @@ public class TestLocationHandling extends WSSTestBase {
 		StorageClient sc = new StorageClient(new Endpoint(storageURL), 
 				kernel.getClientConfiguration(),
 				null);
-		assert 2 == sc.getFiles("/").list(0, 10).size();
+		assert 2 == sc.ls("/").list(0, 10).size();
 		
 		JSONArray exports = new JSONArray();
 		

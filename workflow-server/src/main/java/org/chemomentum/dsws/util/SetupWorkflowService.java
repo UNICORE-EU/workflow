@@ -16,7 +16,6 @@ import com.google.inject.Provides;
 import de.fzj.unicore.persist.PersistenceFactory;
 import de.fzj.unicore.persist.PersistenceProperties;
 import de.fzj.unicore.persist.impl.LockSupport;
-import de.fzj.unicore.uas.UAS;
 import de.fzj.unicore.xnjs.ConfigurationSource;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.BasicManager;
@@ -71,7 +70,7 @@ public class SetupWorkflowService implements Runnable{
 
 	private final static Logger logger=Log.getLogger(Log.SERVICES,SetupWorkflowService.class);
 
-	public static final String VERSION = UAS.getVersion(WorkflowFactoryImpl.class);
+	public static final String VERSION = Kernel.getVersion(WorkflowFactoryImpl.class);
 
 	private final Kernel kernel;
 	private final MetricRegistry registry;

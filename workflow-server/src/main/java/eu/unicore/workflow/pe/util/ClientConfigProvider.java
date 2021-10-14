@@ -1,6 +1,6 @@
 package eu.unicore.workflow.pe.util;
 
-import de.fzj.unicore.uas.security.WSRFClientConfigurationProviderImpl;
+import eu.unicore.security.wsutil.client.authn.ClientConfigurationProviderImpl;
 import eu.unicore.security.wsutil.client.authn.DelegationSpecification;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
@@ -8,7 +8,7 @@ import eu.unicore.util.httpclient.IClientConfiguration;
  *
  * @author schuller
  */
-public class ClientConfigProvider extends WSRFClientConfigurationProviderImpl {
+public class ClientConfigProvider extends ClientConfigurationProviderImpl {
 
 	public ClientConfigProvider(IClientConfiguration baseConfig){
 		super();
