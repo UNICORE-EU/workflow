@@ -220,7 +220,7 @@ or choosing between multiple user IDs, you can specify this in the "job" element
 
  "job": {
 
-    "User prefences": {
+    "User preferences": {
       "uid":   "hpcuser21",
       "group": "hpc",
   }
