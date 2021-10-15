@@ -767,23 +767,51 @@ To choose a larger chunksize if a certain total file size is exceeded:
 
 The optional +filename_format+ allows to control how the individual
 files (which are staged into the job directory) should be named. By
-default, the index is prepended, i.e. "inputfile" would be named
-"1_inputfile" to "N_inputfile" in each chunk. The pattern uses the
+default, the index is prepended, i.e. with
+
+-------------
+"Imports": [{ "From": "${IT_VALUE}", "To" : "infile.txt" }]
+-------------
+
+"1_inputfile.txt" to "N_inputfile.txt" in each chunk. The pattern uses the
 variables "{0}", "{1}" and "{2}", which control the index, filename
-without extension and extension respectively. For example, if you have
-a set of PDF files, and you want them to be named "file_1.pdf" to
-"file_N.pdf", you could use the pattern
+without extension and the extension respectively.
+
+-------------
+{0} = 1, 2, 3, ...
+{1} = "infile"
+{2] = "txt"
+-------------
+
+For example, if you have a set of PDF files, and you want them to be named
+"file_1.pdf" to "file_N.pdf", you could use the pattern
 
 ------------
   "filename_format": "file_{0}.pdf"
 ------------
 
-or, if you prefer to keep the existing extensions, but append an index to the name,
+which would ignore the name in the "To" field completely.
+
+Or, if you prefer to keep the existing name, but append an index to
+the name,
 
 -------------
   "filename_format": "{1}{0}.{2}"
 -------------
 
+which would result in filenames like below:
+
+-------------
+inputfile1.txt
+inputfile2.txt
+...
+-------------
+
+You can also keep the original filenames by setting:
+
+-------------
+"Imports": [{ "From": "${IT_VALUE}", "To" : "${ORIGINAL_FILENAME}"}]
+-------------
 
 [[wf_examples]]
 Examples
