@@ -7,7 +7,7 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>http://www.unicore.eu</url>
-  <version>3.2.1</version>
+  <version>3.3.0</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
@@ -32,8 +32,8 @@
   </scm>
 
   <properties>
-    <uas.version>2.3.0-SNAPSHOT</uas.version>
-    <use.version>4.2.1</use.version>
+    <uas.version>2.3.0</uas.version>
+    <use.version>4.3.0</use.version>
     <groovy.version>2.4.16</groovy.version>
   </properties>
 
