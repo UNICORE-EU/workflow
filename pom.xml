@@ -7,7 +7,7 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>http://www.unicore.eu</url>
-  <version>3.3.0</version>
+  <version>3.3.1-SNAPSHOT</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
