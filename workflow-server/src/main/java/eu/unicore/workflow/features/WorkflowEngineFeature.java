@@ -8,9 +8,9 @@ import org.chemomentum.dsws.WorkflowHome;
 
 import eu.unicore.services.DeploymentDescriptor;
 import eu.unicore.services.Kernel;
+import eu.unicore.services.rest.RestService;
 import eu.unicore.services.utils.deployment.DeploymentDescriptorImpl;
 import eu.unicore.services.utils.deployment.FeatureImpl;
-import eu.unicore.services.rest.RestService;
 import eu.unicore.workflow.rest.WorkflowServices;
 
 /**
