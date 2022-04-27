@@ -38,8 +38,6 @@ public class PEConfig {
 	}
 	
 	private CallbackProcessor cp;
-	
-	private String callbackURL;
 
 	private Kernel kernel;
 	
@@ -77,14 +75,6 @@ public class PEConfig {
 	
 	public synchronized void setCallbackProcessor(CallbackProcessor cpImpl){
 		cp=cpImpl;
-	}
-	
-	public String getCallbackURL(){
-		return callbackURL;
-	}
-	
-	public void setCallbackURL(String url){
-		callbackURL=url;
 	}
 
 	public void setKernel(Kernel kernel){

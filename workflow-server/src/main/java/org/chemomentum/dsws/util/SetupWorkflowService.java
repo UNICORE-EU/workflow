@@ -88,30 +88,22 @@ public class SetupWorkflowService implements Runnable{
 		if(PEConfig.getInstance().getKernel()==null){
 			PEConfig.getInstance().setKernel(kernel);
 		}
-
 		WorkflowProperties wp=kernel.getAttribute(WorkflowProperties.class);
 		if(wp==null){
-			wp=new WorkflowProperties(kernel.getContainerProperties().getRawProperties());
+			wp = new WorkflowProperties(kernel.getContainerProperties().getRawProperties());
 			kernel.addConfigurationHandler(WorkflowProperties.class, wp);
 		}
-		
-		String v=VERSION!=null?VERSION:"DEVELOPMENT";
-		String header="UNICORE Workflow service, version "+v
-				+"\nBased on developments in the EU-funded Chemomentum project (http://www.chemomentum.org)";
-		logger.info(header);
-		
+		logger.info("UNICORE Workflow service, version {}", VERSION);
 		if(PEConfig.getInstance().getProcessEngine()!=null){
-			logger.info("Process engine already initialised, skipping init.");
 			return;
 		}
-		XNJS xnjs = setupXNJS();
-		xnjs.start();
+		setupXNJS().start();
 	}
 
 	protected XNJS setupXNJS() throws Exception {
-
+		WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
 		ConfigurationSource cs = new ConfigurationSource();
-		cs.getProperties().putAll(kernel.getContainerProperties().getRawProperties());
+		cs.getProperties().putAll(wp.getRawProperties());
 		cs.setMetricRegistry(registry);
 		cs.addModule(new WFEngineModule(cs.getProperties(), kernel));
 		
@@ -122,22 +114,21 @@ public class SetupWorkflowService implements Runnable{
 		PersistenceProperties pp = kernel.getPersistenceProperties();
 		PEConfig.getInstance().setPersistence(PersistenceFactory.get(pp).getPersist(WorkflowContainer.class));
 		PEConfig.getInstance().setLocationStore(PersistenceFactory.get(pp).getPersist(Locations.class));
-		
+
 		PEConfig.getInstance().setProcessEngine(new XNJSProcessEngine(xnjs));
 		PEConfig.getInstance().setCallbackProcessor(new CallbackProcessorImpl(xnjs));
-		logger.info("Callback URL configured: "+PEConfig.getInstance().getCallbackURL());
-		
+
 		if(PEConfig.getInstance().getRegistry()==null){
 			String type="external";
 			//configure registry
 			String url = null;
 			RegistryHandler rh=kernel.getAttribute(RegistryHandler.class);
-			if(rh.usesExternalRegistry()) {
-				url = rh.getExternalRegistryURLs()[0];
-			}
-			else {
+			if(wp.isInternal() || !rh.usesExternalRegistry()) {
 				type="internal";
 				url = kernel.getContainerProperties().getContainerURL()+"/rest/registries/default_registry";
+			}
+			else {
+				url = rh.getExternalRegistryURLs()[0];
 			}
 			if(url.contains("/services/Registry")){
 				url = convertToREST(url);

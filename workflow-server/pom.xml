@@ -16,9 +16,9 @@
   </parent>
 
   <properties>
-    <specification.version>8.3.0</specification.version>
+    <specification.version>9.0.0</specification.version>
     <compiler.fork>false</compiler.fork>
-    <package.version>8.3.0</package.version>
+    <package.version>9.0.0</package.version>
     <package.release>1</package.release>
   </properties>
 

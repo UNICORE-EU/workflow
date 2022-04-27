@@ -1,5 +1,8 @@
 package eu.unicore.workflow;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -26,16 +29,9 @@ public class WorkflowProperties extends PropertiesHelper {
 	public static final String PREFIX="workflow.";
 
 	/**
-	 * XNJS config file
+	 * file with additional properties (only loaded for workflow service)
 	 */
-	public static final String XNJS_CONFIG="xnjsConfiguration";
-
-
-	/**
-	 * property key for controlling tracing ("true" by default)  
-	 */
-	public static final String TRACING="tracing";
-	
+	public static final String ADDITIONAL_PROPERTIES = "additionalSettings";
 
 	/**
 	 * property key for defining the maximum number of activities per activity group  
@@ -77,6 +73,12 @@ public class WorkflowProperties extends PropertiesHelper {
 	
 	public static final int DEFAULT_RESUBMIT_LIMIT=3;
 	
+	/**
+	 * property key for defining the internal mode (workflow service is deployed in a UNICORE/X)
+	 */
+	public static final String INTERNAL_MODE = "internalMode";
+
+	
 	@DocumentationReferenceMeta
 	public final static Map<String, PropertyMD> META = new HashMap<String, PropertyMD>();
 	static
@@ -99,11 +101,15 @@ public class WorkflowProperties extends PropertiesHelper {
 				setDescription("Maximum number of re-submissions of failed jobs."));
 		META.put(POLLING, new PropertyMD(String.valueOf("600")).setInt().setPositive().
 				setDescription("Interval in seconds for (slow) polling of job states."));
+		META.put(INTERNAL_MODE, new PropertyMD("false").setBoolean().
+				setDescription("Internal mode: Workflow service only uses services deployed in the same UNICORE/X instance."));
+		META.put(ADDITIONAL_PROPERTIES, new PropertyMD().setPath().
+				setDescription("Optional file containing additional settings (e.g. XNJS.* settings) only used for the workflow service."));
 		
 		// old stuff - to be removed TODO
 		META.put("tracing", new PropertyMD("false").setBoolean().setDeprecated().
 				setDescription("(deprecated)"));
-		META.put(XNJS_CONFIG, new PropertyMD("n/a").
+		META.put("xnjsConfiguration", new PropertyMD("n/a").
 				setDescription("(deprecated)"));
 	}
 
@@ -114,11 +120,11 @@ public class WorkflowProperties extends PropertiesHelper {
 
 	public WorkflowProperties(Properties properties)
 			throws ConfigurationException {
-		super(PREFIX, properties, META, logger);
+		super(PREFIX, loadAdditionalProperties(properties), META, logger);
 	}
 
-	public boolean isTracing(){
-		return getBooleanValue(TRACING);
+	public boolean isInternal(){
+		return getBooleanValue(INTERNAL_MODE);
 	}
 	
 	public boolean isStorageCleanup(){
@@ -143,5 +149,32 @@ public class WorkflowProperties extends PropertiesHelper {
 	
 	public int getStatusPollingInterval(){
 		return getIntValue(POLLING);
+	}
+
+	public Properties getRawProperties() {
+		return properties;
+	}
+
+	private static Properties loadAdditionalProperties(Properties initial) {
+		Properties finalProps = new Properties();
+		finalProps.putAll(initial);
+		String additionalProps = initial.getProperty(PREFIX+ADDITIONAL_PROPERTIES);
+		if(additionalProps!=null) {
+			File f = new File(additionalProps);
+			logger.info("Loading additional Workflow system settings from <{}>", f);
+			try {
+				try(FileReader fr = new FileReader(f)){
+					Properties add = new Properties();
+					add.load(fr);
+					finalProps.putAll(add);
+				}
+			}
+			catch(IOException e) {
+				throw new ConfigurationException(
+						Log.createFaultMessage("Could not load properties from <"
+						+additionalProps+">", e));
+			}
+		}
+		return finalProps;
 	}
 }
