@@ -3,12 +3,9 @@ package eu.unicore.workflow.rest;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.chemomentum.dsws.util.SetupWorkflowService;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
-import com.codahale.metrics.MetricRegistry;
 
 import de.fzj.unicore.uas.UAS;
 import eu.unicore.services.Kernel;
@@ -32,7 +29,6 @@ public abstract class WSSTestBase {
 		kernel=uas.getKernel();
 		uas.startSynchronous();
 		
-		new SetupWorkflowService(kernel, new MetricRegistry()).run();
 	}
 	
 	@AfterClass

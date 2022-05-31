@@ -31,6 +31,11 @@ public class WorkflowEngineFeature extends FeatureImpl {
 		getHomeClasses().put(WorkflowHome.SERVICE_NAME, WorkflowHome.class);
 	}
 	
+	public void setKernel(Kernel kernel) {
+		super.setKernel(kernel);
+		getStartupTasks().add(new WorkflowStartupTask(kernel));
+	}
+
 	public List<DeploymentDescriptor> getServices(){
 		List<DeploymentDescriptor> services = new ArrayList<>();
 		services.add(new RESTSD(kernel));		

@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.chemomentum.dsws.ConversionResult;
-import org.chemomentum.dsws.util.SetupWorkflowService;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -27,6 +26,7 @@ import de.fzj.unicore.xnjs.ems.Manager;
 import de.fzj.unicore.xnjs.persistence.IActionStoreFactory;
 import de.fzj.unicore.xnjs.persistence.JDBCActionStoreFactory;
 import eu.unicore.workflow.WorkflowProperties;
+import eu.unicore.workflow.features.WorkflowStartupTask;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.model.PEWorkflow;
@@ -57,7 +57,7 @@ public abstract class TestBase {
 		cs.addModule(new WFTestModule(cs.getProperties()));
 		
 		xnjs = new XNJS(cs);
-		SetupWorkflowService.configureProcessing(xnjs);
+		WorkflowStartupTask.configureProcessing(xnjs);
 		xnjs.setProcessingChain("TESTING", null, new String[]
 				{"eu.unicore.workflow.pe.xnjs.TestingActivityProcessor"});
 		
