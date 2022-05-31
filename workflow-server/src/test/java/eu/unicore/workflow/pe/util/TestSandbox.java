@@ -5,7 +5,6 @@ import groovy.lang.GroovyShell;
 import java.security.AccessControlException;
 
 import org.junit.Test;
-import org.oasisOpen.docs.wsrf.rl2.CurrentTimeDocument;
 
 public class TestSandbox {
 
@@ -33,21 +32,5 @@ public class TestSandbox {
 			throw ex;
 		}
 	}
-	
-	
-	/**
-	 * Load an XMLBeans class from within a Groovy script running in the {@link ScriptSandbox}
-	 * (tests fix for SF bug #3151819)
-	 */
-	@Test
-	public void testLoadXMLBeansClassFromScript(){
-		StringBuilder sb=new StringBuilder();
-		sb.append("org.oasisOpen.docs.wsrf.rl2.CurrentTimeDocument.Factory.newInstance();");
-		String script=sb.toString();
-		GroovyShell shell=new GroovyShell(CurrentTimeDocument.class.getClassLoader());
-		new ScriptSandbox().eval(shell, script);
-	}
-	
-	
-	
+
 }
