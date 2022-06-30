@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.util.ErrorCode;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.VariableConstants;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
@@ -25,7 +26,7 @@ public class VariableSetIterator extends ValueSetIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger logger=Log.getLogger(Log.SERVICES, VariableSetIterator.class);
+	private final static Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, VariableSetIterator.class);
 	
 	private final String workflowID;
 	private final VariableSet[] variableSets;

@@ -159,6 +159,27 @@ public class TestConversion {
 		
 	}
 	
+	@Test
+	public void testSubflow2() throws Exception {
+		String file="src/test/resources/json/subflow2.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		assert wfID.equals(res.getWorkflowID());
+		PEWorkflow ag=res.getConvertedWorkflow();
+		Activity act=ag.getActivity("date1");
+		assert act!=null;
+		ActivityGroup subGroup = (ActivityGroup)ag.getActivity("sw1");
+		assert subGroup!=null;
+		Activity act1 = subGroup.getActivity("sw1-date1");
+		assert act1!=null;
+		
+	}
+	
 
 	@Test
 	public void testWhile() throws Exception {
@@ -176,6 +197,21 @@ public class TestConversion {
 		System.out.println(sc.getScript());
 	//	assert "eval(COUNTER<5);".equals(sc.getScript()): sc.getScript();
 		
+	}
+	
+	@Test
+	public void testDiamond() throws Exception {
+		String file="src/test/resources/json/diamond2.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		PEWorkflow ag=res.getConvertedWorkflow();
+		assert ag.getActivities().size()==4;
+		assert ag.getActivity("date3")!=null;
 	}
 	
 	protected void printErrors(ConversionResult res){

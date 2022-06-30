@@ -44,8 +44,7 @@ public class WorkflowInstance extends BaseResourceImpl {
 
 	public static final String INITPARAM_STORAGE_EPR = "storageEPR";
 
-	private static final Logger logger = Log.getLogger(Log.SERVICES,
-			WorkflowInstance.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, WorkflowInstance.class);
 
 	private ProcessState processState = null;
 

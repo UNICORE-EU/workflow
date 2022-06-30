@@ -24,8 +24,6 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 /**
  * resolve files on a UNICORE storage.
  *
- * This class is not threadsafe.
- * 
  * @author schuller
  */
 public class SMSResolver implements Resolver{
@@ -44,7 +42,7 @@ public class SMSResolver implements Resolver{
 		try{
 			String url=extractStorageURL(fileset.base);
 			String baseDir=extractBaseDir(fileset.base);
-			List<Pair<String,Long>>results=new ArrayList<Pair<String,Long>>();
+			List<Pair<String,Long>>results = new ArrayList<>();
 			Kernel kernel=PEConfig.getInstance().getKernel();
 			StorageClient sms = getSMSClient(url, workflowID, kernel.getClientConfiguration());
 			results.addAll(getMatches(sms,baseDir,fileset));
@@ -113,7 +111,7 @@ public class SMSResolver implements Resolver{
 		return res;
 	}
 	
-	private Map<String, Pattern>patterns=new HashMap<String, Pattern>();
+	private Map<String, Pattern>patterns = new HashMap<>();
 	
 	Pattern getPattern(String expr){
 		Pattern p=patterns.get(expr);

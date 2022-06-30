@@ -12,6 +12,7 @@ import eu.unicore.services.Home;
 import eu.unicore.services.InitParameters;
 import eu.unicore.services.messaging.PullPoint;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;
 import eu.unicore.workflow.pe.files.Locations;
 
@@ -22,7 +23,7 @@ import eu.unicore.workflow.pe.files.Locations;
  */
 public class WorkflowFactoryImpl extends BaseResourceImpl {
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,WorkflowFactoryImpl.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, WorkflowFactoryImpl.class);
 
 	/**
 	 * maps dialect URIs to DSLDelegates that do the actual DSL processing

@@ -29,7 +29,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class ForGroupProcessor extends GroupProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,ForGroupProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ForGroupProcessor.class);
 
 	public ForGroupProcessor(XNJS configuration) {
 		super(configuration);

@@ -13,6 +13,7 @@ import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.ModelBase;
@@ -27,7 +28,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class HoldActivityProcessor extends ProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,HoldActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, HoldActivityProcessor.class);
 
 	public HoldActivityProcessor(XNJS configuration) {
 		super(configuration);

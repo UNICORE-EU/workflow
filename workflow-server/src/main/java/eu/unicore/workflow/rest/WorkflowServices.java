@@ -55,7 +55,7 @@ public class WorkflowServices extends Application implements USERestApplication 
 				try(JcaPEMWriter writer = new JcaPEMWriter(out)){
 					writer.writeObject(cred.getCertificate());
 				}catch(Exception ex){
-					Log.logException("Cannot write public key", ex, Log.getLogger("unicore.security", CoreServices.class));
+					Log.logException("Cannot write public key", ex, Log.getLogger(Log.SECURITY, WorkflowServices.class));
 				}
 				content.put(RegistryImpl.SERVER_PUBKEY, out.toString());
 				content.put(RegistryImpl.SERVER_IDENTITY, cred.getSubjectName());

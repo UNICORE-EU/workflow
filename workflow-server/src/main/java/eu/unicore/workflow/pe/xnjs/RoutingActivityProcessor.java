@@ -8,6 +8,7 @@ import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.ems.processors.DefaultProcessor;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.Activity;
 
 /**
@@ -17,7 +18,7 @@ import eu.unicore.workflow.pe.model.Activity;
  */
 public class RoutingActivityProcessor extends DefaultProcessor implements Constants{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,RoutingActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, RoutingActivityProcessor.class);
 	
 	public RoutingActivityProcessor(XNJS configuration) {
 		super(configuration);

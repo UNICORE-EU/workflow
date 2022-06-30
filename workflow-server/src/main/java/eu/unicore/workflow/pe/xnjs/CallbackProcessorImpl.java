@@ -12,13 +12,14 @@ import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.CallbackProcessor;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 
 public class CallbackProcessorImpl implements CallbackProcessor{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,CallbackProcessorImpl.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, CallbackProcessorImpl.class);
 
 	private final XNJS xnjs;
 	private final Kernel kernel;

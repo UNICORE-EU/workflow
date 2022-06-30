@@ -23,7 +23,10 @@ import eu.unicore.util.configuration.PropertyMD;
  */
 public class WorkflowProperties extends PropertiesHelper {
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES, WorkflowProperties.class);
+	// base for workflow-related logger categories
+	public static final String LOG_CATEGORY = "unicore.workflow.";
+
+	private static final Logger logger = Log.getLogger(LOG_CATEGORY, WorkflowProperties.class);
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX="workflow.";
@@ -155,11 +158,15 @@ public class WorkflowProperties extends PropertiesHelper {
 		return properties;
 	}
 
+	private static final String _loaded = "__additional_workflow_properties__";
+
 	private static Properties loadAdditionalProperties(Properties initial) {
 		Properties finalProps = new Properties();
 		finalProps.putAll(initial);
 		String additionalProps = initial.getProperty(PREFIX+ADDITIONAL_PROPERTIES);
-		if(additionalProps!=null) {
+		// prevent doing this twice...
+		boolean haveAlreadyLoaded = initial.getProperty(_loaded)!=null;
+		if(additionalProps!=null && !haveAlreadyLoaded) {
 			File f = new File(additionalProps);
 			logger.info("Loading additional Workflow system settings from <{}>", f);
 			try {
@@ -167,6 +174,7 @@ public class WorkflowProperties extends PropertiesHelper {
 					Properties add = new Properties();
 					add.load(fr);
 					finalProps.putAll(add);
+					finalProps.put(_loaded, "true");
 				}
 			}
 			catch(IOException e) {

@@ -10,17 +10,17 @@ import de.fzj.unicore.xnjs.util.ErrorCode;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 
 /**
- * Use this to get a {@link Resolver} that can resolve elements of file sets<br/>
+ * Use this to get a {@link Resolver} that can resolve elements of file sets
  *  
  * @author schuller
  */
 public class ResolverFactory {
 
-	static final Set<Class<? extends Resolver>> resolvers=new HashSet<Class<? extends Resolver>>();
+	static final Set<Class<? extends Resolver>> resolvers = new HashSet<>();
 
 	static {
 		resolvers.add(SMSResolver.class);
-		resolvers.add(C9MResolver.class);
+		resolvers.add(WorkflowFileResolver.class);
 	}
 
 	public static synchronized void clear(){

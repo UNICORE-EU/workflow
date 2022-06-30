@@ -68,7 +68,7 @@ import eu.unicore.workflow.rest.WorkflowServices;
  */
 public class WorkflowStartupTask implements Runnable{
 
-	private final static Logger logger = Log.getLogger(Log.SERVICES, WorkflowStartupTask.class);
+	private final static Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, WorkflowStartupTask.class);
 
 	public static final String VERSION = Kernel.getVersion(WorkflowFactoryImpl.class);
 

@@ -50,7 +50,7 @@ public class Converter {
 
 	//understood activity option names
 	public static final Set<String> CONVERTER_OPTIONS = 
-			Collections.unmodifiableSet(new HashSet<String>());
+			Collections.unmodifiableSet(new HashSet<>());
 
 	private final boolean unitTesting;
 
@@ -71,7 +71,7 @@ public class Converter {
 	 * @return the {@link ConversionResult} for the workflow instance
 	 */
 	public ConversionResult convert(String wfUUID, JSONObject wf) throws Exception {
-		List<String>outputFiles = new ArrayList<String>();
+		List<String>outputFiles = new ArrayList<>();
 		ConversionResult result = new ConversionResult();
 		result.setWorkflowID(wfUUID);
 		wf.put("id", wfUUID);
@@ -114,32 +114,29 @@ public class Converter {
 		addVariableDeclarations(workflowInfo, converted, result);
 
 		//this list contains all the activities in this subgroup 
-		List<eu.unicore.workflow.pe.model.Activity>activities=new ArrayList<eu.unicore.workflow.pe.model.Activity>();
-		JSONArray swfs = wf.optJSONArray("subworkflows");
-		if(swfs!=null) {
-			for(int i=0; i<swfs.length(); i++){
-				JSONObject swf = swfs.getJSONObject(i);
-				String id = swf.getString("id");
-				eu.unicore.workflow.pe.model.Activity sub=null;
-				String type = swf.optString("type", "GROUP");
-				try {
-					if("FOR_EACH".equals(type)){
-						sub=processForEach(swf, outputFiles, parentLoopID, result);
-					}
-					else if("REPEAT_UNTIL".equals(type)){
-						sub=processRepeatUntil(swf, outputFiles, parentLoopID, result);
-					}
-					else if("WHILE".equals(type)){
-						sub=processWhile(swf, outputFiles, parentLoopID, result);
-					}
-					else{
-						sub=convertSubFlow(swf,outputFiles, parentLoopID, result);
-					}
-					if(sub!=null)activities.add(sub);
-				}catch(Exception ex){
-					String msg="Subgroup '"+id+"': got an exception during conversion";
-					result.addError(Log.createFaultMessage(msg, ex));
+		List<eu.unicore.workflow.pe.model.Activity>activities=new ArrayList<>();
+		workflowInfo.getSubWorkflows();
+		for(JSONObject swf: workflowInfo.getSubWorkflows()) {
+			String id = swf.getString("id");
+			eu.unicore.workflow.pe.model.Activity sub=null;
+			String type = swf.optString("type", "GROUP");
+			try {
+				if("FOR_EACH".equals(type)){
+					sub=processForEach(swf, outputFiles, parentLoopID, result);
 				}
+				else if("REPEAT_UNTIL".equals(type)){
+					sub=processRepeatUntil(swf, outputFiles, parentLoopID, result);
+				}
+				else if("WHILE".equals(type)){
+					sub=processWhile(swf, outputFiles, parentLoopID, result);
+				}
+				else{
+					sub=convertSubFlow(swf,outputFiles, parentLoopID, result);
+				}
+				if(sub!=null)activities.add(sub);
+			}catch(Exception ex){
+				String msg="Subgroup '"+id+"': got an exception during conversion";
+				result.addError(Log.createFaultMessage(msg, ex));
 			}
 		}
 		//block start?
@@ -219,7 +216,8 @@ public class Converter {
 				Integer maxConcurrentValue=Integer.parseInt(maxConcurrent);
 				res.setMaxConcurrentActivities(maxConcurrentValue);
 			}catch(NumberFormatException nfe){
-				result.addError("For-each loop '"+id+"': Parameter '"+ForGroup.PROPERTY_MAX_CONCURRENT_ACTIVITIES+"' does not evaluate to an integer");
+				result.addError("For-each loop '"+id+"': Parameter '"+
+						ForGroup.PROPERTY_MAX_CONCURRENT_ACTIVITIES+"' does not evaluate to an integer");
 				return null;
 			}
 		}
@@ -512,20 +510,23 @@ public class Converter {
 	 * add transitions within a sub.flow 
 	 */
 	protected static void addTransitions(WorkflowInfo workflowInfo, ActivityGroup subflow, ConversionResult result) throws JSONException {
-		List<eu.unicore.workflow.pe.model.Transition>resultTransitions=new ArrayList<eu.unicore.workflow.pe.model.Transition>();
+		List<eu.unicore.workflow.pe.model.Transition>resultTransitions = new ArrayList<>();
 		List<JSONObject>transitions=workflowInfo.getTransitions();
 		for(JSONObject t: transitions){
 
-			eu.unicore.workflow.pe.model.Activity from=subflow.getActivity(t.getString("from"));
-			eu.unicore.workflow.pe.model.Activity to=subflow.getActivity(t.getString("to"));
+			String fromID = t.getString("from");
+			String toID = t.getString("to");
+			
+			eu.unicore.workflow.pe.model.Activity from = subflow.getActivity(fromID);
+			eu.unicore.workflow.pe.model.Activity to = subflow.getActivity(toID);
 			String transitionID = t.optString("id", newUID());
 
 			if(from==null){
-				result.addError("Transition "+from+"->"+to+" : references non-existent 'from' entity");
+				result.addError("Transition "+fromID+"->"+toID+" : references non-existent 'from' entity <"+fromID+">");
 				continue;
 			}
 			if(to==null){
-				result.addError("Transition "+from+"->"+to+": references non-existent 'to' entity");
+				result.addError("Transition "+fromID+"->"+toID+": references non-existent 'to' entity <"+toID+">");
 				continue;
 			}
 

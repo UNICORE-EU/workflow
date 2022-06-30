@@ -11,6 +11,7 @@ import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.Condition;
 import eu.unicore.workflow.pe.model.Iterate;
@@ -25,7 +26,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class RepeatGroupProcessor extends GroupProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,RepeatGroupProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, RepeatGroupProcessor.class);
 
 	public RepeatGroupProcessor(XNJS configuration) {
 		super(configuration);

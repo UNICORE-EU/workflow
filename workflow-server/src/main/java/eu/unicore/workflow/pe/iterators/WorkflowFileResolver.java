@@ -14,21 +14,19 @@ import eu.unicore.client.core.StorageClient;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.Constants;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 
 /**
- * this class can resolve logical filenames
- * using the location manager.<br/>
- *
- * This class is not threadsafe.
+ * this class can resolve "wf:..." file names using the file catalog
  * 
  * @author schuller
  */
-public class C9MResolver extends SMSResolver {
+public class WorkflowFileResolver extends SMSResolver {
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES, C9MResolver.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, WorkflowFileResolver.class);
 
 	@Override
 	public boolean acceptBase(String base) {
@@ -39,7 +37,7 @@ public class C9MResolver extends SMSResolver {
 	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ProcessingException {
 		try{
 			Kernel kernel=PEConfig.getInstance().getKernel();
-			ArrayList<Pair<String,Long>>results=new ArrayList<Pair<String,Long>>();
+			ArrayList<Pair<String,Long>>results = new ArrayList<>();
 			results.addAll(getMatches(workflowID, fileset, kernel));
 			return results;
 		}catch(Exception ex){
@@ -48,7 +46,7 @@ public class C9MResolver extends SMSResolver {
 	}
 
 	protected List<Pair<String,Long>>getMatches(String workflowID, FileSet fileSet, Kernel kernel) throws Exception{
-		ArrayList<Pair<String,Long>>results=new ArrayList<Pair<String,Long>>();
+		ArrayList<Pair<String,Long>>results = new ArrayList<>();
 		Locations locations = PEConfig.getInstance().getLocationStore().read(workflowID);
 
 		//list files and check includes/excludes
@@ -104,6 +102,6 @@ public class C9MResolver extends SMSResolver {
 	}
 
 	public boolean equals(Object other){
-		return (other!=null && other instanceof C9MResolver);
+		return (other!=null && other instanceof WorkflowFileResolver);
 	}
 }

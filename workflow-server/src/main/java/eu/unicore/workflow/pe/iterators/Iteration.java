@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
@@ -18,7 +19,7 @@ import eu.unicore.workflow.pe.xnjs.ProcessVariables;
  */
 public class Iteration implements Serializable, Iterate{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,Iteration.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, Iteration.class);
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -56,16 +57,7 @@ public class Iteration implements Serializable, Iterate{
 			resolve(vars);
 			String val=getCurrentValue();
 			if(lastValue!=null && val.equals(lastValue)){
-				String msg="Iteration value did not change! " +
-				"Probably your loop increment expression is faulty?";
-				logger.warn(msg);
-				if(logger.isDebugEnabled()){
-					StringBuilder st=new StringBuilder();
-					for(StackTraceElement ste: Thread.currentThread().getStackTrace()){
-						st.append(ste.toString()).append("\n");
-					}
-					logger.debug(st.toString());
-				}
+				logger.warn("Iteration value did not change! Probably your loop increment expression is faulty?");
 			}else{
 				lastValue=val;
 			}

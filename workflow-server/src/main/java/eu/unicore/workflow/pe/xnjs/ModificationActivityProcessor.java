@@ -6,6 +6,7 @@ import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.ModifyVariableActivity;
 import eu.unicore.workflow.pe.util.ScriptSandbox;
 import groovy.lang.GroovyShell;
@@ -17,7 +18,7 @@ import groovy.lang.GroovyShell;
  */
 public class ModificationActivityProcessor extends ProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,ModificationActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ModificationActivityProcessor.class);
 	
 	public ModificationActivityProcessor(XNJS configuration) {
 		super(configuration);

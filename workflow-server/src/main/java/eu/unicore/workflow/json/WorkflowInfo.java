@@ -228,9 +228,7 @@ public class WorkflowInfo {
 	public static WorkflowInfo build(JSONObject wf) throws JSONException {
 		WorkflowInfo w=new WorkflowInfo();
 		w.isRoot=true;
-	
 		buildCommon(w, wf);
-		
 		return w;
 	}
 	
@@ -253,17 +251,13 @@ public class WorkflowInfo {
 	
 	
 	private static void buildCommon(WorkflowInfo w, JSONObject wf) throws JSONException {
-		JSONArray swfs = wf.optJSONArray("subworkflows");
-		if(swfs!=null) {
-			for(int i=0; i<swfs.length(); i++){
-				w.addSubWorkflow(swfs.getJSONObject(i));
-			}	
+		List<JSONObject> swfs = getItemsWithID(wf, "subworkflows");
+		for(JSONObject o: swfs){
+			w.addSubWorkflow(o);
 		}
-		JSONArray activities = wf.optJSONArray("activities");
-		if(activities!=null) {
-			for(int i=0; i<activities.length(); i++){
-				w.addActivity(activities.getJSONObject(i));
-			}	
+		List<JSONObject> activities = getItemsWithID(wf, "activities");
+		for(JSONObject o: activities){
+			w.addActivity(o);
 		}
 		JSONArray declarations = wf.optJSONArray("variables");
 		if(declarations!=null) {
@@ -277,6 +271,27 @@ public class WorkflowInfo {
 				w.addTransition(transitions.getJSONObject(i));
 			}	
 		}
+	}
+	
+	private static List<JSONObject >getItemsWithID(JSONObject source, String name) throws JSONException {
+		List<JSONObject>result = new ArrayList<>();
+		Object itemsDecl = source.opt(name);
+		if(itemsDecl!=null && itemsDecl instanceof JSONArray) {
+			JSONArray items = source.getJSONArray(name);
+			for(int i=0; i<items.length(); i++){
+				result.add(items.getJSONObject(i));	
+			}
+		}else if(itemsDecl!=null && itemsDecl instanceof JSONObject) {
+			JSONObject items = source.getJSONObject(name);
+			Iterator<?> iter = items.keys();
+			while(iter.hasNext()) {
+				String id = (String)iter.next();
+				JSONObject item = items.getJSONObject(id);
+				item.put("id", id);
+				result.add(item);	
+			}
+		}
+		return result;
 	}
 	
 	public boolean isLoop() {

@@ -25,6 +25,7 @@ import eu.unicore.services.rest.client.BaseClient;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.ProcessState;
 import eu.unicore.workflow.pe.iterators.Iteration;
@@ -44,7 +45,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class ActivityGroupProcessor extends GroupProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,ActivityGroupProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ActivityGroupProcessor.class);
 	
 	public ActivityGroupProcessor(XNJS configuration) {
 		super(configuration);
@@ -148,7 +149,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		List<Activity>activities=ag.getDueActivities();
 		if(!subActionsStillRunning && activities.size()==0){
 			action.addLogTrace("No more transitions left to follow.");
-			logger.info("ActivityGroup {}: No more transitions left to follow.", action.getUUID());
+			logger.debug("ActivityGroup {}: No more transitions left to follow.", action.getUUID());
 			setToDoneSuccessfully();
 			return;
 		}

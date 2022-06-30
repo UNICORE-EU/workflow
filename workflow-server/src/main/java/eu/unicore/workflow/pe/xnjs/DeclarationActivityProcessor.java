@@ -6,6 +6,7 @@ import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
 
@@ -15,7 +16,7 @@ import eu.unicore.workflow.pe.model.util.VariableUtil;
  */
 public class DeclarationActivityProcessor extends ProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,DeclarationActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, DeclarationActivityProcessor.class);
 	
 	public DeclarationActivityProcessor(XNJS configuration) {
 		super(configuration);

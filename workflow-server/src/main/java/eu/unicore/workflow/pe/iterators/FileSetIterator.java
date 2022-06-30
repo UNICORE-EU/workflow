@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import de.fzj.unicore.uas.util.Pair;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
@@ -21,7 +22,7 @@ public class FileSetIterator extends ValueSetIterator {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger logger=Log.getLogger(Log.SERVICES, FileSetIterator.class);
+	private final static Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, FileSetIterator.class);
 	
 	private final String workflowID;
 	
@@ -46,7 +47,7 @@ public class FileSetIterator extends ValueSetIterator {
 	 * @throws ProcessingException
 	 */
 	protected void reInit()throws ProcessingException{
-		List<Pair<String,Long>>results=new ArrayList<Pair<String,Long>>();
+		List<Pair<String,Long>>results = new ArrayList<>();
 		for(FileSet f: fileSets){
 			try{
 				Resolver r=ResolverFactory.getResolver(f.base);
@@ -65,9 +66,9 @@ public class FileSetIterator extends ValueSetIterator {
 		logger.info("[{}] Iterating over {} files, total size {} kB.", getWorkflowID(), values.length, totalSize);
 		if(logger.isDebugEnabled()){
 			StringBuilder sb=new StringBuilder();
-			sb.append("Filenames:\n");
+			sb.append("Filenames: ");
 			for(String val: values){
-				sb.append(val).append('\n');
+				sb.append(val).append(' ');
 			}
 			logger.debug(sb.toString());
 		}

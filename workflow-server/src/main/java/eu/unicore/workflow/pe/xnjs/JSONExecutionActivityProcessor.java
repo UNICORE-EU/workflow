@@ -22,6 +22,7 @@ import eu.unicore.client.lookup.RandomSelection;
 import eu.unicore.client.lookup.SiteSelectionStrategy;
 import eu.unicore.client.lookup.TargetSystemFinder;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.StageOutProcessor;
 import eu.unicore.workflow.pe.files.StagingPreprocessor;
@@ -42,7 +43,7 @@ import eu.unicore.workflow.pe.util.InsertVariablesFilter;
  */
 public class JSONExecutionActivityProcessor extends ProcessorBase {
 
-	private static final Logger logger = Log.getLogger(Log.SERVICES,JSONExecutionActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, JSONExecutionActivityProcessor.class);
 
 	public static final String LAST_ERROR_CODE = JSONExecutionActivityProcessor.class.getName()+"_LAST_ERROR_CODE";
 
@@ -70,7 +71,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		super.handleCreated();
 		JSONExecutionActivity work = getWork();
 		String iteration=getCurrentIteration();
-		logger.info("Start processing Job execution activity <{}> in iteration <{}>", work.getID(), iteration);
+		logger.debug("Start processing Job execution activity <{}> in iteration <{}>", work.getID(), iteration);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		if(vars==null){
 			vars=new ProcessVariables();
@@ -140,18 +141,18 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		if(imports!=null && imports.length()>0) {
 			JSONArray filtered = new StagingPreprocessor(workflowID).processImports(imports);
 			wa.put("Imports", filtered);
-			if(logger.isDebugEnabled())logger.debug("Filtered stage ins for {}: {}", getWork().getID(), filtered.toString(2));
+			logger.debug("Filtered stage ins for {}: {}", work.getID(), filtered.toString(2));
 		}
 
 		// since we replace stuff like iterations, variables in the job,
 		// we need to store the version we have submitted, to be able
 		// to correctly register the outputs later
 		JSONArray exports = wa.optJSONArray("Exports");
-		logger.debug(exports);
 		if(exports!=null && exports.length()>0) {
 			JSONArray filtered = new StagingPreprocessor(workflowID).processExports(exports);
 			wa.put("Exports", filtered);
 			action.getProcessingContext().put(EXPORTS, exports.toString());
+			logger.debug("Filtered stage outs for {}: {}", work.getID(), filtered.toString(2));
 		}
 		String jobURL = doSubmit(wa, user);
 		storeJobURL(jobURL);
@@ -219,8 +220,6 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 */
 	@Override
 	protected void handleRunning()throws ProcessingException{
-		logger.debug("Handling running action <{}>", action.getUUID());
-
 		// check last send instant to SO
 		Long lastSend = (Long)action.getProcessingContext().get(SEND_INSTANT);
 		if(lastSend!=null && lastSend+5000>System.currentTimeMillis()){
@@ -462,7 +461,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			//first, find current submission host
 			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(work.getWorkflowID());
 			if(wfc==null){
-				logger.info("No parent workflow found for activity <{}>", work.getID());
+				logger.debug("No parent workflow found for activity <{}>", work.getID());
 				return;
 			}
 			PEStatus status=wfc.findSubFlowContainingActivity(work.getID()).getActivityStatus(work.getID(),getCurrentIteration());

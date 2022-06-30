@@ -33,7 +33,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class ProcessorBase extends DefaultProcessor implements Constants{
 
-	protected static final Logger logger=Log.getLogger(Log.SERVICES,DefaultProcessor.class);
+	protected static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, DefaultProcessor.class);
 	
 	protected WorkflowProperties properties;
 	

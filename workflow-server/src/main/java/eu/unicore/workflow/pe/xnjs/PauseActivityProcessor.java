@@ -10,6 +10,7 @@ import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.PauseActivity;
 
 /**
@@ -19,7 +20,7 @@ import eu.unicore.workflow.pe.model.PauseActivity;
  */
 public class PauseActivityProcessor extends ProcessorBase{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,PauseActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, PauseActivityProcessor.class);
 
 	public PauseActivityProcessor(XNJS configuration) {
 		super(configuration);

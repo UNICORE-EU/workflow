@@ -7,6 +7,7 @@ import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.util.TestActivity;
 
@@ -19,7 +20,7 @@ import eu.unicore.workflow.pe.util.TestActivity;
 @Ignore
 public class TestingActivityProcessor extends ProcessorBase implements Constants{
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,TestingActivityProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, TestingActivityProcessor.class);
 
 	public static final String ACTION_TYPE="TESTING";
 

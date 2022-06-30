@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.Logger;
 import eu.unicore.workflow.EvaluationFunctions;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.Constants;
 
 import de.fzj.unicore.persist.PersistenceException;
@@ -34,7 +35,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  */
 public class Evaluator implements EvaluationFunctions {
 
-	private static final Logger logger=Log.getLogger(Log.SERVICES,Evaluator.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, Evaluator.class);
 
 	private final String workflowID;
 

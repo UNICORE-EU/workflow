@@ -12,14 +12,14 @@ public class TestResolverFactory {
 	public static void cleanUp() {
 		ResolverFactory.clear();
 		ResolverFactory.registerResolver(SMSResolver.class);
-		ResolverFactory.registerResolver(C9MResolver.class);
+		ResolverFactory.registerResolver(WorkflowFileResolver.class);
 	}
 	
     @Test
 	public void testDuplicateResolverRegistration(){
     	ResolverFactory.registerResolver(SMSResolver.class);
 		assert 2==ResolverFactory.resolvers.size();
-		ResolverFactory.registerResolver(C9MResolver.class);
+		ResolverFactory.registerResolver(WorkflowFileResolver.class);
 		assert 2==ResolverFactory.resolvers.size();
 	}
 

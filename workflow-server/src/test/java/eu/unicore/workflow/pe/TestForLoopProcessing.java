@@ -49,6 +49,17 @@ public class TestForLoopProcessing extends TestBase {
 	}
 	
 	@Test
+	public void testIndirection() throws Exception {
+		String file="src/test/resources/json/foreach_fileset_indirection.json";
+		String wfID=UUID.randomUUID().toString();
+		JSONObject json = new JSONObject(IOUtils.readFile(new File(file)));
+		ConversionResult res = new Converter(true).convert(wfID, json);
+		assert !res.hasConversionErrors();
+		PEWorkflow wf = res.getConvertedWorkflow();
+		doProcess(wf);
+	}
+
+	@Test
 	public void testVariableSetIteration() throws Exception {
 		String file="src/test/resources/json/foreach_varset.json";
 		String wfID=UUID.randomUUID().toString();
@@ -75,7 +86,7 @@ public class TestForLoopProcessing extends TestBase {
 		ForGroup fl=new ForGroup(id, wfID, body);
 		wf.setActivities(fl);
 
-		doProcess(wf,id);
+		doProcess(wf);
 
 		assert(Validate.wasInvoked("a1"));
 		Integer i=Validate.getInvocations("a1");
@@ -219,14 +230,12 @@ public class TestForLoopProcessing extends TestBase {
 		TestActivity a1 = new TestActivity("a1",wfID);
 		body.setActivities(a1);
 		ForGroup fl = new ForGroup("for1",wfID,body);
-		
-		
 		wf.setActivities(fl);
 
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1");
+		assert total/chunkSize==Validate.getInvocations("a1").intValue();
 	}
 
 
@@ -261,7 +270,7 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1");
+		assert total/chunkSize==Validate.getInvocations("a1").intValue();
 	}
 
 
@@ -297,7 +306,7 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1");
+		assert total/chunkSize==Validate.getInvocations("a1").intValue();
 	}
 
 	@Test @Ignore

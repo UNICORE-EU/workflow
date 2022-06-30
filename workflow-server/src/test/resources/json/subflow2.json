@@ -1,0 +1,34 @@
+{
+
+  "activities" : {
+   
+   "date1": {
+     "type": "JOB",
+   	 "job": {
+       "ApplicationName": "Date",
+      },
+      "options": {}
+   },
+
+  },
+
+  "subworkflows" : {
+
+    "sw1": {
+
+	  "activities": {
+        "sw1-date1": {
+          "type": "JOB",
+   		  "job": {
+             "ApplicationName": "Date",
+          },
+         },
+      },
+    },
+  },
+  
+  "transitions" : [
+    {"id": "t12", "from": "date1", "to": "sw1" },
+  ],
+
+}
