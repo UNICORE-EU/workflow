@@ -10,7 +10,6 @@ import javax.ws.rs.core.Application;
 
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
-import de.fzj.unicore.uas.rest.CoreServices;
 import eu.emi.security.authn.x509.X509Credential;
 import eu.unicore.services.Kernel;
 import eu.unicore.services.registry.LocalRegistryClient;

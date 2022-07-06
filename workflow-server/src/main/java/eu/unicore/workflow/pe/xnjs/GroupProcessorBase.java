@@ -105,6 +105,7 @@ public class GroupProcessorBase extends ProcessorBase {
 		clonedVars.put(PV_KEY_ITERATION,iteration);
 		subAction.getProcessingContext().put(ProcessVariables.class,clonedVars);
 		subAction.getProcessingContext().put(PV_KEY_ITERATION,iteration);
+		subAction.setParentActionID(action.getUUID());
 		a.setStatus(ActivityStatus.RUNNING);
 		manager.addInternalAction(subAction);
 		return subAction.getUUID();

@@ -114,8 +114,7 @@ public class Workflows extends ServicesBase {
 			locations.setWorkflowID(newUID);
 			if(!cr.hasConversionErrors() && inputs!=null) {
 				try {
-					@SuppressWarnings("unchecked")
-					Iterator<String> names = (Iterator<String>)inputs.keys();
+					Iterator<String> names = inputs.keys();
 					while(names.hasNext()) {
 						String logicalName = names.next();
 						String location = inputs.getString(logicalName);

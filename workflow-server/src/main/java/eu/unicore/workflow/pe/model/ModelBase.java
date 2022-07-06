@@ -32,7 +32,7 @@ public class ModelBase implements Cloneable, Serializable {
 	 * @param workflowID
 	 */
 	public ModelBase(String id, String workflowID){
-		this(id,workflowID,new Iteration());
+		this(id, workflowID, new Iteration());
 	}
 	
 	public ModelBase(String id, String workflowID, Iterate iteration){

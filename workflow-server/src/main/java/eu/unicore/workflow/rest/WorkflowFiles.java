@@ -80,8 +80,7 @@ public class WorkflowFiles extends RESTRendererBase {
 		try {
 			locations = PEConfig.getInstance().getLocationStore().read(wf.getUniqueID());
 			JSONObject o = new JSONObject(jsonString);
-			@SuppressWarnings("unchecked")
-			Iterator<String> keys = (Iterator<String>)o.keys();
+			Iterator<String> keys = o.keys();
 			while(keys.hasNext()) {
 				String key = keys.next();
 				String loc = o.getString(key);

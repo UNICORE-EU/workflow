@@ -12,5 +12,5 @@ public interface Constants {
 	 * holding the current iterator value
 	 */
 	public static final String VAR_KEY_CURRENT_TOTAL_ITERATION="CURRENT_TOTAL_ITERATOR";
-	
+
 }

@@ -564,8 +564,7 @@ public class Converter {
 
 			JSONObject options = a.optJSONObject("options");
 			if(options!=null) {
-				@SuppressWarnings("unchecked")
-				Iterator<String> keys = (Iterator<String>)options.keys();
+				Iterator<String> keys = options.keys();
 				while(keys.hasNext()){
 					String key = keys.next();;
 					if(!JSONExecutionActivity.UNDERSTOOD_OPTIONS.contains(key)
@@ -573,8 +572,7 @@ public class Converter {
 					{
 						result.addError("Activity '"+id+"': uses non-supported option '"+key+"'");
 					}
-					String value = options.getString(key);
-					work.setOption(key, value);
+					work.setOption(key, String.valueOf(options.get(key)));
 				}
 			}
 			activities.add(work);
@@ -671,12 +669,8 @@ public class Converter {
 
 	private static String getOption(JSONObject a, String optionName, String defaultValue){
 		JSONObject opts = a.optJSONObject("options");
-		if(opts!=null) {
-			return opts.optString(optionName, defaultValue);
-		}
-		else {
-			return a.optString(optionName, defaultValue);
-		}
+		Object value = opts!=null ? opts.opt(optionName): a.opt(optionName);
+		return value!=null? String.valueOf(value) : defaultValue;
 	}
 
 	/**
@@ -689,12 +683,10 @@ public class Converter {
 		if(activityID==null){
 			result.addError("Activity needs ID: "+a.toString());
 		}
-
 		String activityType = a.optString("type", null);
 		if(activityType==null && a.optJSONObject("job")==null){
 			result.addError("Activity '"+activityID+"' needs a 'type' attribute");
 		}
-
 		return result.getConversionErrors().size()>initialErrors;
 	}
 
