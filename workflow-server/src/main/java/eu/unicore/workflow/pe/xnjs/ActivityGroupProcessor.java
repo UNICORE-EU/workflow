@@ -290,7 +290,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			submitAllEligibleActivities(stillRunning);
 		}
 		if(stillRunning){
-			sendActionToSleep(5);
+			sendActionToSleep(10);
 		}
 	}
 

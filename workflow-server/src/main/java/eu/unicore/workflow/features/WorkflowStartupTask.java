@@ -119,7 +119,7 @@ public class WorkflowStartupTask implements Runnable{
 		PEConfig.getInstance().setCallbackProcessor(new CallbackProcessorImpl(xnjs));
 
 		if(PEConfig.getInstance().getRegistry()==null){
-			String type="external";
+			String type="standard";
 			//configure registry
 			String url = null;
 			RegistryHandler rh=kernel.getAttribute(RegistryHandler.class);
@@ -134,14 +134,11 @@ public class WorkflowStartupTask implements Runnable{
 				url = convertToREST(url);
 				logger.info("Using converted Registry URL {}", url);
 			}
-
 			eu.unicore.client.registry.IRegistryClient registry = 
 					new eu.unicore.client.registry.RegistryClient(url, kernel.getClientConfiguration(), null);
 			PEConfig.getInstance().setRegistry(registry);
-			logger.info("Using {} registry <{}>", type, url);
+			logger.info("Workflow engine running in {} mode, using registry <{}>", type, url);
 		}
-		
-
 		return xnjs;
 	}
 	
@@ -258,14 +255,14 @@ public class WorkflowStartupTask implements Runnable{
 		else{
 			logger.error("The <{}> service is not deployed. Could not add a default workflow service instance.", WorkflowFactoryHomeImpl.SERVICE_NAME);
 		}
-		return new HashMap<String, String>();
+		return new HashMap<>();
 	}
 
 	private void doCreateWorkflowFactory()throws Exception{
 		Home h=kernel.getHome(WorkflowFactoryHomeImpl.SERVICE_NAME);
 		InitParameters init = new InitParameters(WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID, TerminationMode.NEVER);
 		h.createResource(init);
-		logger.info("Added {} resource to workflow submission service.", WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
+		logger.debug("Added {} resource to workflow submission service.", WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
 	}
 	
 }

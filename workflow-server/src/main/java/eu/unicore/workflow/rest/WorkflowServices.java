@@ -17,6 +17,7 @@ import eu.unicore.services.registry.RegistryHandler;
 import eu.unicore.services.registry.RegistryImpl;
 import eu.unicore.services.rest.USERestApplication;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 
 /**
  * REST app dealing with workflows
@@ -58,7 +59,10 @@ public class WorkflowServices extends Application implements USERestApplication 
 				}
 				content.put(RegistryImpl.SERVER_PUBKEY, out.toString());
 				content.put(RegistryImpl.SERVER_IDENTITY, cred.getSubjectName());
-				
+			}
+			WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
+			if(wp.isInternal()) {
+				content.put(RegistryImpl.MARK_ENTRY_AS_INTERNAL, "true");
 			}
 			lrc.addEntry(endpoint, content, null);
 		}catch(Exception ex){
