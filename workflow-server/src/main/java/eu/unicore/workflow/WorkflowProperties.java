@@ -26,7 +26,7 @@ public class WorkflowProperties extends PropertiesHelper {
 	// base for workflow-related logger categories
 	public static final String LOG_CATEGORY = "unicore.workflow.";
 
-	private static final Logger logger = Log.getLogger(LOG_CATEGORY, WorkflowProperties.class);
+	private static final Logger logger = Log.getLogger("unicore.configuration.", WorkflowProperties.class);
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX="workflow.";
@@ -83,7 +83,8 @@ public class WorkflowProperties extends PropertiesHelper {
 
 	
 	@DocumentationReferenceMeta
-	public final static Map<String, PropertyMD> META = new HashMap<String, PropertyMD>();
+	public final static Map<String, PropertyMD> META = new HashMap<>();
+
 	static
 	{
 		

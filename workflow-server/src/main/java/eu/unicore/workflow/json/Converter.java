@@ -589,28 +589,19 @@ public class Converter {
 		List<DeclareVariableActivity>activities = new ArrayList<>();
 		for(JSONObject dv:workflowInfo.getDeclarations()){
 			boolean OK = true;
-
-			String id = dv.optString("id", null);
 			String name = dv.optString("name", null);
 			String type = dv.optString("type", null);
 			String initialValue = dv.optString("initial_value", "");
-
-			if(type==null){
-				result.addError("Variable declaration '"+id+"': need a type.");
-				OK=false;
-			}
 			if(name==null){
-				result.addError("Variable declaration '"+id+"': need a name.");
+				result.addError("Variable declaration needs a 'name' field.");
 				OK=false;
 			}
-
-			if(id==null){
-				if(OK) {
-					id = "declare-"+name+"-"+type;
-				}
+			if(type==null){
+				result.addError("Variable declaration '"+name+"': needs a 'type' field.");
+				OK=false;
 			}
-
 			if(OK){
+				String id = "declare-"+name+"-"+type;
 				DeclareVariableActivity decl=new DeclareVariableActivity(id,result.getWorkflowID(),name,type,initialValue);
 				activities.add(decl);
 				result.getDeclaredVariables().put(name,type);

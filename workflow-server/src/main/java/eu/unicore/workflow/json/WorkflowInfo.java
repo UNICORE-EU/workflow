@@ -259,11 +259,9 @@ public class WorkflowInfo {
 		for(JSONObject o: activities){
 			w.addActivity(o);
 		}
-		JSONArray declarations = wf.optJSONArray("variables");
-		if(declarations!=null) {
-			for(int i=0; i<declarations.length(); i++){
-				w.addDeclaration(declarations.getJSONObject(i));
-			}	
+		List<JSONObject> declarations = getItemsByKey(wf, "variables", "name");
+		for(JSONObject o: declarations){
+			w.addDeclaration(o);
 		}
 		JSONArray transitions = wf.optJSONArray("transitions");
 		if(transitions!=null) {
@@ -272,8 +270,11 @@ public class WorkflowInfo {
 			}	
 		}
 	}
+	private static List<JSONObject>getItemsWithID(JSONObject source, String name) throws JSONException {
+		return getItemsByKey(source, name, "id");
+	}
 	
-	private static List<JSONObject >getItemsWithID(JSONObject source, String name) throws JSONException {
+	private static List<JSONObject>getItemsByKey(JSONObject source, String name, String target) throws JSONException {
 		List<JSONObject>result = new ArrayList<>();
 		Object itemsDecl = source.opt(name);
 		if(itemsDecl!=null && itemsDecl instanceof JSONArray) {
@@ -287,7 +288,7 @@ public class WorkflowInfo {
 			while(iter.hasNext()) {
 				String id = (String)iter.next();
 				JSONObject item = items.getJSONObject(id);
-				item.put("id", id);
+				item.put(target, id);
 				result.add(item);	
 			}
 		}

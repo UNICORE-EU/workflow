@@ -50,12 +50,6 @@
     <defaultGoal>install</defaultGoal>
     <plugins>
       <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://unicore.svn.sourceforge.net/svnroot/unicore/workflow/tags</tagBase>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
         <executions>

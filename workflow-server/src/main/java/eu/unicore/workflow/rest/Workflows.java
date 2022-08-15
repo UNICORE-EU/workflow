@@ -48,6 +48,7 @@ import eu.unicore.services.rest.PagingHelper;
 import eu.unicore.services.rest.USEResource;
 import eu.unicore.services.rest.impl.ServicesBase;
 import eu.unicore.util.Log;
+import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
@@ -262,12 +263,12 @@ public class Workflows extends ServicesBase {
 	}
 
 	protected Map<String, Object> renderClientProperties() throws Exception {
-		Map<String,Object>props = new HashMap<String, Object>();
+		Map<String,Object>props = new HashMap<>();
 		Client c = AuthZAttributeStore.getClient();
 		props.put("dn", c.getDistinguishedName());
 		Role r = c.getRole();
 		if(r!=null){
-			Map<String,Object>rProps = new HashMap<String, Object>();
+			Map<String,Object>rProps = new HashMap<>();
 			rProps.put("selected",r.getName());
 			rProps.put("availableRoles",r.getValidRoles());
 			props.put("role",rProps);
@@ -283,6 +284,7 @@ public class Workflows extends ServicesBase {
 				X509Certificate cert = kernel.getContainerSecurityConfiguration().getCredential().getCertificate();
 				cred.put("dn", cert.getSubjectX500Principal().getName());
 				cred.put("issuer", cert.getIssuerX500Principal().getName());
+				cred.put("expires", getISODateFormatter().format(cert.getNotAfter()));
 			}catch(Exception ex) {}
 			props.put("credential", cred);
 		}
@@ -304,27 +306,31 @@ public class Workflows extends ServicesBase {
 		}catch(Exception ex) {}
 		props.put("trustedSAMLIssuers",trustedSAML);
 		
-		Map<String,Object>connectors = new HashMap<String, Object>();  
+		Map<String,Object>connectors = new HashMap<>();
 		for(ExternalSystemConnector ec: kernel.getExternalSystemConnectors()){
 			connectors.put(ec.getExternalSystemName(), ec.getConnectionStatus());
 		}
 		props.put("externalConnections", connectors);
-		
+
 		try {
 			String version = this.getClass().getPackage().getSpecificationVersion();
 			props.put("version", version);
 		}catch(Exception ex){}
+
+		WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
+		props.put("engineMode", wp.isInternal()? "internal" : "standard");
 		return props;
 	}
 	
 	@Override
 	protected void updateLinks() {
 		super.updateLinks();
-		links.add(new Link("action:abort",getBaseURL()+"/"+resource.getUniqueID()+"/actions/abort","Abort"));
-		links.add(new Link("action:continue",getBaseURL()+"/"+resource.getUniqueID()+"/actions/continue","Continue"));
-		links.add(new Link("action:callback",getBaseURL()+"/"+resource.getUniqueID()+"/actions/callback","Job status callback"));
-		links.add(new Link("jobs",getBaseURL()+"/"+resource.getUniqueID()+"/jobs","Job list"));
-		links.add(new Link("files",getBaseURL()+"/"+resource.getUniqueID()+"/files","File list"));
+		String base = getBaseURL()+"/"+resource.getUniqueID();
+		links.add(new Link("action:abort", base+"/actions/abort", "Abort"));
+		links.add(new Link("action:continue", base+"/actions/continue", "Continue"));
+		links.add(new Link("action:callback", base+"/actions/callback", "Job status callback"));
+		links.add(new Link("jobs",  base+"/jobs", "Job list"));
+		links.add(new Link("files", base+"/files", "File list"));
 	}
 
 	synchronized WorkflowFactoryImpl getFactory() throws PersistenceException {
