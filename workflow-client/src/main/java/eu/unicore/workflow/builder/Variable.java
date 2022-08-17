@@ -7,7 +7,7 @@ import de.fzj.unicore.uas.json.JSONUtil;
 public class Variable {
 
 	protected final JSONObject json;
-	
+	protected final String name;
 	/**
 	 * declare a new variable (defaults to type INTEGER value '0')
 	 * 
@@ -15,13 +15,17 @@ public class Variable {
 	 */
 	public Variable(String name) {
 		this.json = new JSONObject();
-		JSONUtil.putQuietly(json, "name", name);
+		this.name = name;
 		JSONUtil.putQuietly(json, "type", "INTEGER");
 		JSONUtil.putQuietly(json, "initial_value", "0");
 	}
 
 	public JSONObject getJSON() {
 		return json;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public Variable initial_value(String val) {

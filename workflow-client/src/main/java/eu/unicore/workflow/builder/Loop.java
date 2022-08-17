@@ -13,13 +13,19 @@ public abstract class Loop {
 	
 	protected final JSONObject json;
 
+	protected final String id;
+
 	public Loop(String id) {
 		this.json = new JSONObject();
-		if(id!=null)JSONUtil.putQuietly(json, "id", id);
+		this.id=id;
 	}
 	
 	public JSONObject getJSON() {
 		return json;
+	}
+
+	public String getID() {
+		return id;
 	}
 	
 	public Loop type(LoopType type) {
@@ -30,15 +36,16 @@ public abstract class Loop {
 	public Group body() {
 		Group b = null;
 		JSONObject body = json.optJSONObject("body");
+		String bid = id+"__body__";
 		if(body!=null) {
 			try{
-				b = new Group(body.getString("id"), body);
+				b = new Group(bid , body);
 			}catch(JSONException e) {
 				throw new IllegalStateException(e);
 			}
 		}
 		else {
-			b = new Group(json.optString("id")+"__body");
+			b = new Group(bid);
 			JSONUtil.putQuietly(json, "body", b.getJSON());
 		}
 		return b;

@@ -10,11 +10,10 @@ public class Group {
 
 	public Group(String id, JSONObject json) {
 		this.json = json;
-		if(id!=null)JSONUtil.putQuietly(json, "id", id);
 	}
 	
 	public Group(String id) {
-		this(id,new JSONObject());
+		this(id, new JSONObject());
 	}
 
 	public JSONObject getJSON() {
@@ -23,14 +22,14 @@ public class Group {
 	
 	public Group subworkflow(String id) {
 		Group g = new Group(id);
-		JSONUtil.getOrCreateArray(json, "subworkflows").put(g.json);
+		JSONUtil.getOrCreateObject(json, "subworkflows").put(id, g.json);
 		return g;
 	}
 	
 	public WorkflowJob job(String id) {
 		WorkflowJob j = new WorkflowJob();
 		JSONUtil.putQuietly(j.getJSON(), "id", id);
-		JSONUtil.getOrCreateArray(json, "activities").put(j.getJSON());
+		JSONUtil.getOrCreateObject(json, "activities").put(id, j.getJSON());
 		return j;
 	}
 	
@@ -52,13 +51,13 @@ public class Group {
 	
 	public Variable variable(String name) {
 		Variable var = new Variable(name);
-		JSONUtil.getOrCreateArray(json, "variables").put(var.getJSON());
+		JSONUtil.getOrCreateObject(json, "variables").put(name, var.getJSON());
 		return var;
 	}
 	
 	public VariableModification modify_variable(String id) {
 		VariableModification var = new VariableModification(id);
-		JSONUtil.getOrCreateArray(json, "activities").put(var.getJSON());
+		JSONUtil.getOrCreateObject(json, "activities").put(id, var.getJSON());
 		return var;
 	}
 	
@@ -73,7 +72,7 @@ public class Group {
 
 	public ForEach for_each(String id) {
 		ForEach fe = new ForEach(id);
-		JSONUtil.getOrCreateArray(json, "subworkflows").put(fe.json);
+		JSONUtil.getOrCreateObject(json, "subworkflows").put(id, fe.json);
 		return fe;
 	}
 }

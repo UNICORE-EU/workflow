@@ -1,6 +1,5 @@
 package eu.unicore.workflow.rest;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -20,8 +19,6 @@ import org.json.JSONObject;
 
 import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.services.Kernel;
-import eu.unicore.services.rest.Link;
-import eu.unicore.services.rest.RESTUtils;
 import eu.unicore.services.rest.impl.RESTRendererBase;
 import eu.unicore.util.ConcurrentAccess;
 import eu.unicore.util.Log;
@@ -34,12 +31,13 @@ import eu.unicore.workflow.pe.files.Locations;
  * 
  * @author schuller
  */
-public class WorkflowFiles extends RESTRendererBase {
+public class WorkflowFiles {
 
 	private static final Logger logger = Log.getLogger("unicore.rest", WorkflowFiles.class);
 
 	final Kernel kernel;
 	final WorkflowInstance wf;
+	final String baseURL;
 
 	public WorkflowFiles(Kernel kernel, WorkflowInstance wf, String baseURL){
 		this.wf = wf;
@@ -77,7 +75,7 @@ public class WorkflowFiles extends RESTRendererBase {
 			}
 			return Response.ok(o.toString(), MediaType.APPLICATION_JSON).build();
 		}catch(Exception ex){
-			return handleError("Error listing workflow files matching'"+path+"'", ex, logger);
+			return RESTRendererBase.handleError("Error listing workflow files matching'"+path+"'", ex, logger);
 		}
 	}
 	
@@ -113,25 +111,12 @@ public class WorkflowFiles extends RESTRendererBase {
 			return Response.ok().entity(reply.toString()).build();
 		}
 		catch(Exception e){
-			return handleError("Cannot register file(s)", e, logger);
+			return RESTRendererBase.handleError("Cannot register file(s)", e, logger);
 		}finally {
 			if(locations!=null) {
 				PEConfig.getInstance().getLocationStore().write(locations);
 			}
 		}
-	}
-
-	@Override
-	protected Map<String, Object> getProperties() throws Exception {
-		return new HashMap<>();
-	}
-
-
-
-	@Override
-	protected void updateLinks() {
-		links.add(new Link("parent",RESTUtils.makeHref(kernel, "workflows/", wf.getUniqueID()),
-				"Parent Workflow"));
 	}
 
 }

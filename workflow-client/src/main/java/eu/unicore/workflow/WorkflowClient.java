@@ -57,8 +57,8 @@ public class WorkflowClient extends BaseServiceClient {
 				getAuth());
 	}
 
-	public BaseServiceClient getFileList() throws Exception {
-		return new BaseServiceClient(endpoint.cloneTo(getLinkUrl("files")), 
+	public WorkflowFilesClient getFileList() throws Exception {
+		return new WorkflowFilesClient(endpoint.cloneTo(getLinkUrl("files")), 
 				getSecurityConfiguration(), 
 				getAuth());
 	}

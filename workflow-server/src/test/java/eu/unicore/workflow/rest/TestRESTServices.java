@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -19,6 +20,7 @@ import eu.unicore.client.data.HttpFileTransferClient;
 import eu.unicore.services.rest.client.RESTException;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
+import eu.unicore.workflow.WorkflowFilesClient;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileIndirectionHelper;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
@@ -85,17 +87,20 @@ public class TestRESTServices extends WSSTestBase {
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
 		System.out.println(loc);
 		Assert.assertNotNull(loc.get("wf:date1/out"));
-		BaseServiceClient fileList = client.getFileList();
+		WorkflowFilesClient fileList = client.getFileList();
 		fileList.setUpdateInterval(-1);
-		JSONObject files = fileList.getProperties();
-		System.out.println(files.toString(2));
-		Assert.assertNotNull(files.getString("wf:date1/out"));
+		Map<String,String>mappings = fileList.getMappings();
+		System.out.println(mappings);
+		Assert.assertNotNull(mappings.get("wf:date1/out"));
 		// register
-		JSONObject toRegister = new JSONObject();
+		Map<String,String> toRegister = new HashMap<>();
 		toRegister.put("foo", "http://somewhere");
-		fileList.setProperties(toRegister);
-		files = fileList.getProperties();
-		Assert.assertEquals("http://somewhere", files.getString("wf:foo"));
+		fileList.register(toRegister);
+		mappings = fileList.getMappings();
+		Assert.assertEquals(2,  mappings.size());
+		Assert.assertEquals("http://somewhere", mappings.get("wf:foo"));
+		mappings = fileList.getMappings("wf:date1/*");
+		Assert.assertEquals(1,  mappings.size());
 		client.delete();
 	}
 	

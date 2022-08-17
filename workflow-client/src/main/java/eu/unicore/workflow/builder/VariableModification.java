@@ -7,12 +7,17 @@ import de.fzj.unicore.uas.json.JSONUtil;
 public class VariableModification {
 
 	protected final JSONObject json;
+	protected final String id;
 
 	public VariableModification(String id) {
 		this.json = new JSONObject();
-		JSONUtil.putQuietly(json, "id", id);
+		this.id = id;
 	}
 
+	public String getID() {
+		return id;
+	}
+	
 	public JSONObject getJSON() {
 		return json;
 	}
