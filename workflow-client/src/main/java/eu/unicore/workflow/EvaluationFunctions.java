@@ -8,11 +8,6 @@ package eu.unicore.workflow;
 public interface EvaluationFunctions {
 
 	/**
-	 * evaluate the given boolean expression
-	 */
-	public boolean eval(boolean what) ;
-	
-	/**
 	 * the format used to denote times : yyyy-MM-dd HH:mm
 	 */
 	public static final String DATE_FORMAT="yyyy-MM-dd HH:mm";
@@ -20,12 +15,12 @@ public interface EvaluationFunctions {
 	/**
 	 * check if the given time is later than now 
 	 */
-	public boolean after(String time);
+	public boolean after(String time) throws Exception;
 	
 	/**
 	 * check if the given time is before now 
 	 */
-	public boolean before(String time);
+	public boolean before(String time) throws Exception;
 	
 	/**
 	 * get the last known exit code of the given activity

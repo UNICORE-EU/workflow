@@ -65,6 +65,12 @@ public class WorkflowProperties extends PropertiesHelper {
 	public static final String POLLING="pollingInterval";
 
 	/**
+	 * property key for defining the period for "fast" job status polling  
+	 */
+	public static final String FAST_POLLING="fastPollingInterval";
+
+	
+	/**
 	 * property key for disabling re-submission
 	 */
 	public static final String DISABLE_RESUBMIT="resubmitDisable";
@@ -104,6 +110,8 @@ public class WorkflowProperties extends PropertiesHelper {
 		META.put(RESUBMIT_LIMIT, new PropertyMD(String.valueOf(DEFAULT_RESUBMIT_LIMIT)).setInt().setPositive().
 				setDescription("Maximum number of re-submissions of failed jobs."));
 		META.put(POLLING, new PropertyMD(String.valueOf("600")).setInt().setPositive().
+				setDescription("Interval in seconds for (slow) polling of job states."));
+		META.put(FAST_POLLING, new PropertyMD(String.valueOf("20")).setInt().setPositive().
 				setDescription("Interval in seconds for (slow) polling of job states."));
 		META.put(INTERNAL_MODE, new PropertyMD("false").setBoolean().
 				setDescription("Internal mode: Workflow service only uses services deployed in the same UNICORE/X instance."));
@@ -155,6 +163,10 @@ public class WorkflowProperties extends PropertiesHelper {
 		return getIntValue(POLLING);
 	}
 
+	public int getFastPollingInterval(){
+		return getIntValue(FAST_POLLING);
+	}
+	
 	public Properties getRawProperties() {
 		return properties;
 	}

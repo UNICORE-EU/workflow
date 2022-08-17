@@ -1,0 +1,20 @@
+{
+
+"activities" : {
+  "a1": {
+   "job": {
+     "Executable": "date",
+    },
+  },
+  "a2": {
+   "job": {
+     "Executable": "date",
+    },
+  },
+ },
+
+"transitions": [
+ {"from": "a1", "to": "no-such-activity"},
+]
+
+}

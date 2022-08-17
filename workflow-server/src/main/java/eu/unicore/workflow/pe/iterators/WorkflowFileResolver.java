@@ -6,13 +6,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.util.Pair;
-import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.core.StorageClient;
+import eu.unicore.services.Kernel;
 import eu.unicore.util.Log;
-import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.Constants;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
@@ -68,9 +66,10 @@ public class WorkflowFileResolver extends SMSResolver {
 				if(match(logicalName, loc) && !isExcluded(logicalName, fileSet)){
 					String physicalLocation = locations.getLocations().get(logicalName);
 					if(smsClient==null || !physicalLocation.contains(smsClient.getEndpoint().getUrl())){
-						smsClient = getSMSClient(extractStorageURL(physicalLocation), workflowID, getClientConfiguration(kernel, workflowID));
+						smsClient = getSMSClient(extractStorageURL(physicalLocation), workflowID, kernel.getClientConfiguration());
 					}
-					results.add(new Pair<String,Long>(physicalLocation,getFileSize(smsClient, physicalLocation)));
+					long size = getFileSize(smsClient, physicalLocation);
+					if(size>-1)results.add(new Pair<String,Long>(physicalLocation, size));
 				}
 			}	
 		}
@@ -90,15 +89,6 @@ public class WorkflowFileResolver extends SMSResolver {
 			logger.error("Cannot retrieve file size",ex);
 		}
 		return Long.valueOf(-1);
-	}
-
-	private IClientConfiguration clientConfig = null;
-
-	protected IClientConfiguration getClientConfiguration(Kernel kernel, String workflowID) throws PersistenceException{
-		if(clientConfig==null){
-			clientConfig=kernel.getClientConfiguration().clone();
-		}
-		return clientConfig;
 	}
 
 	public boolean equals(Object other){

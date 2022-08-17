@@ -12,10 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Validate {
 
-	private static final List<String>invoked=new ArrayList<String>();
-	private static final Map<String,Integer>invocations=new ConcurrentHashMap<String,Integer>();
-	
-	private static final List<String>actionIDs=new ArrayList<String>();
+	private static final List<String>invoked = new ArrayList<>();
+	private static final Map<String,Integer>invocations = new ConcurrentHashMap<>();
+	private static final List<String>actionIDs = new ArrayList<>();
 	
 	private Validate(){}
 	

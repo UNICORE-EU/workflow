@@ -239,7 +239,7 @@ public class Converter {
 			iterate=new ValueSetIterator(JSONUtil.toArray(values));
 		}
 		else if(fileSetDef!=null && fileSetDef.length()>0){
-			List<FileSet>fileSets=new ArrayList<FileSet>();
+			List<FileSet>fileSets = new ArrayList<>();
 			boolean chunked=false;
 			int chunkSize=0;
 			String formatString=null;

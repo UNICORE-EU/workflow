@@ -73,10 +73,6 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		String iteration=getCurrentIteration();
 		logger.debug("Start processing Job execution activity <{}> in iteration <{}>", work.getID(), iteration);
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
-		}
 		vars.put(VAR_KEY_CURRENT_TOTAL_ITERATION,iteration);
 		try {
 			submitJob();
@@ -109,7 +105,10 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				}
 			}
 		};
-		int wakeUpPeriod=properties.getStatusPollingInterval();
+		boolean useNotifications = !Boolean.parseBoolean(getWork()
+				.getOption(JSONExecutionActivity.OPTION_NO_NOTIFICATIONS));
+		int wakeUpPeriod = useNotifications? 
+				properties.getStatusPollingInterval() : properties.getFastPollingInterval();
 		xnjs.getScheduledExecutor().schedule(r, wakeUpPeriod, TimeUnit.SECONDS);
 	}
 
@@ -131,7 +130,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 		// TODO?!
 		//Calendar lifetime=wfc.getLifetime();
-
+		
 		if(!Boolean.parseBoolean(work.getOption(JSONExecutionActivity.OPTION_NO_NOTIFICATIONS))){
 			String cbUrl = getBaseURL()+workflowID+"/actions/callback";
 			wa.put("Notification", cbUrl);
@@ -220,7 +219,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 */
 	@Override
 	protected void handleRunning()throws ProcessingException{
-		// check last send instant to SO
+		// check last send instant
 		Long lastSend = (Long)action.getProcessingContext().get(SEND_INSTANT);
 		if(lastSend!=null && lastSend+5000>System.currentTimeMillis()){
 			return;

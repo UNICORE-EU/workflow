@@ -18,9 +18,9 @@ public abstract class ActivityContainer extends Activity{
 
 	private static final long serialVersionUID=1;
 
-	final Map<String,Wrapper<Activity>>activities=new HashMap<String, Wrapper<Activity>>();
+	final Map<String,Wrapper<Activity>>activities = new HashMap<>();
 
-	protected final Map<String,DeclareVariableActivity>declarations=new HashMap<String, DeclareVariableActivity>();
+	protected final Map<String,DeclareVariableActivity>declarations = new HashMap<>();
 
 	protected String loopIteratorName=null;
 
@@ -53,7 +53,7 @@ public abstract class ActivityContainer extends Activity{
 	public void setActivities(List<Activity> activities) {
 		this.activities.clear();
 		for(Activity a: activities){
-			this.activities.put(a.getID(), new Wrapper<Activity>(a));
+			this.activities.put(a.getID(), new Wrapper<>(a));
 		}
 	}
 
@@ -104,7 +104,7 @@ public abstract class ActivityContainer extends Activity{
 		//clone activities
 		for(Map.Entry<String, Wrapper<Activity>> entry:this.activities.entrySet()){
 			Activity clonedActivity=entry.getValue().get().clone();
-			cloned.activities.put(entry.getKey(), new Wrapper<Activity>(clonedActivity));
+			cloned.activities.put(entry.getKey(), new Wrapper<>(clonedActivity));
 		}
 		//clone declarations
 		for(Map.Entry<String, DeclareVariableActivity> entry:this.declarations.entrySet()){

@@ -76,7 +76,6 @@ public class TestConversion {
 		String file="src/test/resources/json/foreach.json";
 		String wfID="1";
 		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
-		System.out.println(wf.toString(2));
 		assert wf!=null;
 		ConversionResult res = new Converter().convert(wfID, wf);
 		assert res!=null;
@@ -103,16 +102,9 @@ public class TestConversion {
 	@Test
 	public void testExpressions() throws Exception {
 		String wfID = "1";
-		String expr = "eval(1+1=2)";
-		String expect = "(new eu.unicore.workflow.pe.Evaluator(\"1\", CURRENT_TOTAL_ITERATOR).eval(1+1=2))";
+		String expr = "exitCode(\"blah\")>0";
+		String expect = "(new eu.unicore.workflow.pe.Evaluator(\"1\", CURRENT_TOTAL_ITERATOR).exitCode(\"blah\"))>0";
 		String actual = Converter.convertExpression(wfID, expr);
-		System.out.println(actual);
-		assert expect.equals(actual) : "got: "+actual;
-		
-		expr = "eval(1+1=2) && exitCode(\"blah\")>0";
-		expect = "(new eu.unicore.workflow.pe.Evaluator(\"1\", CURRENT_TOTAL_ITERATOR).eval(1+1=2))"+
-				" && (new eu.unicore.workflow.pe.Evaluator(\"1\", CURRENT_TOTAL_ITERATOR).exitCode(\"blah\"))>0";
-		actual = Converter.convertExpression(wfID, expr);
 		assert expect.equals(actual) : "got: "+actual;
 	}
 	
@@ -194,9 +186,7 @@ public class TestConversion {
 		PEWorkflow ag=res.getConvertedWorkflow();
 		WhileGroup whileGrp = (WhileGroup)ag.getActivity("while");
 		ScriptCondition sc = (ScriptCondition) whileGrp.getCondition();
-		System.out.println(sc.getScript());
-	//	assert "eval(COUNTER<5);".equals(sc.getScript()): sc.getScript();
-		
+		assert "C<=2;".equals(sc.getScript()): sc.getScript();
 	}
 	
 	@Test

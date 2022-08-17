@@ -64,7 +64,7 @@ public abstract class TestBase {
 		xnjs.start();
 		
 		//setup persistence
-		H2Persist<WorkflowContainer>persist=new H2Persist<WorkflowContainer>();
+		H2Persist<WorkflowContainer>persist = new H2Persist<>();
 		persist.setDaoClass(WorkflowContainer.class);
 		Properties props=new Properties();
 		props.setProperty("persistence.directory", "target/data");
@@ -145,10 +145,10 @@ public abstract class TestBase {
 	
 	public void waitForDone(String wfID) throws ExecutionException, InterruptedException {
 		int c=0;
-		Integer s = 0;
+		int s = 0;
 		while(c<120){
 			s = xnjs.get(Manager.class).getStatus(wfID, null);
-			if(ActionStatus.DONE!=s.intValue()){
+			if(ActionStatus.DONE!=s){
 				Thread.sleep(1000);
 				c++;
 			}

@@ -27,7 +27,12 @@ public class ResolverFactory {
 		resolvers.clear();
 	};
 
-
+	public static synchronized void reset(){
+		resolvers.clear();
+		resolvers.add(SMSResolver.class);
+		resolvers.add(WorkflowFileResolver.class);
+	};
+	
 	public static synchronized void registerResolver(Class<? extends Resolver> resolver){
 		resolvers.add(resolver);
 	};

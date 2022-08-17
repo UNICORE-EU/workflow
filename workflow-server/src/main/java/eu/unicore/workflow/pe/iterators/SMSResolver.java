@@ -33,8 +33,7 @@ public class SMSResolver implements Resolver{
 	
 	@Override
 	public boolean acceptBase(String base) {
-		if(base!=null && base.contains("/rest/core/storages/"))return true;
-		return false;
+		return base!=null && base.contains("/rest/core/storages/");
 	}
 
 	@Override
@@ -175,8 +174,7 @@ public class SMSResolver implements Resolver{
 		return "/";
 	}
 
-	public StorageClient getSMSClient(String url, String workflowID, IClientConfiguration props)throws Exception{
-		IClientConfiguration sp = props.clone();
+	public StorageClient getSMSClient(String url, String workflowID, IClientConfiguration sp)throws Exception{
 		String user = readWF(workflowID).getUserDN();
 		return getSMSClient(url, sp, user);
 	}

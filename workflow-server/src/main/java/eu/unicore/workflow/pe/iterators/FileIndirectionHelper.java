@@ -101,14 +101,10 @@ public class FileIndirectionHelper {
 	 * @param base
 	 */
 	protected static String getURL(String base)throws Exception{
-		//check if we have an extra U6 protocol in the string
+		//check if we have an extra UNICORE protocol in the string
 		int i=base.indexOf(':');
 		String sub=base.substring(i+1);
-		if ( sub.startsWith("http://") || sub.startsWith("https://")){
-			int j=sub.indexOf('#');
-			if(j>-1){
-				sub=sub.substring(0, j);
-			}
+		if (sub.startsWith("http://") || sub.startsWith("https://")){
 			return sub;
 		}  
 		return base;

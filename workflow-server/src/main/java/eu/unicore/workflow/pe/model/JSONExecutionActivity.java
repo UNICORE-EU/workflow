@@ -35,7 +35,7 @@ public class JSONExecutionActivity extends Activity{
 	
 	private String jobDefinition;
 	
-	private final Map<String,String>options=new HashMap<String,String>();
+	private final Map<String,String>options=new HashMap<>();
 	
 	//requested job resource lifetime
 	private long lifetimeMillis=-1;
@@ -53,6 +53,7 @@ public class JSONExecutionActivity extends Activity{
 		HashSet<String> s=new HashSet<String>();
 		s.add(OPTION_IGNORE_FAILURE);
 		s.add(OPTION_MAX_RESUBMITS);
+		s.add(OPTION_NO_NOTIFICATIONS);
 		UNDERSTOOD_OPTIONS = Collections.unmodifiableSet(s);
 	}
 	

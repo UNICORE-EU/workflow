@@ -1,8 +1,9 @@
 package eu.unicore.workflow.pe;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import de.fzj.unicore.persist.Persist;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.InternalManager;
 import eu.unicore.workflow.pe.model.Activity;
+import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.PauseActivity;
@@ -82,14 +84,21 @@ public class TestWorkflowProcessing extends TestBase {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testHelperActivities()throws Exception{
 		Validate.clear();
 		String wfID=UUID.randomUUID().toString();
 		PEWorkflow job=new PEWorkflow(wfID);
 		List<Activity>as=new ArrayList<>();
 		List<Transition>tr=new ArrayList<>();
-		
+		DeclareVariableActivity d1 = new DeclareVariableActivity("dec1", wfID, "b1", 
+				VariableConstants.VARIABLE_TYPE_BOOLEAN, "true");
+		DeclareVariableActivity d2 = new DeclareVariableActivity("dec2", wfID, "s1", 
+				VariableConstants.VARIABLE_TYPE_STRING, "val");
+		DeclareVariableActivity d3 = new DeclareVariableActivity("dec3", wfID, "f1", 
+				VariableConstants.VARIABLE_TYPE_FLOAT, "3.1415");
+		DeclareVariableActivity d4 = new DeclareVariableActivity("dec4", wfID, "i1", 
+				VariableConstants.VARIABLE_TYPE_INTEGER, "42");
+		job.setDeclarations(d1,d2,d3,d4);
 		// routing
 		as.add(new RoutingActivity("r1",wfID));
 		as.add(new TestActivity("a1",wfID));
@@ -130,9 +139,13 @@ public class TestWorkflowProcessing extends TestBase {
 		assert HoldActivityProcessor.isHeld(wfID, "hold").getM1();
 		
 		//continue
-		WorkflowContainer wfc=persist.getForUpdate(wfID);
-		wfc.resume(Collections.EMPTY_MAP);
-		persist.write(wfc);
+		Map<String,String> params = new HashMap<>();
+		params.put("b1", "false");
+		params.put("s1", "bar");
+		params.put("f1", "2.718");
+		params.put("i1", "137");
+		
+		PEConfig.getInstance().getProcessEngine().resume(wfID, params);
 		assert !HoldActivityProcessor.isHeld(wfID, "hold").getM1();
 		
 		waitForDone(wfID);

@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import de.fzj.unicore.uas.UAS;
@@ -21,19 +22,22 @@ public abstract class WSSTestBase {
 
 	protected static UAS uas;
 	
+	@Before
+	public void cleanup()throws Exception{
+		FileUtils.deleteQuietly(new File("target/data/WORK"));
+		FileUtils.forceMkdir(new File("target/data/WORK"));
+	}
+	
 	@BeforeClass
 	public static void setUp()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data"));
-		
 		uas=new UAS("src/test/resources/container.properties");
 		kernel=uas.getKernel();
 		uas.startSynchronous();
-		
 	}
 	
 	@AfterClass
 	public static void tearDown()throws Exception{
-		System.out.println("*** SHUTDOWN");
 		if(kernel!=null)kernel.shutdown();
 	}
 	

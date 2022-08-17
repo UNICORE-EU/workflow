@@ -135,9 +135,11 @@ public class TestForLoopProcessing extends TestBase {
 	public void testIterateOverFileSet()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
-
+		ResolverFactory.reset();
 		ResolverFactory.registerResolver(R1.class);
-		FileSet fs=new FileSet("test/", null, null, false, false);
+		FileSet fs = new FileSet("test/", null, null, false, false);
+		total = 10;
+		size = 0;
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 		fsi.setIteratorName("ForEach_Iterator");
 
@@ -153,23 +155,24 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert 10==Validate.getInvocations("a1");
+		assert 10==Validate.getInvocations("a1") : "Expect 10, have "+Validate.getInvocations("a1");
 
 	}
-	
+
 	static long size = 0l;
 	static int total = 10;
 	
 	public static class R1 implements Resolver {
 
 		public boolean acceptBase(String base) {
-			return true;
+			return "test/".equals(base);
 		}
+
 		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)
 				throws ProcessingException {
-			ArrayList<Pair<String, Long>>results=new ArrayList<Pair<String, Long>>();
+			ArrayList<Pair<String, Long>>results = new ArrayList<>();
 			for(int i=0;i<total;i++){
-				results.add(new Pair<String, Long>("file_"+i, size));
+				results.add(new Pair<>("file_"+i, size));
 			}
 			return results;
 		}
@@ -179,12 +182,13 @@ public class TestForLoopProcessing extends TestBase {
 	public void testIterateOverChunkedFileSet()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
-
 		final int chunkSize=2;
-
+		total = 10;
+		size = 0;
+		ResolverFactory.reset();
 		ResolverFactory.registerResolver(R1.class);
-		FileSet fs=new FileSet("test/", null, null, false, false);
-		FileSetIterator fsi=new FileSetIterator(null,fs);
+		FileSet fs = new FileSet("test/", null, null, false, false);
+		FileSetIterator fsi = new FileSetIterator(null,fs);
 
 		ChunkedFileIterator chunkedIterator=new ChunkedFileIterator(fsi,chunkSize);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
@@ -201,7 +205,6 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-
 	}
 
 	@Test
@@ -209,13 +212,13 @@ public class TestForLoopProcessing extends TestBase {
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
 
-		total=10;
-		size=100l;
-		
 		final int chunkSize=2;
 
+		ResolverFactory.reset();
 		ResolverFactory.registerResolver(R1.class);
-		FileSet fs=new FileSet("test/", null, null, false, false);
+		FileSet fs = new FileSet("test/", null, null, false, false);
+		total=10;
+		size=100l;
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size as number of files per chunk
@@ -235,7 +238,8 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1").intValue();
+		assert total/chunkSize==Validate.getInvocations("a1").intValue():
+			"Expect "+total/chunkSize+", have: "+Validate.getInvocations("a1").intValue();
 	}
 
 
@@ -244,13 +248,12 @@ public class TestForLoopProcessing extends TestBase {
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
 
+		final int chunkSize=2;
+		ResolverFactory.reset();
+		ResolverFactory.registerResolver(R1.class);
+		FileSet fs = new FileSet("test/", null, null, false, false);
 		total=10;
 		size=1024l;
-		
-		final int chunkSize=2;
-
-		ResolverFactory.registerResolver(R1.class);
-		FileSet fs=new FileSet("test/", null, null, false, false);
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size in kbytes
@@ -270,7 +273,8 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1").intValue();
+		assert total/chunkSize==Validate.getInvocations("a1").intValue():
+			"Expect "+total/chunkSize+", have: "+Validate.getInvocations("a1").intValue();
 	}
 
 
@@ -279,12 +283,12 @@ public class TestForLoopProcessing extends TestBase {
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();
 
+		final int chunkSize=2;
+		ResolverFactory.reset();
+		ResolverFactory.registerResolver(R1.class);
+		FileSet fs = new FileSet("test/", null, null, false, false);
 		total=10;
 		size=1024l;
-		final int chunkSize=2;
-
-		ResolverFactory.registerResolver(R1.class);
-		FileSet fs=new FileSet("test/", null, null, false, false);
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size in kbytes
@@ -306,7 +310,8 @@ public class TestForLoopProcessing extends TestBase {
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");
-		assert total/chunkSize==Validate.getInvocations("a1").intValue();
+		assert total/chunkSize==Validate.getInvocations("a1").intValue():
+			"Expect "+total/chunkSize+", have: "+Validate.getInvocations("a1").intValue();
 	}
 
 	@Test @Ignore

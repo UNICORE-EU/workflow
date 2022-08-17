@@ -146,7 +146,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 	public static Pair<Boolean, Map<String,String>> isHeld(String workflowID, String activityID) throws PersistenceException{
 		WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(workflowID);
 		SubflowContainer sfc=wfc.findSubFlowContainingActivity(activityID);
-		Pair<Boolean, Map<String,String>>res=new Pair<Boolean, Map<String,String>>();
+		Pair<Boolean, Map<String,String>>res = new Pair<>();
 		if(sfc!=null){
 			if(sfc.isHeld()){
 				res.setM1(Boolean.TRUE);

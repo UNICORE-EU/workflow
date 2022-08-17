@@ -3,6 +3,7 @@ package eu.unicore.workflow.rest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -46,8 +47,6 @@ public class WorkflowFiles extends RESTRendererBase {
 		this.baseURL = baseURL;
 	}
 
-
-
 	/**
 	 * query file location(s)
 	 */
@@ -60,20 +59,42 @@ public class WorkflowFiles extends RESTRendererBase {
 		try{
 			if(path==null || path.isEmpty())path="/";
 			Locations locations = PEConfig.getInstance().getLocationStore().read(wf.getUniqueID());
-			// TODO filter according to path parameter
-			JSONObject o = JSONUtil.asJSON(locations.getLocations());
+			JSONObject o ;
+			Map<String, String>loc = locations.getLocations();
+			if(path!="/") {
+				if(!path.startsWith("wf:")) {
+					path="wf:"+path;
+				}
+				Pattern p = compilePattern(path);
+				o = new JSONObject();
+				for(String name: loc.keySet()) {
+					if(p.matcher(name).find()) {
+						o.put(name, loc.get(name));
+					}
+				}
+			}else {
+				o = JSONUtil.asJSON(loc);
+			}
 			return Response.ok(o.toString(), MediaType.APPLICATION_JSON).build();
 		}catch(Exception ex){
 			return handleError("Error listing workflow files matching'"+path+"'", ex, logger);
 		}
 	}
-
+	
+	private Pattern compilePattern(String expr){
+		StringBuilder pattern=new StringBuilder();
+		pattern.append(expr.replace(".","\\.").replace("*", "[^/]*").replace("?", "."));
+		pattern.append("\\Z");
+		return Pattern.compile(pattern.toString());
+	}
+	
 	/**
 	 * register location
 	 */
 	@PUT
-	@Path("/register")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response register(String jsonString) 
 			throws Exception {
 		Locations locations = null;
@@ -81,13 +102,15 @@ public class WorkflowFiles extends RESTRendererBase {
 			locations = PEConfig.getInstance().getLocationStore().read(wf.getUniqueID());
 			JSONObject o = new JSONObject(jsonString);
 			Iterator<String> keys = o.keys();
+			JSONObject reply = new JSONObject();
 			while(keys.hasNext()) {
 				String key = keys.next();
 				String loc = o.getString(key);
 				if(!key.startsWith("wf:"))key="wf:"+key;
 				locations.getLocations().put(key, loc);
+				reply.put(key, loc);
 			}
-			return Response.ok().build();
+			return Response.ok().entity(reply.toString()).build();
 		}
 		catch(Exception e){
 			return handleError("Cannot register file(s)", e, logger);
@@ -100,8 +123,7 @@ public class WorkflowFiles extends RESTRendererBase {
 
 	@Override
 	protected Map<String, Object> getProperties() throws Exception {
-		Map<String,Object> props = new HashMap<>();
-		return props;
+		return new HashMap<>();
 	}
 
 

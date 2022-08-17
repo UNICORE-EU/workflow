@@ -26,7 +26,7 @@ public class ActivityGroup extends ActivityContainer{
 	
 	public static final String OPTION_COBROKER="COBROKER";
 	
-	private List<Transition>transitions=new ArrayList<Transition>();
+	private List<Transition>transitions = new ArrayList<>();
 	
 	private boolean coBrokerActivities=false;
 	
@@ -48,7 +48,7 @@ public class ActivityGroup extends ActivityContainer{
 	 * @return non-null list of Activity objects in state READY
 	 */
 	public List<Activity> getDueActivities(){
-		List<Activity>result=new ArrayList<Activity>();
+		List<Activity>result = new ArrayList<>();
 		for(Wrapper<Activity> wa: activities.values()){
 			if(ActivityStatus.READY==wa.get().getStatus())result.add(wa.get());
 		}
@@ -147,7 +147,7 @@ public class ActivityGroup extends ActivityContainer{
 	}
 	
 	public List<Transition>findOutgoingTransitions(Activity a){
-		List<Transition>result=new ArrayList<Transition>();
+		List<Transition>result = new ArrayList<>();
 		String id=a.id;
 		for(Transition t: transitions){
 			if(id.equals(t.from))result.add(t);
@@ -161,7 +161,7 @@ public class ActivityGroup extends ActivityContainer{
 	 * @param a - the activity to check
 	 */
 	public List<Transition>findIncomingTransitions(Activity a){
-		List<Transition>result=new ArrayList<Transition>();
+		List<Transition>result = new ArrayList<>();
 		String id=a.id;
 		for(Transition t: transitions){
 			if(id.equals(t.to))result.add(t);
