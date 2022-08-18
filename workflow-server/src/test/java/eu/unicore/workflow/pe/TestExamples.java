@@ -10,6 +10,7 @@ import org.junit.Test;
 import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.model.PEWorkflow;
+import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.xnjs.TestBase;
 
 /**
@@ -72,6 +73,11 @@ public class TestExamples  extends TestBase {
 		assert !res.hasConversionErrors(): String.valueOf(res.getConversionErrors());
 		PEWorkflow wf = res.getConvertedWorkflow();
 		doProcess(wf);
+		
+		try (WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(wfID)){
+			wfc.compact(0);
+			assert wfc.getSize()==0;
+		}
 	}
 	
 	@Test

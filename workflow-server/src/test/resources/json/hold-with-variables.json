@@ -15,20 +15,21 @@
 	    "id": "date1",
 	    "type": "JOB",
 	    "job": {
-		"ApplicationName": "Date",
+		  "ApplicationName": "Date",
 	    },
 	},
 	
 	{
 	    "id": "hold1",
 	    "type": "HOLD",
+	    "sleep_time": "30m",
 	},
 	
 	{
 	    "id": "date2",
 	    "type": "JOB",
 	    "job": {
-		"Executable": "date",
+		  "Executable": "date",
 	    },
 	},
     ],

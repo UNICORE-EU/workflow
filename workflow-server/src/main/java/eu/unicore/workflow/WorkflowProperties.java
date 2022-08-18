@@ -24,9 +24,9 @@ import eu.unicore.util.configuration.PropertyMD;
 public class WorkflowProperties extends PropertiesHelper {
 
 	// base for workflow-related logger categories
-	public static final String LOG_CATEGORY = "unicore.workflow.";
+	public static final String LOG_CATEGORY = "unicore.workflow";
 
-	private static final Logger logger = Log.getLogger("unicore.configuration.", WorkflowProperties.class);
+	private static final Logger logger = Log.getLogger("unicore.configuration", WorkflowProperties.class);
 
 	@DocumentationReferencePrefix
 	public static final String PREFIX="workflow.";

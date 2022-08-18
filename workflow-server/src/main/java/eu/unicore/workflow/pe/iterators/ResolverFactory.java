@@ -69,18 +69,4 @@ public class ResolverFactory {
 		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)throws ProcessingException;
 	}
 
-
-	public static class DefaultResolver implements Resolver{
-
-		public boolean acceptBase(String base) {
-			return true;
-		}
-
-		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)
-				throws ProcessingException {
-			return null;
-		}
-
-	}
-
 }

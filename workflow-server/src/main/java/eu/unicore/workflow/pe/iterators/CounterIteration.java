@@ -66,10 +66,6 @@ public class CounterIteration implements Serializable, Iterate{
 		//nop
 	}
 
-	public CounterIteration clone()throws CloneNotSupportedException{
-		return (CounterIteration)super.clone();
-	}
-	
 	public void fillContext(ProcessVariables vars){
 		//NOP
 	}

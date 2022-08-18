@@ -13,7 +13,7 @@ import eu.unicore.workflow.pe.xnjs.ProcessVariables;
  * 
  * @author schuller
  */
-public interface Iterate extends Cloneable, Serializable{
+public interface Iterate extends Serializable{
 	
 	/**
 	 * separates the various levels of the iterator value
@@ -53,11 +53,5 @@ public interface Iterate extends Cloneable, Serializable{
 	 * @param vars
 	 */
 	public void fillContext(ProcessVariables vars);
-	
-	/**
-	 * clone this {@link Iterate}
-	 * @throws CloneNotSupportedException
-	 */
-	public Iterate clone()throws CloneNotSupportedException;
-	
+
 }

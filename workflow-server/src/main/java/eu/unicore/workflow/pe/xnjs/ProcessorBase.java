@@ -1,20 +1,15 @@
 package eu.unicore.workflow.pe.xnjs;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.persist.PersistenceException;
-import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionResult;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
-import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import de.fzj.unicore.xnjs.ems.processors.DefaultProcessor;
+import eu.unicore.services.Kernel;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.WorkflowProperties;
@@ -31,9 +26,9 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  * 
  * @author schuller
  */
-public class ProcessorBase extends DefaultProcessor implements Constants{
+public abstract class ProcessorBase extends DefaultProcessor implements Constants{
 
-	protected static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, DefaultProcessor.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ProcessorBase.class);
 	
 	protected WorkflowProperties properties;
 	
@@ -121,43 +116,15 @@ public class ProcessorBase extends DefaultProcessor implements Constants{
 			String iteration=getCurrentIteration();
 			logger.debug("Reporting error: <{}> for activity <{}> in iteration <{}>", errorDescription, activityID, iteration);
 			try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
-				if(wfc==null){
-					logger.error("No parent workflow found for activity <"+activityID+">");
-					return;
-				}
 				SubflowContainer sfc=wfc.findSubFlowContainingActivity(activityID);
-				if(sfc!=null){
-					PEStatus status=sfc.getActivityStatus(activityID,iteration);
-					status.setErrorCode(errorCode);
-					status.setErrorDescription(errorDescription);
-					status.setActivityStatus(ActivityStatus.FAILED);
-					wfc.setDirty();
-				}
-				else{
-					logger.warn("No status reporting possible for workflow <{}> activity <{}> in iteration <{}>",
-							workflowID, activityID, iteration);
-				}
+				PEStatus status=sfc.getActivityStatus(activityID,iteration);
+				status.setErrorCode(errorCode);
+				status.setErrorDescription(errorDescription);
+				status.setActivityStatus(ActivityStatus.FAILED);
 			}
 		}catch(Exception ex){
 			Log.logException("Error while reporting error", ex, logger);
 		}
-	}
-
-	/**
-	 * set the action to "waiting" state and schedule it to wake up in N seconds
-	 */
-	protected void sendActionToSleep(int N){
-		action.setWaiting(true);
-		xnjs.getScheduledExecutor().schedule(new Runnable(){
-			public void run(){
-				final String actionID=action.getUUID();
-				try{
-					xnjs.get(InternalManager.class).handleEvent(new ContinueProcessingEvent(actionID));
-				}catch(ExecutionException ee){
-					Log.logException("Error sending continuation message for action <"+actionID+">", ee, logger);
-				}
-			}
-		}, N, TimeUnit.SECONDS);
 	}
 
 	public void setAction(Action a){

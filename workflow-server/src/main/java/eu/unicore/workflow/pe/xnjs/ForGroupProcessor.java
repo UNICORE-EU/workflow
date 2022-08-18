@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -54,11 +53,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 			reportError("ITERATION_ERROR", Log.createFaultMessage("Iteration error", ex));
 			throw new ProcessingException(ex);
 		}
-
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
-		}
 		submitAllEligibleActivities();
 	}
 
@@ -75,15 +69,7 @@ public class ForGroupProcessor extends GroupProcessorBase{
 		else{
 			//process some more iterations of the loop
 			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
-				if(workflowInfo==null){
-					String msg="No workflow info for <"+ag.getWorkflowID()+">";
-					logger.debug(msg);
-					setToDoneAndFailed(msg);
-					return;
-				}
 				SubflowContainer attr=workflowInfo.findSubFlowAttributes(ag.getID());
-				if(attr==null)throw new PersistenceException("Persistent information about <"+ag.getID()+"> is missing");
-
 				try{
 					//get the system limit for the maximum concurrent activities
 					int maxConcurrentSystem = properties.getIntValue(WorkflowProperties.FOR_EACH_MAX_CONCURRENT_ACTIVITIES);
@@ -98,7 +84,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 						if(subTasks.size()>=maxConcurrent){
 							break;
 						}
-						workflowInfo.setDirty();
 						subTasks.add(submit(ag.getBody(), attr));
 					}
 				}catch(Exception ex){
@@ -125,10 +110,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 			ForGroup ag=(ForGroup)action.getAjd();
 			//check substates ...
 			List<String>subTasks=getOrCreateSubTasks();
-			if(subTasks==null){
-				throw new IllegalStateException("Could not find list of sub-tasks.");
-			}
-
 			Iterator<String>iterator=subTasks.iterator();
 			subActionLoop: while(iterator.hasNext()){
 				String subActionID=iterator.next();
@@ -180,7 +161,6 @@ public class ForGroupProcessor extends GroupProcessorBase{
 							String subActivityID=((Activity)sub.getAjd()).getID();
 							PEStatus stat=attr.getActivityStatus(subActivityID, iteration);
 							stat.setActivityStatus(ActivityStatus.SUCCESS);
-							workflowInfo.setDirty();
 						}
 					}
 				}
@@ -190,7 +170,7 @@ public class ForGroupProcessor extends GroupProcessorBase{
 			throw new ProcessingException(ex);
 		}
 		if(subTasksStillRunning){
-			sendActionToSleep(3);
+			sleep(5);
 		}
 		submitAllEligibleActivities();
 	}

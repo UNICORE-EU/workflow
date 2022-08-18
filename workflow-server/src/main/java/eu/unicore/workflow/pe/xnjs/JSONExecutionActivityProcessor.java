@@ -31,6 +31,7 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.util.InsertVariablesFilter;
+import eu.unicore.workflow.pe.util.WorkAssignmentUtils;
 
 /**
  * Processes a single workflow activity<br/>
@@ -160,8 +161,13 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 	public static SiteSelectionStrategy defaultStrategy = new RandomSelection();
 
-	private String doSubmit(JSONObject work, String user)throws Exception {
-		Builder builder = new Builder(work.toString(2));
+	private String doSubmit(JSONObject job, String user)throws Exception {
+		Builder builder = new Builder(job.toString(2));
+		if(getWork().getBlacklist().size()>0) {
+			String existingBL = builder.getProperty("blacklist", "");
+			builder.setProperty("blacklist",
+					WorkAssignmentUtils.toCommaSeparatedList(getWork().getBlacklist(), existingBL));
+		}
 		TargetSystemFinder f = new TargetSystemFinder();
 		SiteClient sc = f.findTSS(
 				PEConfig.getInstance().getRegistry(), 
@@ -169,7 +175,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				PEConfig.getInstance().getAuthCallback(user), 
 				builder, 
 				defaultStrategy);
-		JSONObject prefs = work.optJSONObject("User preferences");
+		JSONObject prefs = job.optJSONObject("User preferences");
 		if(prefs!=null) {
 			for(String attr: new String[]{"uid", "xlogin", "role",
 					"group", "pgid", "supgids", "supplementaryGroups" }) {
@@ -177,7 +183,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				if(value!=null)sc.getUserPreferences().put(attr,value);
 			}
 		}
-		JobClient jc = sc.submitJob(work);
+		JobClient jc = sc.submitJob(job);
 		String wd = jc.getLinkUrl("workingDirectory");
 		action.getProcessingContext().put(WD_REF, wd);
 		action.getProcessingContext().put(USER, user);
@@ -192,25 +198,14 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		String jobID = jobURL.substring(jobURL.lastIndexOf("/")+1);
 
 		try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
-			if(wfc==null){
-				logger.error("No parent workflow found for activity <{}>", activityID);
-				return;
-			}
 			wfc.getJobMap().put(jobID, action.getUUID());
 			SubflowContainer sfc=wfc.findSubFlowContainingActivity(activityID);
-			if(sfc!=null){
-				PEStatus status = sfc.getActivityStatus(activityID,iteration);
-				status.setJobURL(jobURL);
-				wfc.setDirty();
-			}
-			else{
-				logger.warn("No status reporting possible for workflow <{}> activity <{}> iteration <{}>",
-						workflowID, activityID, iteration);
-			}
+			PEStatus status = sfc.getActivityStatus(activityID,iteration);
+			status.setJobURL(jobURL);
 		}
 	}
 
-	protected String getBaseURL() {
+	private String getBaseURL() {
 		return PEConfig.getInstance().getKernel().getContainerProperties().getContainerURL()+"/rest/workflows/";
 	}
 
@@ -224,22 +219,13 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		if(lastSend!=null && lastSend+5000>System.currentTimeMillis()){
 			return;
 		}
-
 		try{
 			if(!isTopLevelWorkflowStillRunning()){
 				setToDoneAndFailed("Parent workflow was aborted or failed");
 				reportError("PARENT_FAILED","Parent aborted or failed.");
 				return;
 			}
-
-			JSONExecutionActivity work = getWork();
-			String workflowID=work.getWorkflowID();
-			WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(workflowID);
-			if(wfc==null){
-				setToDoneAndFailed("Parent workflow information not found.");
-				return;
-			}
-
+			
 			String err="running";
 			Pair<Status, String>state=new Pair<>(Status.RUNNING, err);
 			String jobURL = getCurrentJobURL();
@@ -274,10 +260,9 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		}catch(Exception ex){
 			throw new ProcessingException(ex);
 		}
-
 	}
 
-	protected Pair<Status,String>getJobStatus(String jobUrl) throws Exception {
+	private Pair<Status,String>getJobStatus(String jobUrl) throws Exception {
 		String user = action.getProcessingContext().getAs(USER, String.class);
 		JobClient jc = new JobClient(new Endpoint(jobUrl), 
 				PEConfig.getInstance().getConfigProvider().getClientConfiguration(jobUrl),
@@ -334,7 +319,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		}
 	}
 
-	protected void handleResubmit()throws ProcessingException {
+	private void handleResubmit()throws ProcessingException {
 		JSONExecutionActivity work = getWork();
 		String errorCode = (String)action.getProcessingContext().get(LAST_ERROR_CODE);
 		String errorDescription = (String)action.getProcessingContext().get(LAST_ERROR_DESCRIPTION);
@@ -357,16 +342,15 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		}
 
 		// user can set option to "0" intending NO resubmission
-		int max = maxOption>0 ? Math.max(maxOption, getMaximumResubmitLimit()) : 0 ;
+		int max = maxOption>0 ? Math.min(maxOption, getMaximumResubmitLimit()) : 0 ;
 
 		//global flag
-		boolean configNoResubmit=properties.isResubmitDisabled();
+		boolean configNoResubmit = properties.isResubmitDisabled();
 
-		//we can finally decide now. We can resubmit if three conditions hold:
-		// 1. it is not switched off, OR the user explicitly wants it
+		//we can finally decide now. We can resubmit if:
+		// 1. it is not switched off AND the user explicitly wants it
 		// 2. the resubmit count is not exceeded
-		// 3. the error is recoverable
-		boolean resubmit = (!configNoResubmit || userWantsResubmit) && max>submitted && shouldResubmit(errorCode);
+		boolean resubmit = (!configNoResubmit && userWantsResubmit) && max>submitted;
 
 		if(resubmit){
 			int attempt=submitted+1;
@@ -384,6 +368,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				action.setStatus(ActionStatus.POSTPROCESSING);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, msg);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "SUBMIT_FAILED");
+				sleep(60);
 			}
 		}
 		else{
@@ -394,41 +379,13 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	}
 
 	/**
-	 * check whether the engine should resubmit a failed task
-	 * 
-	 * @param errorCode -  the error code describing the failure reason
-	 */
-	protected boolean shouldResubmit(String errorCode){
-		if(errorCode==null)return false;
-
-		//TODO check workflow and job setting
-
-		ErrorCode ect = null;
-
-		try{
-			ect = ErrorCode.valueOf(errorCode);
-			if(ect==null)return false;
-		}catch(Exception ex) {
-			return false;
-		}
-
-		// TODO!!
-
-		switch(ect){
-
-		default: return false;
-
-		}
-
-	}
-
-	/**
 	 * decide whether to add a blacklist entry. This makes sense if the job has a chance
 	 * to run successfully on a different target system
 	 * 
 	 * @param errorCode
 	 */
-	protected boolean shouldAddBlacklistEntry(String errorCode){
+	private boolean shouldAddBlacklistEntry(String errorCode){
+		if(errorCode==null)return false;
 		ErrorCode ect = ErrorCode.valueOf(errorCode);
 		if(ect==null)return false;
 		switch(ect){
@@ -441,7 +398,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		}
 	}
 
-	protected String getCurrentJobURL() throws Exception {
+	private String getCurrentJobURL() throws Exception {
 		JSONExecutionActivity work = getWork();
 		WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(work.getWorkflowID());
 		if(wfc==null){
@@ -454,7 +411,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 	}
 
-	protected void addToBlackList(){
+	private void addToBlackList(){
 		JSONExecutionActivity work = getWork();
 		try{
 			//first, find current submission host

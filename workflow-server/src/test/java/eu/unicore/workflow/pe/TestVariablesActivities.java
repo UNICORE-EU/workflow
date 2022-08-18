@@ -148,11 +148,11 @@ public class TestVariablesActivities extends TestBase {
 	
 	@Test()
 	public void testSecurityOfModifyVariable()throws Exception{
-		String wfID=UUID.randomUUID().toString();
-		ActivityGroup job=new ActivityGroup("1234",wfID);
-		List<Activity>as=new ArrayList<Activity>();
+		String wfID = UUID.randomUUID().toString();
+		PEWorkflow job = new PEWorkflow(wfID);
+		List<Activity>as = new ArrayList<>();
 		
-		//malicious code
+		// malicious script
 		as.add(new ModifyVariableActivity("a1",job.getWorkflowID(),"test1","System.exit(1);"));
 		
 		job.setActivities(as);

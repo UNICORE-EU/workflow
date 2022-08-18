@@ -29,7 +29,7 @@
 
     },
 
-    "chunking": { "chunksize": "2" }
+    "chunking": { "chunksize": "2", "filename_format": "file_{0}.{2}"},
 
     "filesets": [
       {

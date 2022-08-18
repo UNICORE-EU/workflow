@@ -1,9 +1,6 @@
 package eu.unicore.workflow.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,19 +9,16 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fzj.unicore.uas.util.Pair;
+import de.fzj.unicore.uas.xnjs.XNJSFacade;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
-import eu.unicore.client.core.StorageClient;
-import eu.unicore.client.data.HttpFileTransferClient;
 import eu.unicore.services.rest.client.RESTException;
 import eu.unicore.workflow.WorkflowClient;
+import eu.unicore.workflow.WorkflowClient.Status;
 import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.WorkflowFilesClient;
 import eu.unicore.workflow.pe.PEConfig;
-import eu.unicore.workflow.pe.iterators.FileIndirectionHelper;
-import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
-import eu.unicore.workflow.pe.iterators.WorkflowFileResolver;
+import eu.unicore.workflow.pe.xnjs.Statistics;
 
 public class TestRESTServices extends WSSTestBase {
 
@@ -47,6 +41,8 @@ public class TestRESTServices extends WSSTestBase {
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		assert wfProps.getJSONArray("tags").length()==1;
+		assert 1 == client.getJobList().getUrls(0, 100).size();
+		client.abort();
 		client.delete();
 	}
 	
@@ -72,6 +68,24 @@ public class TestRESTServices extends WSSTestBase {
 		client.delete();
 	}
 	
+	@Test
+	public void testHoldContinue()throws Exception{
+		WorkflowClient client = createWorkflow("src/test/resources/json/hold-with-variables.json");
+		JSONObject wfProps = client.getProperties();
+		int c=0;
+		do {
+			Thread.sleep(1000);
+			c++;
+		}while(Status.HELD!=client.getStatus() && c<20);
+		Map<String,String>params = new HashMap<>();
+		params.put("COUNTER", "456");
+		client.resume(params);
+		waitWhileRunning(client);
+		wfProps = client.getProperties();
+		System.out.println(wfProps.toString(2));
+		assert "456".equals(wfProps.getJSONObject("parameters").getString("COUNTER"));
+		client.delete();
+	}
 	
 	@Test
 	public void testRunTwoStepWithOutputs()throws Exception{
@@ -104,44 +118,6 @@ public class TestRESTServices extends WSSTestBase {
 		client.delete();
 	}
 	
-	
-	@Test
-	public void testResolveWorkflowFiles()throws Exception{
-		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
-		waitWhileRunning(client);
-		String wfURL = client.getEndpoint().getUrl();
-		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
-		WorkflowFileResolver resolver = new WorkflowFileResolver();
-		FileSet fileset = new FileSet("wf:", new String[] {"*/*"}, null, false, false);
-		Collection<Pair<String,Long>> results = resolver.resolve(wfID, fileset);
-		System.out.println(results);
-		Assert.assertEquals(2, results.size());
-	}
-	
-	@Test
-	public void testIndirectResolve()throws Exception{
-		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
-		waitWhileRunning(client);
-		String wfURL = client.getEndpoint().getUrl();
-		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
-
-		String list = 
-				"wf:date1/out\n" +
-				"wf:date1/err\n";
-		String smsURL = "http://localhost:64433/rest/core/storages/WORK";
-		StorageClient sms = new StorageClient(new Endpoint(smsURL),kernel.getClientConfiguration(),null);
-		HttpFileTransferClient ftc = (HttpFileTransferClient)sms.createImport("file_list.txt", false, -1, "BFT", null);
-		ftc.writeAllData(new ByteArrayInputStream(list.getBytes()));
-		ftc.delete();
-
-		Collection<Pair<String,Long>>source = new ArrayList<>();
-		source.add(new Pair<String,Long>(smsURL+"/files/file_list.txt",1l));
-		FileIndirectionHelper fih = new FileIndirectionHelper(source, wfID);
-		Collection<Pair<String,Long>> results = fih.resolve();
-		System.out.println(results);
-		Assert.assertEquals(2, results.size());
-	}
-	
 	@Test
 	public void testRunCatInput()throws Exception{
 		FileUtils.forceMkdir(new File("target/data/WORK"));
@@ -164,23 +140,6 @@ public class TestRESTServices extends WSSTestBase {
 		System.out.println(files.toString(2));
 		Assert.assertNotNull(files.getString("wf:infile"));
 		client.delete();
-	}
-
-	private WorkflowFactoryClient getFactoryClient() {
-		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
-		return new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
-	}
-	
-	private WorkflowClient createWorkflow(JSONObject wf) throws Exception {
-		wf.put("storageURL","https://somestorage");
-		return getFactoryClient().submitWorkflow(wf);
-	}
-
-	private WorkflowClient createWorkflow(String wfFileName) throws Exception {
-		JSONObject wf = wfFileName==null ? 
-				new JSONObject() : 
-				new JSONObject(FileUtils.readFileToString(new File(wfFileName), "UTF-8"));
-		return createWorkflow(wf);
 	}
 	
 	@Test
@@ -207,6 +166,24 @@ public class TestRESTServices extends WSSTestBase {
 	}
 	
 	@Test
+	public void testErrorResubmit()throws Exception{
+		WorkflowClient client = createWorkflow("src/test/resources/errors/runtime-error.json");
+		waitWhileRunning(client);
+		JSONObject wfProps = client.getProperties();
+		System.out.println(wfProps.toString(2));
+		JSONObject status = wfProps.getJSONObject("detailedStatus").
+				getJSONObject("activities").
+				getJSONArray("fail-and-resubmit").
+				getJSONObject(0);
+		Assert.assertTrue(status.getString("errorMessage").contains("JOB_FAILED"));
+		Assert.assertTrue(status.getString("status").equals("FAILED"));
+		String url = client.getEndpoint().getUrl();
+		String wfID = url.substring(url.lastIndexOf("/")+1);
+		Statistics stats = XNJSFacade.get(null, kernel).getAction(wfID).getProcessingContext().get(Statistics.class);
+		Assert.assertEquals(2, stats.getTotalJobs());
+	}
+	
+	@Test
 	public void testRunNoNotifications()throws Exception{
 		WorkflowClient client = createWorkflow("src/test/resources/json/no-notifications.json");
 		JSONObject wfProps = client.getProperties();
@@ -215,7 +192,24 @@ public class TestRESTServices extends WSSTestBase {
 		System.out.println(wfProps.toString(2));
 	}
 
-	protected JSONObject waitWhileRunning(WorkflowClient client) throws Exception {
+	private WorkflowFactoryClient getFactoryClient() {
+		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
+		return new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
+	}
+	
+	private WorkflowClient createWorkflow(JSONObject wf) throws Exception {
+		wf.put("storageURL","https://somestorage");
+		return getFactoryClient().submitWorkflow(wf);
+	}
+
+	private WorkflowClient createWorkflow(String wfFileName) throws Exception {
+		JSONObject wf = wfFileName==null ? 
+				new JSONObject() : 
+				new JSONObject(FileUtils.readFileToString(new File(wfFileName), "UTF-8"));
+		return createWorkflow(wf);
+	}
+
+	private JSONObject waitWhileRunning(WorkflowClient client) throws Exception {
 		int c=0;
 		do{
 			Thread.sleep(1000);

@@ -40,7 +40,6 @@ import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
 import eu.unicore.workflow.pe.model.ModifyVariableActivity;
-import eu.unicore.workflow.pe.model.PauseActivity;
 import eu.unicore.workflow.pe.model.RepeatGroup;
 import eu.unicore.workflow.pe.model.RoutingActivity;
 import eu.unicore.workflow.pe.model.WhileGroup;
@@ -53,7 +52,6 @@ import eu.unicore.workflow.pe.xnjs.HoldActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.JSONExecutionActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.ModificationActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.NullECM;
-import eu.unicore.workflow.pe.xnjs.PauseActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.RepeatGroupProcessor;
 import eu.unicore.workflow.pe.xnjs.RoutingActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.WhileGroupProcessor;
@@ -195,7 +193,6 @@ public class WorkflowStartupTask implements Runnable{
 				DeclareVariableActivity.ACTION_TYPE,
 				RoutingActivity.ACTION_TYPE,
 				HoldActivity.ACTION_TYPE,
-				PauseActivity.ACTION_TYPE,
 		};
 
 		String[]procs={
@@ -208,7 +205,6 @@ public class WorkflowStartupTask implements Runnable{
 				DeclarationActivityProcessor.class.getName(),
 				RoutingActivityProcessor.class.getName(),
 				HoldActivityProcessor.class.getName(),
-				PauseActivityProcessor.class.getName(),
 		};
 
 		assert types.length==procs.length;

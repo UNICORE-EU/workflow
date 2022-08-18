@@ -112,7 +112,7 @@ public class TestForLoopProcessing extends TestBase {
 		VariableSetIterator.VariableSet varSet=new VariableSetIterator.VariableSet(
 				"C","0","C<5", "C++", "INTEGER");
 
-		VariableSetIterator iter=new VariableSetIterator(wfID, varSet);
+		VariableSetIterator iter = new VariableSetIterator(varSet);
 		ActivityGroup body = new ActivityGroup("for1-body", wfID, iter);
 		TestActivity a1=new TestActivity("a1",wfID);
 		body.setActivities(a1);

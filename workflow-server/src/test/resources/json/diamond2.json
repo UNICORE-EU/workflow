@@ -6,6 +6,10 @@
      "job": { "ApplicationName": "Date" }
    },
 
+   "split": {
+     "type": "SPLIT"
+   },
+   
   "date2a": {
      "job": { "ApplicationName": "Date" }
    },
@@ -14,6 +18,10 @@
      "job": { "ApplicationName": "Date" }
    },
 
+   "merge": {
+     "type": "MERGE"
+   },
+   
   "date3": {
      "job": { "ApplicationName": "Date" }
    },
@@ -21,10 +29,12 @@
 },
 
 "transitions": [
-   {"from": "date1", "to": "date2a" },
-   {"from": "date1", "to": "date2b" },
-   {"from": "date2a", "to": "date3" },
-   {"from": "date2b", "to": "date3" },
+   {"from": "date1", "to": "split" },
+   {"from": "split", "to": "date2a" },
+   {"from": "split", "to": "date2b" },
+   {"from": "date2a", "to": "merge" },
+   {"from": "date2b", "to": "merge" },
+   {"from": "merge", "to": "date3" }
 ],
 
 }

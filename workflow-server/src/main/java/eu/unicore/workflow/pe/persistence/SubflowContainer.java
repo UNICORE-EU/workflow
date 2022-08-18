@@ -25,27 +25,13 @@ public class SubflowContainer implements Serializable{
 	private String workflowID;
 	
 	private final Map<String,List<PEStatus>> activityStati = new HashMap<>();
-	
-	private List<String> outputFiles = new ArrayList<>();
 
 	//in case this is a subflow, this is the subflow ID
 	private String id;
 
 	//attributes for subflows
-	private List<SubflowContainer> subFlowAttributes = new ArrayList<>();
-	
-	private boolean isLoop=false;
-	
-	private List<String> parentIteratorNames = new ArrayList<>();
-	
-	private String iteratorName;
-	
-	private String parentLoopID;
-	
-	private boolean isSplit=false;
-	
-	private String globalFatalError=null;
-	
+	private final List<SubflowContainer> subFlowAttributes = new ArrayList<>();
+
 	private boolean isHeld=false;
 	
 	private Map<String,String>resumeParams;
@@ -55,25 +41,9 @@ public class SubflowContainer implements Serializable{
 	public String getWorkflowID(){
 		return workflowID;
 	}
-	
-	public void setWorkflowID(String id){
-		workflowID=id;
-	}
-
-	public List<String> getOutputFiles(){
-		return outputFiles;
-	}
-	
-	public void setOutputFiles(List<String>files){
-		outputFiles=files;
-	}
 
 	public List<SubflowContainer> getSubFlowAttributes() {
 		return subFlowAttributes;
-	}
-
-	public void setSubFlowAttributes(List<SubflowContainer> subFlowAttributes) {
-		this.subFlowAttributes = subFlowAttributes;
 	}
 
 	/**
@@ -185,84 +155,6 @@ public class SubflowContainer implements Serializable{
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	/**
-	 * returns <code>true</code> if this SubflowContainer is a loop body
-	 */
-	public boolean isLoop(){
-		return isLoop;
-	}
-	
-	public void setIsLoop(boolean isLoop){
-		this.isLoop=isLoop;
-	}
-	
-	/**
-	 * returns the ID of the parent loop, or <code>null</code> if no parent loop exists
-	 */
-	public String getParentLoopID(){
-		return parentLoopID;
-	}
-	
-	public void setParentLoopID(String parentLoopID){
-		this.parentLoopID=parentLoopID;
-	}
-	
-	/**
-	 * returns the iterator variable name or <code>null</code> if this is not a loop
-	 */
-	public String getIteratorName(){
-		return iteratorName;
-	}
-
-	/**
-	 * sets the iterator name for this ActivityGroup
-	 * 
-	 * @param iteratorName
-	 */
-	public void setIteratorName(String iteratorName) {
-		this.iteratorName = iteratorName;	
-	}
-
-	public List<String> getParentIteratorNames() {
-		return parentIteratorNames;
-	}
-
-	public void setParentIteratorNames(List<String> parentIteratorNames) {
-		this.parentIteratorNames = parentIteratorNames;
-	}
-	
-	public void setupParentIteratorNames(List<String>parents){
-		parentIteratorNames.addAll(parents);
-		for(SubflowContainer a: subFlowAttributes){
-			String iter=getIteratorName();
-			List<String>sub=new ArrayList<String>();
-			sub.addAll(parents);
-			if(isLoop && iter!=null)sub.add(iter);
-			a.setupParentIteratorNames(sub);
-		}
-		
-	}
-
-	public boolean isSplit() {
-		return isSplit;
-	}
-
-	public void setSplit(boolean isSplit) {
-		this.isSplit = isSplit;
-	}
-
-	public String getGlobalFatalError() {
-		return globalFatalError;
-	}
-
-	public void setGlobalFatalError(String globalFatalError) {
-		this.globalFatalError = globalFatalError;
-	}
-	
 	/**
 	 * parse the given ActivityGroup and setup this SubflowContainer instance
 	 * 
@@ -277,8 +169,7 @@ public class SubflowContainer implements Serializable{
 				subAttributes.build((ActivityContainer)act);
 				subFlowAttributes.add(subAttributes);
 			}
-			activityStati.put(act.getID(),new ArrayList<PEStatus>());
-			this.setIsLoop(activityGroup.isLoop());
+			activityStati.put(act.getID(), new ArrayList<>());
 		}
 	}
 	
@@ -303,7 +194,7 @@ public class SubflowContainer implements Serializable{
 	 * recursively collect all job URLs submitted for this sub-flow
 	 * @return job URLs
 	 */
-	public Collection<String> collectJobs() {
+	public List<String> collectJobs() {
 		List<String>jobs = new ArrayList<>();
 		for(List<PEStatus> as: activityStati.values()){
 			for(PEStatus s: as){

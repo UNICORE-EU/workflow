@@ -50,58 +50,23 @@ import org.json.JSONObject;
 public class WorkflowInfo {
 
 	private List<WorkflowInfo> subWorkflowInfos;
-	
-	private boolean isRoot=true;
-	
-	private WorkflowInfo parent;
-	
-	protected String id;
+
 	protected java.util.Map<String,JSONObject> subWorkflows;
 	protected List<JSONObject> variableDeclarations;
 	protected Map<String,JSONObject> activities;
 	protected List<JSONObject> transitions;
-	protected final Map<String,String> options = new HashMap<>();
 	
 	private boolean isLoop=false;
 	private String iteratorName;
 	
 	public WorkflowInfo(){
-		subWorkflowInfos=new ArrayList<WorkflowInfo>();
+		subWorkflowInfos = new ArrayList<>();
 		subWorkflows=new HashMap<>();
 		variableDeclarations=new ArrayList<>();
 		activities=new HashMap<>();
 		transitions=new ArrayList<>();
 	}
 
-
-	/**
-	 * check hierarchically for an option value,
-	 * Order of checking:
-	 * <ul>
-	 * <li>Activity options</li>
-	 * <li>options defined in this (sub)workflow</li>
-	 * <li>options defined in the parent, if any</li>
-	 * </ul>
-	 */
-	public String getContextVariable(String key, String activityID, String defaultValue){
-		String res=null;
-		
-		JSONObject a = getActivity(activityID);
-		if(a!=null){
-			JSONObject opts = a.optJSONObject("options");
-			res = opts.optString(key, null);
-		}
-		
-		if(res==null){
-			res = getOptionValue(key,defaultValue);
-		}
-		
-		if(res==null && parent!=null){
-			res = parent.getContextVariable(key,activityID,defaultValue);
-		}
-		return res;
-	}
-	
 	/**
 	 * get the transitions that are outgoing from the source 
 	 * 
@@ -199,35 +164,12 @@ public class WorkflowInfo {
 		}
 		return res;
 	}
-	
-	/**
-	 * checks whether the given activity is a Start activity, i.e. is of type START, or
-	 * has no incoming transitions
-	 */
-	public boolean isStartActivity(JSONObject a) throws JSONException {
-		return ("START".equals(a.getString("type")) 
-				|| getIncomingTransitions(a).size()==0);
-	}
-	
-	/**
-	 * get the (sub)workflow containing the given activity
-	 * @param activityID -  the id of the activity to search for
-	 * @return WorkflowInfo for the parent container
-	 */
-	public WorkflowInfo getContainer(String activityID){
-		if(getActivity(activityID)!=null)return this;
-		for(WorkflowInfo sub: subWorkflowInfos){
-			if(sub.getActivity(activityID)!=null)return this;
-		}
-		return null;
-	}
-	
+
 	/**
 	 * build a new WorkflowInfo from the supplied workflow definition
 	 */
 	public static WorkflowInfo build(JSONObject wf) throws JSONException {
 		WorkflowInfo w=new WorkflowInfo();
-		w.isRoot=true;
 		buildCommon(w, wf);
 		return w;
 	}
@@ -237,15 +179,11 @@ public class WorkflowInfo {
 	 */
 	public static WorkflowInfo buildSubflow(JSONObject wf) throws JSONException {
 		WorkflowInfo w=new WorkflowInfo();
-		w.setId(wf.getString("id"));
 		boolean isLoop = wf.optBoolean("is_loop_body", false);
 		String iteratorName = wf.optString("iterator_name", null);
 		w.setLoop(isLoop);
 		w.setIteratorName(iteratorName);
-		w.isRoot=false;
-		
 		buildCommon(w, wf);
-		
 		return w;
 	}
 	
@@ -302,14 +240,6 @@ public class WorkflowInfo {
 	public void setLoop(boolean isLoop) {
 		this.isLoop = isLoop;
 	}
-	
-	public boolean isRoot() {
-		return isRoot;
-	}
-
-	public void setRoot(boolean isRoot) {
-		this.isRoot = isRoot;
-	}
 
 	public List<JSONObject> getSubWorkflows() {
 		return new ArrayList<>(subWorkflows.values());
@@ -348,22 +278,6 @@ public class WorkflowInfo {
 		return null;
 	}
 
-	public void addOption(String key, String value){
-		options.put(key,value);
-	}
-	
-	public Map<String,String> getOptions() {
-		return options;
-	}
-
-	public String getOptionValue(String key) {
-		return getOptionValue(key,null);
-	}
-
-	public String getOptionValue(String key, String defaultValue) {
-		return options.getOrDefault(key, defaultValue);
-	}
-	
 	public List<JSONObject> getDeclarations() {
 		return variableDeclarations;
 	}
@@ -377,18 +291,7 @@ public class WorkflowInfo {
 		transitions.add(transition);
 		return true;
 	}
-	
-	public boolean removeTransition(JSONObject transition) throws JSONException {
-		Iterator<JSONObject>iterator=transitions.iterator();
-		while(iterator.hasNext()){
-			if(iterator.next().getString("id").equals(transition.getString("id"))){
-				iterator.remove();
-				return true;
-			}
-		}
-		return false;
-	}
-	
+
 	public boolean addTransition(String id1, String id2) throws JSONException {
 		if(!entityExists(id1)){
 			throw new IllegalArgumentException("No matching 'from' activity or subflow");
@@ -408,23 +311,9 @@ public class WorkflowInfo {
 		activities.put(activity.getString("id"), activity);
 		return true;
 	}
-	
-	public void removeActivity(JSONObject activity) throws JSONException {
-		activities.remove(activity.getString("id"));
-	}
-	
-	public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-	
 	public boolean addSubWorkflow(JSONObject subWorkflow) throws JSONException {
 		WorkflowInfo subW=build(subWorkflow);
-		subW.isRoot=false;
-		subW.parent=this;
 		subWorkflowInfos.add(subW);
 		String id=subWorkflow.getString("id");
 		subWorkflows.put(id,subWorkflow);

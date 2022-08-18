@@ -201,14 +201,13 @@ public class ActivityGroup extends ActivityContainer{
 
 	public ActivityGroup clone(){
 		try{
-			ActivityGroup cloned=(ActivityGroup)super.clone();
-			List<Transition>clonedTr=new ArrayList<Transition>();
-			//clone transitions
-			for(Transition entry:this.transitions){
-				Transition clonedTransition=entry.clone();
+			ActivityGroup cloned = (ActivityGroup)super.clone();
+			List<Transition>clonedTr = new ArrayList<>();
+			for(Transition entry: this.transitions){
+				Transition clonedTransition = entry.clone();
 				clonedTr.add(clonedTransition);
 			}
-			cloned.transitions=clonedTr;
+			cloned.transitions = clonedTr;
 			return cloned;
 		}
 		catch(CloneNotSupportedException ce){

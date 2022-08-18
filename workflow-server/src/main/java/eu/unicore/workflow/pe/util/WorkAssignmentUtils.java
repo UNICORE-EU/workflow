@@ -1,5 +1,8 @@
 package eu.unicore.workflow.pe.util;
 
+import java.util.Collection;
+
+import eu.unicore.services.utils.Utilities;
 import eu.unicore.workflow.pe.model.Activity;
  
 /**
@@ -22,7 +25,11 @@ public class WorkAssignmentUtils {
 	 * @return  a UUID (provided workflow ID is a UUID)
 	 */
 	public static String buildActionID(String workflowID, String activityID, String iteration){
-		return workflowID+SEP+activityID+SEP+iteration;
+		String uid = workflowID+SEP+activityID+SEP+iteration;
+		if(uid.length()>255) {
+			uid =  workflowID+SEP+Utilities.newUniqueID();
+		}
+		return uid;
 	}
 	
 	
@@ -79,4 +86,13 @@ public class WorkAssignmentUtils {
 		return workAssignmentID.split(SEP)[3];
 	}
 
+	public static String toCommaSeparatedList(Collection<String>list, String appendTo) {
+		StringBuilder sb = new StringBuilder(appendTo);
+		for(String s: list) {
+			if(sb.length()>0)sb.append(",");
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+	
 }

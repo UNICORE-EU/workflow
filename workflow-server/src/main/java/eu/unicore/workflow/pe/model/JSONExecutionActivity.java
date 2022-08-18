@@ -35,7 +35,7 @@ public class JSONExecutionActivity extends Activity{
 	
 	private String jobDefinition;
 	
-	private final Map<String,String>options=new HashMap<>();
+	private final Map<String,String>options = new HashMap<>();
 	
 	//requested job resource lifetime
 	private long lifetimeMillis=-1;
@@ -44,13 +44,13 @@ public class JSONExecutionActivity extends Activity{
 	private int submissionCounter=-1;
 
 	//blacklist of sites not to submit to
-	private Set<String>blacklist=new HashSet<String>();
+	private Set<String>blacklist = new HashSet<>();
 	
 	//understood option names
 	public static final Set<String>UNDERSTOOD_OPTIONS;
 	
 	static{
-		HashSet<String> s=new HashSet<String>();
+		HashSet<String> s=new HashSet<>();
 		s.add(OPTION_IGNORE_FAILURE);
 		s.add(OPTION_MAX_RESUBMITS);
 		s.add(OPTION_NO_NOTIFICATIONS);

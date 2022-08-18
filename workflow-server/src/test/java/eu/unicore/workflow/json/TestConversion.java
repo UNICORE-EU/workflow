@@ -8,10 +8,12 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import de.fzj.unicore.xnjs.util.IOUtils;
+import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.ForGroup;
+import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.ScriptCondition;
@@ -97,6 +99,27 @@ public class TestConversion {
 		assert ((ActivityGroup)body).getActivities().size()==1; 
 		
 		assert "IT".equals(((Iteration)body.getIterate()).getIteratorName());
+	}
+	
+	
+	@Test
+	public void testConvertForEachFilesetChunked()throws Exception{
+		String file="src/test/resources/json/foreach_fileset_chunked.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		assert wfID.equals(res.getWorkflowID());
+		ActivityGroup ag=res.getConvertedWorkflow();
+		ForGroup fg=(ForGroup)ag.getActivity("for1");
+		Activity body=fg.getBody();
+		assert ((ActivityGroup)body).getActivities().size()==1;
+		ChunkedFileIterator cfi = (ChunkedFileIterator)body.getIterate();
+		assert 2==cfi.getChunkSize();
+		assert "file_{0}.{2}".equals(cfi.getFormatString());
 	}
 	
 	@Test
@@ -200,8 +223,24 @@ public class TestConversion {
 		printErrors(res);
 		assert !res.hasConversionErrors();
 		PEWorkflow ag=res.getConvertedWorkflow();
-		assert ag.getActivities().size()==4;
+		assert ag.getActivities().size()==6;
 		assert ag.getActivity("date3")!=null;
+	}
+	
+	@Test
+	public void testHold() throws Exception {
+		String file="src/test/resources/json/hold-with-variables.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		PEWorkflow ag=res.getConvertedWorkflow();
+		assert ag.getActivities().size()==3;
+		HoldActivity hold = (HoldActivity)ag.getActivity("hold1");
+		assert 1800==hold.getSleepTime();
 	}
 	
 	protected void printErrors(ConversionResult res){

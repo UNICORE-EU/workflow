@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.chemomentum.dsws.ConversionResult;
-
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.persist.annotations.ID;
 import de.fzj.unicore.persist.annotations.Table;
@@ -26,18 +24,12 @@ public class WorkflowContainer extends SubflowContainer implements AutoCloseable
 	
 	private String userDN;
 	
-	private ConversionResult conversionResult;
-	
-	private String dialect;
-	
 	private String storageURL;
 	
 	private Calendar lifetime;
 
 	// maps job IDs to activity IDs
 	private final Map<String,String>jobMap = new HashMap<>();
-
-	private transient boolean dirty = false;
 
 	@ID
 	@Override
@@ -56,22 +48,6 @@ public class WorkflowContainer extends SubflowContainer implements AutoCloseable
 		this.userDN = userDN;
 	}
 
-	public ConversionResult getConversionResult() {
-		return conversionResult;
-	}
-
-	public void setConversionResult(ConversionResult conversionResult) {
-		this.conversionResult = conversionResult;
-	}
-
-	public String getDialect(){
-		return dialect;
-	}
-	
-	public void setDialect(String dialect){
-		this.dialect=dialect;
-	}
-	
 	public String getStorageURL() {
 		return storageURL;
 	}
@@ -79,7 +55,6 @@ public class WorkflowContainer extends SubflowContainer implements AutoCloseable
 	public void setStorageURL(String storageURL) {
 		this.storageURL= storageURL;
 	}
-	
 	
 	public Calendar getLifetime() {
 		return lifetime;
@@ -93,19 +68,9 @@ public class WorkflowContainer extends SubflowContainer implements AutoCloseable
 		return jobMap;
 	}
 
-	public void setDirty() {
-		this.dirty = true;
-	}
-
 	@Override
 	public void close() throws PersistenceException {
-		if(dirty){
-			PEConfig.getInstance().getPersistence().write(this);
-		}
-		else{
-			PEConfig.getInstance().getPersistence().unlock(this);
-		}
+		PEConfig.getInstance().getPersistence().write(this);
 	}
-	
-	
+
 }

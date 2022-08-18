@@ -163,10 +163,6 @@ public class Iteration implements Serializable, Iterate{
 	public void reset(final ProcessVariables vars)throws IterationException{
 	}
 
-	public Iteration clone()throws CloneNotSupportedException{
-		return (Iteration)super.clone();
-	}
-	
 	public void fillContext(ProcessVariables vars){
 		//NOP
 	}

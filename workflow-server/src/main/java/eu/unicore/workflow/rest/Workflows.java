@@ -4,7 +4,6 @@ import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,17 +35,17 @@ import org.json.JSONObject;
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.json.JSONUtil;
 import de.fzj.unicore.uas.util.UnitParser;
-import eu.unicore.services.ExternalSystemConnector;
-import eu.unicore.services.Home;
-import eu.unicore.services.security.util.AuthZAttributeStore;
-import eu.unicore.services.utils.Utilities;
 import eu.unicore.security.AuthorisationException;
 import eu.unicore.security.Client;
 import eu.unicore.security.Role;
+import eu.unicore.services.ExternalSystemConnector;
+import eu.unicore.services.Home;
 import eu.unicore.services.rest.Link;
 import eu.unicore.services.rest.PagingHelper;
 import eu.unicore.services.rest.USEResource;
 import eu.unicore.services.rest.impl.ServicesBase;
+import eu.unicore.services.security.util.AuthZAttributeStore;
+import eu.unicore.services.utils.Utilities;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;
@@ -176,15 +175,9 @@ public class Workflows extends ServicesBase {
 			@QueryParam("num") @DefaultValue(value="200") int num) throws Exception {
 		try{
 			WorkflowContainer wfc = PEConfig.getInstance().getPersistence().read(resourceID);
-			Collection<String>jobs = wfc.collectJobs();
-			List<String> toRender = null;
-			if(jobs instanceof List)toRender = (List<String>)jobs;
-			else {
-				toRender = new ArrayList<String>();
-				toRender.addAll(jobs);
-			}
+			List<String>jobs = wfc.collectJobs();
 			PagingHelper ph = new PagingHelper(getBaseURL()+"/"+resourceID+"/jobs", "", "jobs");
-			JSONObject o = ph.renderJson(offset, num, toRender);
+			JSONObject o = ph.renderJson(offset, num, jobs);
 			return Response.ok(o.toString(), MediaType.APPLICATION_JSON).build();
 
 		}catch(Exception ex){

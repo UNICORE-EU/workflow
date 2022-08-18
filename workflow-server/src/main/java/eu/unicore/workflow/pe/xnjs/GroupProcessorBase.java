@@ -3,12 +3,15 @@ package eu.unicore.workflow.pe.xnjs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+
 import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ExecutionException;
 import de.fzj.unicore.xnjs.ems.Manager;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
+import de.fzj.unicore.xnjs.util.LogUtil;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.Activity;
@@ -28,8 +31,10 @@ import eu.unicore.workflow.pe.util.WorkAssignmentUtils;
  * 
  * @author schuller
  */
-public class GroupProcessorBase extends ProcessorBase {
-
+public abstract class GroupProcessorBase extends ProcessorBase {
+	
+	private static final Logger logger=LogUtil.getLogger(LogUtil.XNJS, GroupProcessorBase.class);
+	
 	private static final String SUBACTIONS_KEY = "SUBACTIONS";
 	
 	public GroupProcessorBase(XNJS configuration) {
@@ -40,7 +45,7 @@ public class GroupProcessorBase extends ProcessorBase {
 	protected List<String> getOrCreateSubTasks(){
 		List<String> res = (List<String>) action.getProcessingContext().get(SUBACTIONS_KEY);
 		if(res==null){
-			res = new ArrayList<String>();
+			res = new ArrayList<>();
 			action.getProcessingContext().put(SUBACTIONS_KEY,res);
 			action.setDirty();
 		}
@@ -87,7 +92,7 @@ public class GroupProcessorBase extends ProcessorBase {
 		activityStatus.setActivityStatus(ActivityStatus.RUNNING);
 		activityStatus.setIteration(iteration);
 		attr.getActivityStatus(group.getID()).add(activityStatus);
-		logger.info("Submitting activity group <"+group.getID()+"> status "+activityStatus);
+		logger.info("Submitting activity group <{}>", group.getID());
 		group.setStatus(ActivityStatus.RUNNING);
 		action.setDirty();
 		return uuid;
@@ -164,36 +169,25 @@ public class GroupProcessorBase extends ProcessorBase {
 		String subActivityID=((Activity)sub.getAjd()).getID();
 		String subActionID=sub.getUUID();
 
-		// collect statistics from sub-activity
-		Statistics subStats=sub.getProcessingContext().get(Statistics.class);
-		getStatistics().addAll(subStats);
-	
 		//clean up the sub-action
 		if(!PEConfig.getInstance().isKeepAllActions()){
 			xnjs.get(Manager.class).destroy(subActionID, action.getClient());
 		}
-
-		WorkflowContainer workflowInfo=null;
-		SubflowContainer attr;
 		ActivityContainer ag=(ActivityContainer)action.getAjd();
 		//store activity status to global workflow info
-		try{
-			workflowInfo=PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID());
-			attr=workflowInfo.findSubFlowAttributes(ag.getID());
+		try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
+			SubflowContainer attr = workflowInfo.findSubFlowAttributes(ag.getID());
 			String iteration=(String)sub.getProcessingContext().get(PV_KEY_ITERATION);
 			PEStatus stat=attr.getActivityStatus(subActivityID, iteration);
 			stat.setActivityStatus(ActivityStatus.SUCCESS);
-		}finally{
-			if(workflowInfo!=null){
-				try{
-					PEConfig.getInstance().getPersistence().write(workflowInfo);
-				}catch(Exception ex){
-					throw new ProcessingException(ex);
-				}
-			}
 		}
 	}
 		
+	protected void collectStatistics(Action sub) {
+		// collect statistics from sub-activity
+		Statistics subStats=sub.getProcessingContext().get(Statistics.class);
+		getStatistics().addAll(subStats);
+	}
 	
 	/**
 	 * create new variables as declared for the given ActivityContainer
@@ -226,7 +220,7 @@ public class GroupProcessorBase extends ProcessorBase {
 	@Override
 	protected void setToDoneSuccessfully(){
 		action.addLogTrace("All iterations processed.");
-		logger.info(action.getAjd().getClass().getSimpleName()+" "+action.getUUID()+": All iterations processed.");
+		logger.info("{} {}: All iterations processed.", action.getAjd().getClass().getSimpleName(), action.getUUID());
 		super.setToDoneSuccessfully();
 	}
 }

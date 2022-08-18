@@ -30,6 +30,8 @@ public class HoldActivityProcessor extends ProcessorBase{
 
 	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, HoldActivityProcessor.class);
 
+	private static final String _exit_at = "__EXIT_AT";
+	
 	public HoldActivityProcessor(XNJS configuration) {
 		super(configuration);
 	}
@@ -42,15 +44,13 @@ public class HoldActivityProcessor extends ProcessorBase{
 		String iteration=getCurrentIteration();
 		logger.debug("Workflow <{}> entering hold task <{}> in iteration <{}>", work.getWorkflowID(), work.getID(), iteration);
 		long sleepTime = work.getSleepTime();
-		boolean hold = sleepTime<=0;
-		
-		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
+		if(sleepTime>0) {
+			action.getProcessingContext().put(_exit_at, 
+					Long.valueOf(System.currentTimeMillis()+1000*sleepTime));
 		}
+		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		try {
-			if(hold)setToHold();
+			setToHold();
 		}
 		catch(Exception ex){
 			String reason=Log.createFaultMessage("Could not hold workflow", ex);
@@ -59,9 +59,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 		}
 		vars.put(VAR_KEY_CURRENT_TOTAL_ITERATION,iteration);
 		action.setWaiting(true);
-		//set to wakeup after some seconds
-		if(hold)sleepTime=3;
-		scheduleWakeupCall(sleepTime);
+		scheduleWakeupCall(5);
 	}
 
 	/**
@@ -89,7 +87,6 @@ public class HoldActivityProcessor extends ProcessorBase{
 	@Override
 	protected void handleRunning()throws ProcessingException{
 		logger.debug("Handling running action <{}>", action.getUUID());
-
 		try{
 			if(!isTopLevelWorkflowStillRunning()){
 				setToDoneAndFailed("Parent workflow was aborted or failed");
@@ -97,6 +94,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 				return;
 			}
 			Pair<Boolean, Map<String,String>>resume=isHeld(getParentWorkflowID(),getActivityID());
+			boolean exit = false;
 			if(!resume.getM1()){
 				logger.debug("Exiting HOLD task <{}>", action.getUUID());
 				Map<String,String>resumeParams = resume.getM2();
@@ -110,17 +108,26 @@ public class HoldActivityProcessor extends ProcessorBase{
 						return;
 					}
 				}
+				exit = true;
+			}
+			else {
+				// check if we have a sleep interval set and it has passed
+				Long wakeUp = (Long)action.getProcessingContext().get(_exit_at);
+				if(wakeUp!=null && wakeUp<System.currentTimeMillis()) {
+					logger.debug("Exiting HOLD task <{}> after it's waiting time has passed.", action.getUUID());
+					exit = true;
+				}
+			}
+			if(exit) {
 				setToDoneSuccessfully();
 				return;
 			}
 		}catch(Exception ex){
 			throw new ProcessingException(ex);
 		}
-
-		//setup retry
 		action.setWaiting(true);
 		action.setDirty();
-		scheduleWakeupCall(3);
+		scheduleWakeupCall(5);
 	}
 
 	private void updateProcessVariables(Map<String,String>resumeParams){
@@ -170,7 +177,6 @@ public class HoldActivityProcessor extends ProcessorBase{
 		try(WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
 			SubflowContainer sfc = wfc.findSubFlowContainingActivity(ag.getID());
 			sfc.hold();	
-			wfc.setDirty();
 		}
 	}
 }

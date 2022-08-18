@@ -144,11 +144,7 @@ public class Delegate implements DSLDelegate {
 				iteration=thisIteratorValue;
 				swr.put("iteration", iteration);
 			}
-			if(subFlowAttributes.isSplit()){
-				swr.put("iteration", "1");
-			}
 
-			//activities
 			Collection<String> activities = subFlowAttributes.getActivities();
 
 			Map<String, List<Object>> activityStati = new HashMap<>();
@@ -158,8 +154,7 @@ public class Delegate implements DSLDelegate {
 			}
 			swr.put("activities", activityStati);
 
-			//subworkflows
-			List<SubflowContainer> subworkflows=subFlowAttributes.getSubFlowAttributes();
+			List<SubflowContainer> subworkflows = subFlowAttributes.getSubFlowAttributes();
 			Map<String,JSONArray>subWorkflowStati = new HashMap<>();
 
 			for(SubflowContainer sub: subworkflows){
@@ -169,7 +164,7 @@ public class Delegate implements DSLDelegate {
 			}
 			swr.put("subworkflows", subWorkflowStati);
 
-			//write toplevel status
+			// toplevel status
 			if(thisIteratorValue!=null){
 				try{
 					PEStatus s = parentAttributes.getActivityStatus(subFlowAttributes.getId(), thisIteratorValue);

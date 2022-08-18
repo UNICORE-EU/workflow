@@ -113,6 +113,7 @@ public class TestWhileLoopProcessing extends TestBase {
 		List<PEStatus>s1=getStatus(wfID, "while_body");
 		//must all be successful
 		for(PEStatus st: s1){
+			System.out.println(st);
 			assert ActivityStatus.SUCCESS.equals(st.getActivityStatus());
 		}
 	}

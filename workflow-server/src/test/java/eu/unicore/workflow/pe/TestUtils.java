@@ -1,5 +1,8 @@
 package eu.unicore.workflow.pe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 import eu.unicore.workflow.pe.util.WorkAssignmentUtils;
@@ -41,4 +44,18 @@ public class TestUtils {
 		assert uid.equals("1/2/3");
 	}
 
+	@Test
+	public void testBlacklist() throws Exception {
+		List<String> l = new ArrayList<>();
+		String existing = "";
+		l.add("http://foo");
+		l.add("http://bar");
+		String csv = WorkAssignmentUtils.toCommaSeparatedList(l, existing);
+		assert "http://foo,http://bar".equals(csv);
+		l.clear();
+		l.add("http://micros0ft.com");
+		csv = WorkAssignmentUtils.toCommaSeparatedList(l, csv);
+		assert "http://foo,http://bar,http://micros0ft.com".equals(csv);
+	}
+	
 }

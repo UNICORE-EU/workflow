@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -31,7 +30,6 @@ import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.ActivityStatus;
-import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
@@ -66,12 +64,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			logger.info("Processing workflow <{}>", ag.getWorkflowID());
 		}
 		else{
-			logger.info("Processing group <{}> in workflow <{}> iteration <{}<", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
-		}
-
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
+			logger.info("Processing group <{}> in workflow <{}> iteration <{}>", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 		}
 		if(ag.isCoBrokerActivities()){
 			action.setStatus(ActionStatus.PREPROCESSING);
@@ -154,17 +147,9 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		}
 		else{
 			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
-				if(workflowInfo==null){
-					String msg="No workflow info for <"+ag.getWorkflowID()+">";
-					logger.debug(msg);
-					setToDoneAndFailed(msg);
-					return;
-				}
 				SubflowContainer attr=workflowInfo.findSubFlowAttributes(ag.getID());
-				if(attr==null)throw new PersistenceException("Persistent information about <"+ag.getID()+"> is missing");
 				try{
 					for(Activity a: activities){
-						workflowInfo.setDirty();
 						String id;
 						if(a instanceof ActivityGroup){
 							String loopIteratorName=((ActivityGroup)a).getLoopIteratorName();
@@ -244,6 +229,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 
 					if(ActionStatus.DONE==status){
 						action.setDirty();
+						collectStatistics(sub);
 						String subActivityID=((Activity)sub.getAjd()).getID();
 						Activity subActivity=ag.getActivity(subActivityID);
 
@@ -274,10 +260,6 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 					}
 				}
 			}
-		}catch(EvaluationException ee){
-			setToDoneAndFailed(Log.createFaultMessage("Evaluation failed", ee));
-			//TODO report which evaluation failed
-			throw new ProcessingException(ee);
 		}catch(Exception ex){
 			setToDoneAndFailed(Log.createFaultMessage("Error occurred", ex));
 			throw new ProcessingException(ex);
@@ -289,7 +271,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			submitAllEligibleActivities(stillRunning);
 		}
 		if(stillRunning){
-			sendActionToSleep(10);
+			sleep(10);
 		}
 	}
 

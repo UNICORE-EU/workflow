@@ -273,16 +273,6 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 		return chunkSize;
 	}
 	
-	public FileSetIterator getSource() {
-		return source;
-	}
-	
-	public ChunkedFileIterator clone()throws CloneNotSupportedException{
-		ChunkedFileIterator cloned=(ChunkedFileIterator)super.clone();
-		cloned.source=this.source.clone();
-		return cloned;
-	}
-	
 	protected int calculateChunkSize(ProcessVariables varsOrig){
 		// use a copy to prevent side effects
 		ProcessVariables vars=varsOrig.copy();

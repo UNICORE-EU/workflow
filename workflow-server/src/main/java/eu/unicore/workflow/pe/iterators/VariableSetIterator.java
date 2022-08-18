@@ -28,15 +28,12 @@ public class VariableSetIterator extends ValueSetIterator {
 
 	private final static Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, VariableSetIterator.class);
 	
-	private final String workflowID;
 	private final VariableSet[] variableSets;
 	
 	/**
-	 * @param workflowID - the workflow ID
 	 * @param varSets - the variable sets
 	 */
-	public VariableSetIterator(String workflowID, VariableSet... varSets){
-		this.workflowID=workflowID;
+	public VariableSetIterator(VariableSet... varSets){
 		this.variableSets=varSets;
 	}
 	
@@ -46,7 +43,7 @@ public class VariableSetIterator extends ValueSetIterator {
 	 * @throws ProcessingException
 	 */
 	protected void reInit(final ProcessVariables vars)throws ProcessingException{
-		List<String>results=new ArrayList<String>();
+		List<String>results = new ArrayList<>();
 		try{
 			zip(results,vars.copy(),null,variableSets);
 		}catch(Exception ex){
@@ -91,14 +88,6 @@ public class VariableSetIterator extends ValueSetIterator {
 		}catch(Exception ex){
 			throw new IterationException(ex);
 		}
-	}
-	
-	public VariableSetIterator clone()throws CloneNotSupportedException{
-		return (VariableSetIterator)super.clone();
-	}
-	
-	public String getWorkflowID() {
-		return workflowID;
 	}
 	
 	@Override
@@ -172,8 +161,7 @@ public class VariableSetIterator extends ValueSetIterator {
 					nextValue=String.valueOf(next);
 					c++;
 					if(c>1000){
-							logger.debug("Stopping because of too many values");
-							throw new EvaluationException("Too many values ("+c+") in value set for variable <"+variableName+">");
+						throw new EvaluationException("Too many values ("+c+") in value set for variable <"+variableName+">");
 					}
 				}
 				return values;
@@ -181,10 +169,5 @@ public class VariableSetIterator extends ValueSetIterator {
 				throw new EvaluationException("Error building value set for variable <"+variableName+">",ex);
 			}
 		}
-		
-		public String toString(){
-			return variableType+" "+variableName+"="+startValue+" ; "+condition+" ; "+modifier;
-		}
-		
 	}
 }

@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.fzj.unicore.uas.json.JSONUtil;
+import de.fzj.unicore.xnjs.util.UnitParser;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.EvaluationFunctions;
 import eu.unicore.workflow.pe.Evaluator;
@@ -88,13 +89,12 @@ public class Converter {
 			List<String>outputFiles, String parentLoopID, ConversionResult result) throws JSONException {
 
 		WorkflowInfo workflowInfo = WorkflowInfo.buildSubflow(wf);
-		String subID = wf.optString("id");
+		String subID = wf.getString("id");
 
 		ActivityGroup converted;
 
 		if(subID.equals(result.getWorkflowID())){
 			converted=new PEWorkflow(result.getWorkflowID());
-			
 		}
 		else{
 			converted=new ActivityGroup(subID,result.getWorkflowID());
@@ -144,7 +144,7 @@ public class Converter {
 			//may have a subflow as start activity
 			List<JSONObject>start = workflowInfo.getStartSubflows();
 			if(start.size()!=1){
-				result.addError("(Sub-)workflow '"+workflowInfo.getId()+"': does not have a well-defined beginning!");
+				result.addError("(Sub-)workflow '"+subID+"': does not have a well-defined beginning!");
 			}
 			else{
 				//add a start activity and transition to original start
@@ -307,7 +307,7 @@ public class Converter {
 				String start = var.getString("start_value");
 				varSets.add(new VariableSet(vName,start,condScript,expr,vType));
 			}
-			iterate=new VariableSetIterator(wfID,varSets.toArray(new VariableSet[varSets.size()]));
+			iterate = new VariableSetIterator(varSets.toArray(new VariableSet[varSets.size()]));
 		}
 		if(iterate!=null){
 			iterate.setIteratorName(wf.optString("iterator_name", "IT"));
@@ -474,19 +474,14 @@ public class Converter {
 		else if ("HOLD".equals(activityType)){
 			HoldActivity r=new HoldActivity(id,result.getWorkflowID());
 			r.setMergeType(MergeType.SYNCHRONIZE);
-			activities.add(r);
-		}
-
-		else if ("PAUSE".equals(activityType)){
-			HoldActivity r=new HoldActivity(id,result.getWorkflowID());
-			r.setMergeType(MergeType.SYNCHRONIZE);
-			String sleepTime = getOption(a, "sleepTime");
+			String sleepTime = getOption(a, "sleep_time");
 			if(sleepTime!=null){
 				try{
-					r.setSleepTime(Long.valueOf(sleepTime));
+					UnitParser up = UnitParser.getTimeParser(0);
+					r.setSleepTime(up.getLongValue(sleepTime));
 				}
 				catch(NumberFormatException nfe){
-					result.addError("Activity '"+id+"': parameter 'sleepTime' must be of type 'long'");
+					result.addError("Activity '"+id+"': parameter 'sleep_time' must be of type 'long'");
 					err = true;
 				}
 			}

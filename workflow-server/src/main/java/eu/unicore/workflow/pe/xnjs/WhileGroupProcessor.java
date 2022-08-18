@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -52,11 +51,6 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 			reportError("ITERATION_ERROR", Log.createFaultMessage("Iteration error", ex));
 			throw new ProcessingException(ex);
 		}
-
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
-		}
 		try{
 			submitAllEligibleActivities();
 		}catch(Exception ex){
@@ -88,18 +82,9 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 		else{
 			//process another iteration of the loop
 			try(WorkflowContainer workflowInfo = PEConfig.getInstance().getPersistence().getForUpdate(ag.getWorkflowID())){
-				if(workflowInfo==null){
-					String msg="No workflow info for <"+ag.getWorkflowID()+">";
-					logger.debug(msg);
-					setToDoneAndFailed(msg);
-					return;
-				}
 				SubflowContainer attr=workflowInfo.findSubFlowAttributes(ag.getID());
-				if(attr==null)throw new PersistenceException("Persistent information about <"+ag.getID()+"> is missing");
-
 				try{
 					if(iterate.hasNext()){
-						workflowInfo.setDirty();
 						subTasks.add(submit(ag.getBody(), attr));
 					}
 				}catch(Exception ex){
@@ -124,13 +109,8 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 				reportError("PARENT_FAILED","Parent aborted or failed.");
 				return;
 			}
-
 			//check substates ...
-			List<String>subTasks=getOrCreateSubTasks();
-			if(subTasks==null){
-				throw new IllegalStateException("Could not find list of sub-tasks.");
-			}
-
+			List<String>subTasks = getOrCreateSubTasks();
 			Iterator<String>iterator=subTasks.iterator();
 			subActionLoop: while(iterator.hasNext()){
 				String subActionID=iterator.next();
@@ -150,6 +130,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 					}
 					else{
 						action.setDirty();
+						collectStatistics(sub);
 						//check result
 						if(!sub.getResult().isSuccessful()){
 							if(!shouldIgnoreFailure(sub)){
@@ -174,7 +155,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 			throw new ProcessingException(ex);
 		}
 		if(subTasksStillRunning){
-			sendActionToSleep(3);
+			sleep(5);
 		}
 	}
 

@@ -118,7 +118,6 @@ public class XNJSProcessEngine implements ProcessEngine {
 
 	public void resume(String workflowID, Map<String,String>params) throws Exception {
 		try(WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){
-			wfc.setDirty();
 			doResume(wfc,params);
 		}
 	}

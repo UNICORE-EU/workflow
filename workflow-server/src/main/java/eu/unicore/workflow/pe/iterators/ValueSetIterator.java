@@ -81,12 +81,5 @@ public class ValueSetIterator extends Iteration implements ForEachIterate{
 	public void reset(final ProcessVariables vars)throws IterationException{
 		position=-1;
 	}
-	
-	public ValueSetIterator clone()throws CloneNotSupportedException{
-		ValueSetIterator cloned=(ValueSetIterator)super.clone();
-		if(this.values!=null)cloned.values=this.values.clone();
-		cloned.position=this.position;
-		return cloned;
-	}
 
 }

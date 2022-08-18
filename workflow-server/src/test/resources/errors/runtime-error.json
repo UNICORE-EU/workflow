@@ -1,0 +1,15 @@
+{
+
+"activities" : {
+   "fail-and-resubmit": {
+     "job": {
+       "Executable": "/bin/false",
+     },
+    "options":{
+      "MAX_RESUBMITS": "1"
+    }
+ },
+
+}
+
+}

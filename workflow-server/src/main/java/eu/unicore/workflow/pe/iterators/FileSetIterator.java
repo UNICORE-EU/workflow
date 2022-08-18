@@ -157,11 +157,7 @@ public class FileSetIterator extends ValueSetIterator {
 	public String getWorkflowID() {
 		return workflowID;
 	}
-	
-	public FileSetIterator clone()throws CloneNotSupportedException{
-		return (FileSetIterator)super.clone();
-	}
-	
+
 	public static class FileSet implements Serializable{
 
 		private static final long serialVersionUID = 1L;

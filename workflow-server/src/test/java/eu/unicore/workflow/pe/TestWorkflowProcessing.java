@@ -16,7 +16,6 @@ import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.PEWorkflow;
-import eu.unicore.workflow.pe.model.PauseActivity;
 import eu.unicore.workflow.pe.model.RoutingActivity;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
@@ -115,8 +114,8 @@ public class TestWorkflowProcessing extends TestBase {
 		tr.add(new Transition("e1->hold",wfID,"e1","hold"));
 		tr.add(new Transition("hold->e2",wfID,"hold","e2"));
 		
-		// pause
-		PauseActivity pause = new PauseActivity("pause", wfID);
+		// pause = hold with a non-zero sleep time
+		HoldActivity pause = new HoldActivity("pause", wfID);
 		pause.setSleepTime(1);
 		as.add(pause);
 		as.add(new TestActivity("end",wfID));
