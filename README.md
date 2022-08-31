@@ -1,6 +1,7 @@
 # UNICORE Workflow service
 
-The Workflow service is a server component that supports submission
+This repository contains the source code for the UNICORE
+Workflow service, a server component that supports submission
 and execution of application workflows consisting of UNICORE jobs
 and control constructs.
 
@@ -11,10 +12,44 @@ and control constructs.
  * Full range of UNICORE user authentication options and AAI
    integration
 
-## Prerequisites
+## Download
 
- * Java 8 or later
+The Workflow service is distributed as part of the "Core Server"
+bundle and can be downloaded from SourceForge
+https://sourceforge.net/projects/unicore/files/Servers/Core/
 
- * Integration with a UNICORE Registry and at least one UNICORE/X
-   service
+## Documentation
+
+See the manual at
+https://unicore-docs.readthedocs.io/en/latest/admin-docs/workflow/index.html
+
+## Building from source
+
+You need Java and Apache Maven.
+
+The Java code is built and unit tested using
+
+    mvn install
+
+To skip unit testing
+
+    mvn install -DskipTests
+
+The following commands create distribution packages
+in tgz, deb and rpm formats
+
+ * tgz
+
+    cd workflow-server
+    mvn package -DskipTests -Ppackman -Dpackage.type=bin.tar.gz
+
+ * deb
+
+    cd workflow-server
+    mvn package -DskipTests -Ppackman -Dpackage.type=deb -Ddistribution=Debian
+
+ * rpm
+
+    cd workflow-server
+    mvn package -DskipTests -Ppackman -Dpackage.type=rpm -Ddistribution=RedHat
 

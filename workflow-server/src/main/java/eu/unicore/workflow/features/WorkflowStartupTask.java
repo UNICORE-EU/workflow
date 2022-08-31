@@ -104,8 +104,8 @@ public class WorkflowStartupTask implements Runnable{
 		cs.getProperties().putAll(wp.getRawProperties());
 		cs.setMetricRegistry(registry);
 		cs.addModule(new WFEngineModule(cs.getProperties(), kernel));
-		
-		XNJS xnjs=new XNJS(cs);
+		String xnjsID = wp.isInternal()? "wf" : null;
+		XNJS xnjs = new XNJS(cs, xnjsID);
 		configureProcessing(xnjs);
 		
 		//configure persistence
