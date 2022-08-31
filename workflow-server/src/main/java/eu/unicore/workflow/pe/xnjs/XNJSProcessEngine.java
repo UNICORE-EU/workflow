@@ -122,6 +122,10 @@ public class XNJSProcessEngine implements ProcessEngine {
 		}
 	}
 
+	public XNJS getXNJS() {
+		return xnjs;
+	}
+
 	private void doResume(SubflowContainer sfc,Map<String,String>params){
 		if(sfc.isHeld()){
 			sfc.resume(params);

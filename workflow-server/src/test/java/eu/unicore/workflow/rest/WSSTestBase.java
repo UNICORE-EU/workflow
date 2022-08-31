@@ -9,9 +9,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import de.fzj.unicore.uas.UAS;
+import de.fzj.unicore.xnjs.XNJS;
 import eu.unicore.services.Kernel;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.IClientConfiguration;
+import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
 
 /**
  * starts a full USE workflow engine
@@ -48,6 +51,10 @@ public abstract class WSSTestBase {
 		return 64433;
 	}
 	
+	protected XNJS getXNJS() {
+		return ((XNJSProcessEngine)PEConfig.getInstance().getProcessEngine()).getXNJS();
+	}
+
 	/**
 	 * override to provide non-trivial client side security properties
 	 * @return

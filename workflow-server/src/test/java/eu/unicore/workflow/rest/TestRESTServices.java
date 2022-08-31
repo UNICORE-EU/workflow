@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fzj.unicore.uas.xnjs.XNJSFacade;
+import de.fzj.unicore.xnjs.ems.InternalManager;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.services.rest.client.RESTException;
@@ -179,7 +179,7 @@ public class TestRESTServices extends WSSTestBase {
 		Assert.assertTrue(status.getString("status").equals("FAILED"));
 		String url = client.getEndpoint().getUrl();
 		String wfID = url.substring(url.lastIndexOf("/")+1);
-		Statistics stats = XNJSFacade.get(null, kernel).getAction(wfID).getProcessingContext().get(Statistics.class);
+		Statistics stats = getXNJS().get(InternalManager.class).getAction(wfID).getProcessingContext().get(Statistics.class);
 		Assert.assertEquals(2, stats.getTotalJobs());
 	}
 	
