@@ -38,18 +38,11 @@ To skip unit testing
 The following commands create distribution packages
 in tgz, deb and rpm formats
 
- * tgz
-
+    mvn install -DskipTests
     cd workflow-server
+    # tgz
     mvn package -DskipTests -Ppackman -Dpackage.type=bin.tar.gz
-
- * deb
-
-    cd workflow-server
+    # deb
     mvn package -DskipTests -Ppackman -Dpackage.type=deb -Ddistribution=Debian
-
- * rpm
-
-    cd workflow-server
+    # rpm
     mvn package -DskipTests -Ppackman -Dpackage.type=rpm -Ddistribution=RedHat
-
