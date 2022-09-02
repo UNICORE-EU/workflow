@@ -7,15 +7,14 @@ import eu.unicore.workflow.pe.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 /**
- * allows to process multiple files in each iteration of a for-each loop
- *  
+ * Process one or multiple files in each iteration of a for-each loop
+ *
  * @author schuller
  */
-public class ChunkedFileIterator extends Iteration implements ForEachIterate {
+public class ForEachFileIterator extends Iteration implements ForEachIterate {
 
 	private static final long serialVersionUID=1L; 
-	
-	
+
 	public static enum Type {
 		NUMBER, 
 		SIZE
@@ -24,53 +23,47 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	/**
 	 * Process variables flag (=Boolean.TRUE) to indicate that chunking is active
 	 */
-	public final static String PV_IS_CHUNKED="ChunkedFileIterator_IS_CHUNKED";
+	public final static String PV_IS_CHUNKED="__ForEachFileIterator_IS_CHUNKED";
+
+	/**
+	 * iterator name of the for-each loop
+	 */
+	public final static String PV_ITERATOR_NAME="__ForEachFileIterator_ITERATOR_NAME";
 	
 	/**
 	 * how large is the current chunk (an Integer)
 	 */
-	public final static String PV_THIS_CHUNK_SIZE="ChunkedFileIterator_THIS_CHUNK_SIZE";
+	public final static String PV_THIS_CHUNK_SIZE="__CHUNK_SIZE";
 	
 	/**
 	 * what is the size of all the files in the current chunk (Long)
 	 */
-	public final static String PV_AGGREGATED_CHUNK_SIZE="ChunkedFileIterator_AGGREGATED_FILE_SIZE";
-	
+	public final static String PV_AGGREGATED_CHUNK_SIZE="__FILE_SIZE";
+
+
 	/**
-	 * filename
+	 * Variable holding the filename
 	 */
-	public final static String PV_FILENAME="ChunkedFileIterator_FILENAME";
-	
-	/**
-	 * List of file names separated by ";"
-	 * This avoids the need to declare large numbers of variables and allows for
-	 * the automatic evaluation of the lists within a job. 
-	 */
-	private static final String PV_ORIGINAL_FILENAMES = "ChunkedFileIterator_FILENAMES";
+	public final static String PV_FILENAME="__FILENAME";
 	
 	/**
 	 * filename format string
 	 */
-	public final static String PV_FILENAME_FORMAT="ChunkedFileIterator_FILENAME_FORMAT";
+	public final static String PV_FILENAME_FORMAT="__FILENAME_FORMAT";
 	
 	/**
-	 * iterator name of the for-each loop
+	 * variable name holding the total number of files
 	 */
-	public final static String PV_ITERATOR_NAME="ChunkedFileIterator_ITERATOR_NAME";
-	
-	/**
-	 * variable name for the total number of files
-	 */
-	public final static String PV_TOTAL_NUMBER="TOTAL_NUMBER";
+	public final static String EXPR_TOTAL_NUMBER="TOTAL_NUMBER";
 	
 	/**
 	 * variable name for the total size of all the files
 	 */
-	public final static String PV_TOTAL_SIZE="TOTAL_SIZE";
+	public final static String EXPR_TOTAL_SIZE="TOTAL_SIZE";
 	
 	private FileSetIterator source;
 	
-	private int chunkSize=-1;
+	private int chunkSize = -1;
 	
 	private String chunkSizeExpression;
 	
@@ -83,10 +76,10 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	private String fileNameFormatString=DEFAULT_FORMAT;
 	
 	// only used by persistence
-	ChunkedFileIterator(){
+	ForEachFileIterator(){
 		this.source = null;
 		this.chunkSize = 0;
-		this.type = Type.SIZE;
+		this.type = Type.NUMBER;
 	}
 	
 	/**
@@ -96,7 +89,7 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 * @param chunkSize - the chunk size
 	 * @throws IllegalArgumentException if chunksize is < 2
 	 */
-	public ChunkedFileIterator(FileSetIterator source, int chunkSize){
+	public ForEachFileIterator(FileSetIterator source, int chunkSize){
 		this(source, chunkSize, Type.NUMBER);
 	}
 
@@ -109,12 +102,12 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 *        interpreted as aggregated file size in kbytes
 	 * @throws IllegalArgumentException if chunksize is < 2
 	 */
-	public ChunkedFileIterator(FileSetIterator source, int chunkSize, Type type){
+	public ForEachFileIterator(FileSetIterator source, int chunkSize, Type type){
 		this.source=source;
 		this.chunkSize=chunkSize;
 		this.type = type;
-		if(chunkSize<2 && Type.NUMBER.equals(type)){
-			throw new IllegalArgumentException("Chunk size must be larger than 1!");
+		if(chunkSize<1 && Type.NUMBER.equals(type)){
+			throw new IllegalArgumentException("Chunk size must be larger than zero!");
 		}
 	}
 
@@ -124,10 +117,9 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	 *  
 	 * @param source - the underlying file set iterator
 	 * @param chunkSizeExpression - a Groovy expression for dynamically calculating the chunk size
-	 * @param isAggregatedFileSize - if <code>true</code>, the chunk size is 
-	 *        interpreted as aggregated file size in kbytes
+	 * @param type - how the chunk size is interpreted
 	 */
-	public ChunkedFileIterator(FileSetIterator source, String chunkSizeExpression, Type type){
+	public ForEachFileIterator(FileSetIterator source, String chunkSizeExpression, Type type){
 		this.source=source;
 		this.chunkSizeExpression=chunkSizeExpression;
 		this.type = type;
@@ -151,16 +143,20 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	public void setFormatString(String formatString){
 		this.fileNameFormatString=formatString;
 	}
-
-	public String getFormatString(){
+	
+	public String getFormatString() {
 		return fileNameFormatString;
 	}
 
 	public void fillContext(ProcessVariables vars) {
+		String iteratorName = getIteratorName();
 		//cleanup first
-		for(String key: vars.keySet()){
-			if(key.startsWith(PV_FILENAME)){
-				vars.put(key,null);
+		for(Object key: vars.keySet().toArray()){
+			String k = key.toString();
+			if(k.startsWith(iteratorName+PV_FILENAME) 
+				|| k.startsWith(iteratorName+PV_ORIGINAL_FILENAMES)
+				|| k.startsWith(iteratorName+PV_ORIGINAL_FILENAME)){
+				vars.remove(k);
 			}
 		}
 		vars.put(PV_IS_CHUNKED, Boolean.TRUE);
@@ -173,28 +169,33 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 		}
 		vars.put(PV_ITERATOR_NAME, source.getIteratorName());
 		vars.put(PV_FILENAME_FORMAT, fileNameFormatString);
-		vars.put(PV_CURRENT_FOR_EACH_INDEX, getCurrentIndex());
-		if(source.getIteratorName()!=null){
-			vars.put(source.getIteratorName(), getCurrentIndex());
-		}
+		vars.put(iteratorName+PV_CURRENT_FOR_EACH_INDEX, getCurrentIndex());
+		vars.put(source.getIteratorName(), getCurrentIndex());
 	}
 
 	protected void fillContextFileNumberLimited(ProcessVariables vars){
 		int count=0;
+		String iteratorName = getIteratorName();
 		StringBuilder filenames = new StringBuilder();
 		for(int i=0;i<chunkSize;i++){
 			if(source.hasNext()){
 				source.next(vars);
 				String currentFile=source.getCurrentUnderlyingValue();
 				vars.put(PV_FILENAME+"_"+(i+1), currentFile);
-				vars.put("ORIGINAL_FILENAME_"+(i+1), source.getCurrentFileName());
+				if(chunkSize==1) {
+					vars.put(iteratorName+PV_ORIGINAL_FILENAME,
+							source.getCurrentFileName());
+				}
+				vars.put(iteratorName+PV_ORIGINAL_FILENAME+"_"+(i+1),
+						source.getCurrentFileName());
+				
 				filenames.append((count == 0 ? "" : ";") + source.getCurrentFileName());
 				count++;
 			}
 			else break;
 		}
 		vars.put(PV_THIS_CHUNK_SIZE, Integer.valueOf(count));
-		vars.put(PV_ORIGINAL_FILENAMES, filenames.toString());
+		vars.put(iteratorName+PV_ORIGINAL_FILENAMES, filenames.toString());
 	}
 	
 	/**
@@ -207,6 +208,8 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 		long total=0;
 		long limitBytes=chunkSize*1024; //chunkSize is in Kbytes
 		final StringBuilder filenames = new StringBuilder();
+		String iteratorName = getIteratorName();
+		
 		while(total<limitBytes){
 			if(source.hasNext()){
 				Long length=source.peekNextFileSize();
@@ -218,7 +221,7 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 				source.next(vars);
 				String currentFile=source.getCurrentUnderlyingValue();
 				vars.put(PV_FILENAME+"_"+(count+1), currentFile);
-				vars.put("ORIGINAL_FILENAME_"+(count+1), source.getCurrentFileName());
+				vars.put(iteratorName+PV_ORIGINAL_FILENAME+(count+1), source.getCurrentFileName());
 				filenames.append((count==0 ? "" : ";") + source.getCurrentFileName());
 				count++;
 				if(length>=0){
@@ -233,7 +236,7 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 		}
 		vars.put(PV_THIS_CHUNK_SIZE, Integer.valueOf(count));
 		vars.put(PV_AGGREGATED_CHUNK_SIZE, Long.valueOf(total));
-		vars.put(PV_ORIGINAL_FILENAMES, filenames.toString());
+		vars.put(iteratorName+PV_ORIGINAL_FILENAMES, filenames.toString());
 	}
 	
 	public String getCurrentIndex() {
@@ -276,8 +279,8 @@ public class ChunkedFileIterator extends Iteration implements ForEachIterate {
 	protected int calculateChunkSize(ProcessVariables varsOrig){
 		// use a copy to prevent side effects
 		ProcessVariables vars=varsOrig.copy();
-		vars.put(PV_TOTAL_NUMBER, source.getTotalNumberOfFiles());
-		vars.put(PV_TOTAL_SIZE, source.getTotalFileSize());
+		vars.put(EXPR_TOTAL_NUMBER, source.getTotalNumberOfFiles());
+		vars.put(EXPR_TOTAL_SIZE, source.getTotalFileSize());
 		ScriptEvaluator eval=new ScriptEvaluator();
 		Object res=eval.evaluateDirect(chunkSizeExpression, vars);
 		try{

@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
+import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 /**
@@ -30,7 +30,7 @@ public class InsertVariablesFilter {
 	public JSONObject filter(JSONObject wa) {
 		try{
 			JSONObject job = new JSONObject(wa.toString());
-			Boolean chunked = (Boolean)context.get(ChunkedFileIterator.PV_IS_CHUNKED);
+			Boolean chunked = (Boolean)context.get(ForEachFileIterator.PV_IS_CHUNKED);
 			if(chunked!=null && chunked){
 				handleChunkedInputs(job);
 			}
@@ -57,16 +57,16 @@ public class InsertVariablesFilter {
 		JSONArray inputs = job.optJSONArray("Imports");
 		if(inputs==null || inputs.length()==0)return;
 		
-		Integer thisChunkSize=(Integer)context.get(ChunkedFileIterator.PV_THIS_CHUNK_SIZE);
-		String iteratorName=(String)context.get(ChunkedFileIterator.PV_ITERATOR_NAME);
+		Integer thisChunkSize = context.get(ForEachFileIterator.PV_THIS_CHUNK_SIZE, Integer.class);
+		String iteratorName = context.get(ForEachFileIterator.PV_ITERATOR_NAME, String.class);
 		String key="${"+iteratorName+"_VALUE}";
-		String pattern=(String)context.get(ChunkedFileIterator.PV_FILENAME_FORMAT);
+		String pattern=(String)context.get(ForEachFileIterator.PV_FILENAME_FORMAT);
 
 		JSONArray results = new JSONArray();
 
 		for(int r=0; r<inputs.length(); r++){
 			JSONObject dst = inputs.getJSONObject(r);
-			if(dst.getString("From")==null){
+			if(dst.optString("From", null)==null){
 				results.put(dst);
 				continue;
 			}
@@ -80,7 +80,8 @@ public class InsertVariablesFilter {
 			//else need to clone it several timers
 			for(int i=1;i<=thisChunkSize;i++){
 				JSONObject clone = new JSONObject(dst.toString());
-				String newSource = source.replace(key, "${"+ChunkedFileIterator.PV_FILENAME+"_"+i+"}");
+				String newSource = source.replace(key,
+						"${"+ForEachFileIterator.PV_FILENAME+"_"+i+"}");
 				String newFileName = getFormattedFilename(dst.getString("To"),pattern,i);
 				clone.put("To", newFileName);
 				clone.put("From", newSource);

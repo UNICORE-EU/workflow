@@ -21,10 +21,10 @@ import de.fzj.unicore.xnjs.util.UnitParser;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.EvaluationFunctions;
 import eu.unicore.workflow.pe.Evaluator;
-import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
 import eu.unicore.workflow.pe.iterators.CounterIteration;
 import eu.unicore.workflow.pe.iterators.FileSetIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
+import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.iterators.ValueSetIterator;
 import eu.unicore.workflow.pe.iterators.VariableSetIterator;
@@ -240,9 +240,8 @@ public class Converter {
 		}
 		else if(fileSetDef!=null && fileSetDef.length()>0){
 			List<FileSet>fileSets = new ArrayList<>();
-			boolean chunked=false;
-			int chunkSize=0;
-			String formatString=null;
+			int chunkSize = 1;
+			String formatString = null;
 			String expression = null;
 			for(int i=0; i<fileSetDef.length(); i++){
 				JSONObject fileSet = fileSetDef.getJSONObject(i);
@@ -254,44 +253,37 @@ public class Converter {
 				fileSets.add(new FileSet(base,incl,excl,recurse,indirection));
 			}
 			JSONObject chunk = wf.optJSONObject("chunking");
-			ChunkedFileIterator.Type chunkType = ChunkedFileIterator.Type.NUMBER;
+			ForEachFileIterator.Type chunkType = ForEachFileIterator.Type.NUMBER;
 			if(chunk!=null){
-				chunked=true;
 				chunkSize = chunk.optInt("chunksize", -1);
-				chunkType = ChunkedFileIterator.Type.valueOf(chunk.optString("type", "NUMBER"));
+				chunkType = ForEachFileIterator.Type.valueOf(chunk.optString("type", "NUMBER"));
 				expression = chunk.optString("expression", null);
 				
-				if(chunkSize<0){
+				if(chunkSize<0 && expression==null){
 					result.addError("For-each loop '"+id+"': chunk size  must be an integer value larger than 0. Got: "+chunkSize);
-					chunked=false;
 				}
 				formatString = chunk.optString("filename_format", null);
 				//test format now
 				if(formatString!=null){
 					try{
-						ChunkedFileIterator.testFormat(formatString);
+						ForEachFileIterator.testFormat(formatString);
 					}catch(IllegalArgumentException e){
 						result.addError(Log.createFaultMessage("For-each loop '"+id+"': Error in format string '"+formatString+"'", e));
 					}
 				}
 			}
 			FileSetIterator fileSetIterator=new FileSetIterator(wfID, fileSets.toArray(new FileSetIterator.FileSet[fileSets.size()]));
-			//add chunking
-			if(chunked){
-				if(expression!=null) {
-					iterate=new ChunkedFileIterator(fileSetIterator, expression, chunkType);
-				}
-				else {
-					iterate=new ChunkedFileIterator(fileSetIterator, chunkSize, chunkType);
-				}
-				if(formatString!=null)((ChunkedFileIterator)iterate).setFormatString(formatString);
+			
+			if(expression!=null) {
+				iterate=new ForEachFileIterator(fileSetIterator, expression, chunkType);
 			}
-			else{
-				iterate=fileSetIterator;
+			else {
+				iterate=new ForEachFileIterator(fileSetIterator, chunkSize, chunkType);
 			}
+			if(formatString!=null)((ForEachFileIterator)iterate).setFormatString(formatString);
 		}
 		else if(variableSets!=null && variableSets.length()>0){
-			List<VariableSet>varSets=new ArrayList<VariableSet>();
+			List<VariableSet>varSets = new ArrayList<>();
 			for(int i=0; i<variableSets.length(); i++){
 				JSONObject var = variableSets.getJSONObject(i);
 				String vName = var.getString("variable_name");

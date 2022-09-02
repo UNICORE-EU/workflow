@@ -15,9 +15,9 @@ import de.fzj.unicore.uas.util.Pair;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.json.Converter;
-import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
+import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.iterators.ResolverFactory;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.iterators.ValueSetIterator;
@@ -190,7 +190,7 @@ public class TestForLoopProcessing extends TestBase {
 		FileSet fs = new FileSet("test/", null, null, false, false);
 		FileSetIterator fsi = new FileSetIterator(null,fs);
 
-		ChunkedFileIterator chunkedIterator=new ChunkedFileIterator(fsi,chunkSize);
+		ForEachFileIterator chunkedIterator = new ForEachFileIterator(fsi,chunkSize);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
 		String wfID=UUID.randomUUID().toString();
@@ -223,7 +223,7 @@ public class TestForLoopProcessing extends TestBase {
 
 		// compute chunk size as number of files per chunk
 		String expr="return TOTAL_NUMBER / 5;";
-		ChunkedFileIterator chunkedIterator=new ChunkedFileIterator(fsi,expr,ChunkedFileIterator.Type.NUMBER);
+		ForEachFileIterator chunkedIterator = new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.NUMBER);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
 		String wfID=UUID.randomUUID().toString();
@@ -258,7 +258,7 @@ public class TestForLoopProcessing extends TestBase {
 
 		// compute chunk size in kbytes
 		String expr="return TOTAL_SIZE / 5;";
-		ChunkedFileIterator chunkedIterator=new ChunkedFileIterator(fsi,expr,ChunkedFileIterator.Type.SIZE);
+		ForEachFileIterator chunkedIterator=new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.SIZE);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
 		String wfID=UUID.randomUUID().toString();
@@ -294,7 +294,7 @@ public class TestForLoopProcessing extends TestBase {
 		// compute chunk size in kbytes
 		String expr="if(TOTAL_SIZE > 5) return 2; \n" +
 				"return 1;";
-		ChunkedFileIterator chunkedIterator=new ChunkedFileIterator(fsi,expr,ChunkedFileIterator.Type.NUMBER);
+		ForEachFileIterator chunkedIterator=new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.NUMBER);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
 		String wfID=UUID.randomUUID().toString();

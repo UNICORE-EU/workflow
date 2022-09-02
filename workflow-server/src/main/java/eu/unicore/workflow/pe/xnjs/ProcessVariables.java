@@ -83,4 +83,15 @@ public class ProcessVariables implements Serializable {
 		return copy;
 	}
 	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\n");
+		for(Map.Entry<String, Wrapper<Serializable>> e: entries.entrySet()) {
+			if(sb.length()>2)sb.append("\n");
+			String val = e.getValue()!=null? String.valueOf(e.getValue().get()): "<null>";
+			sb.append(e.getKey()).append(": ").append(val);
+		}
+		sb.append("\n}");
+		return sb.toString();
+	}
 }

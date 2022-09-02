@@ -72,9 +72,6 @@ public class ValueSetIterator extends Iteration implements ForEachIterate{
 			vars.put(getIteratorName(), index);
 			vars.put(getIteratorName()+"_VALUE", value);
 		}
-		//"old" variables
-		vars.put("CURRENT_ITERATOR_INDEX", index);
-		vars.put("CURRENT_ITERATOR_VALUE", value);
 	}
 
 	@Override

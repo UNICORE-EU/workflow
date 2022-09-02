@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import eu.unicore.client.Job;
-import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
+import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 public class TestInsertVariablesFilter {
@@ -41,19 +41,19 @@ public class TestInsertVariablesFilter {
     @Test
 	public void testManipulateStageInDefinitionsInChunkedLoop() throws JSONException {
 		ProcessVariables vars=new ProcessVariables();
-		vars.put(ChunkedFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
-		vars.put(ChunkedFileIterator.PV_ITERATOR_NAME, "ForEachIterator");
-		vars.put(ChunkedFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_1", "foo_1");
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_2", "foo_2");
-		vars.put(ChunkedFileIterator.PV_FILENAME_FORMAT, ChunkedFileIterator.DEFAULT_FORMAT);
+		vars.put(ForEachFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
+		vars.put(ForEachFileIterator.PV_ITERATOR_NAME, "IT");
+		vars.put(ForEachFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
+		vars.put(ForEachFileIterator.PV_FILENAME+"_1", "foo_1");
+		vars.put(ForEachFileIterator.PV_FILENAME+"_2", "foo_2");
+		vars.put(ForEachFileIterator.PV_FILENAME_FORMAT, ForEachFileIterator.DEFAULT_FORMAT);
 
 		InsertVariablesFilter filter = new InsertVariablesFilter(vars);
 
 
 		Job builder=new Job();		
 		builder.application("Date");
-		builder.stagein().from("${ForEachIterator_VALUE}").to("infile");
+		builder.stagein().from("${IT_VALUE}").to("infile");
 		JSONObject doc = builder.getJSON();
 		JSONObject filtered = filter.filter(doc);
 		
@@ -71,12 +71,12 @@ public class TestInsertVariablesFilter {
     @Test
 	public void testManipulateStageInDefinitionsUsingCustomPattern() throws JSONException {
 		ProcessVariables vars=new ProcessVariables();
-		vars.put(ChunkedFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
-		vars.put(ChunkedFileIterator.PV_ITERATOR_NAME, "ForEachIterator");
-		vars.put(ChunkedFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_1", "foo_1");
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_2", "foo_2");
-		vars.put(ChunkedFileIterator.PV_FILENAME_FORMAT, "{1}_{0,number,0000}{2}");
+		vars.put(ForEachFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
+		vars.put(ForEachFileIterator.PV_ITERATOR_NAME, "ForEachIterator");
+		vars.put(ForEachFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
+		vars.put(ForEachFileIterator.PV_FILENAME+"_1", "foo_1");
+		vars.put(ForEachFileIterator.PV_FILENAME+"_2", "foo_2");
+		vars.put(ForEachFileIterator.PV_FILENAME_FORMAT, "{1}_{0,number,0000}{2}");
 
 
 		InsertVariablesFilter filter = new InsertVariablesFilter(vars);
@@ -103,22 +103,22 @@ public class TestInsertVariablesFilter {
     @Test
 	public void testManipulateStageInDefinitionsUsingSimplePattern() throws JSONException {
 		ProcessVariables vars=new ProcessVariables();
-		vars.put(ChunkedFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
-		vars.put(ChunkedFileIterator.PV_ITERATOR_NAME, "ForEachIterator");
-		vars.put(ChunkedFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_1", "foo_1");
-		vars.put(ChunkedFileIterator.PV_FILENAME+"_2", "foo_2");
+		vars.put(ForEachFileIterator.PV_IS_CHUNKED, Boolean.TRUE);
+		vars.put(ForEachFileIterator.PV_ITERATOR_NAME, "IT");
+		vars.put(ForEachFileIterator.PV_THIS_CHUNK_SIZE, Integer.valueOf(2));
+		vars.put(ForEachFileIterator.PV_FILENAME+"_1", "foo_1");
+		vars.put(ForEachFileIterator.PV_FILENAME+"_2", "foo_2");
 
 		InsertVariablesFilter filter = new InsertVariablesFilter(vars);
 
 		Job builder=new Job();		
 		builder.application("Date");
-		builder.stagein().from("${ForEachIterator_VALUE}").to("infile_*.txt");
+		builder.stagein().from("${IT_VALUE}").to("infile_*.txt");
 		JSONObject doc = builder.getJSON();
 		JSONObject filtered = filter.filter(doc);
 		JSONArray in = filtered.getJSONArray("Imports");
 		assert 2==in.length();
-		
+		System.out.println(in.getJSONObject(0).toString(2));
 		assert in.getJSONObject(0).getString("From").equals("foo_1");
 		assert in.getJSONObject(0).getString("To").equals("infile_0001.txt");
 

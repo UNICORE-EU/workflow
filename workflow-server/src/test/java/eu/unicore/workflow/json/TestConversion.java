@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import de.fzj.unicore.xnjs.util.IOUtils;
-import eu.unicore.workflow.pe.iterators.ChunkedFileIterator;
+import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
@@ -117,7 +117,7 @@ public class TestConversion {
 		ForGroup fg=(ForGroup)ag.getActivity("for1");
 		Activity body=fg.getBody();
 		assert ((ActivityGroup)body).getActivities().size()==1;
-		ChunkedFileIterator cfi = (ChunkedFileIterator)body.getIterate();
+		ForEachFileIterator cfi = (ForEachFileIterator)body.getIterate();
 		assert 2==cfi.getChunkSize();
 		assert "file_{0}.{2}".equals(cfi.getFormatString());
 	}
