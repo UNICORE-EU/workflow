@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.util.Pair;
-import eu.unicore.services.Kernel;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
+import eu.unicore.services.Kernel;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
@@ -191,7 +190,7 @@ public class SMSResolver implements Resolver{
 		return (other!=null && other instanceof SMSResolver);
 	}
 		
-	protected WorkflowContainer readWF(String wfID) throws PersistenceException {
+	protected WorkflowContainer readWF(String wfID) throws Exception {
 		return PEConfig.getInstance().getPersistence().read(wfID);
 	}
 }

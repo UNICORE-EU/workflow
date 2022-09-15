@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.util.Pair;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -148,9 +147,8 @@ public class HoldActivityProcessor extends ProcessorBase{
 
 	/**
 	 * checks if the group containing this activity is set on hold
-	 * @throws PersistenceException
 	 */
-	public static Pair<Boolean, Map<String,String>> isHeld(String workflowID, String activityID) throws PersistenceException{
+	public static Pair<Boolean, Map<String,String>> isHeld(String workflowID, String activityID) throws Exception{
 		WorkflowContainer wfc=PEConfig.getInstance().getPersistence().read(workflowID);
 		SubflowContainer sfc=wfc.findSubFlowContainingActivity(activityID);
 		Pair<Boolean, Map<String,String>>res = new Pair<>();
@@ -168,10 +166,8 @@ public class HoldActivityProcessor extends ProcessorBase{
 
 	/**
 	 * set the innermost group containing this activty on hold
-	 * @throws PersistenceException
-	 * @throws InterruptedException
-	 */
-	public void setToHold() throws PersistenceException, InterruptedException{
+	*/
+	public void setToHold() throws Exception, InterruptedException{
 		ModelBase ag=(ModelBase)action.getAjd();
 		String workflowID=ag.getWorkflowID();
 		try(WorkflowContainer wfc=PEConfig.getInstance().getPersistence().getForUpdate(workflowID)){

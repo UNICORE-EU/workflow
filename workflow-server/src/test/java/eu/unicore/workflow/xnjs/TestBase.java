@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.persist.PersistenceProperties;
 import de.fzj.unicore.persist.impl.H2Persist;
 import de.fzj.unicore.xnjs.ConfigurationSource;
@@ -138,7 +137,7 @@ public abstract class TestBase {
 	 * @param workflowID - the workflow ID
 	 * @param activityID - the activity ID
 	 */
-	protected List<PEStatus> getStatus(String workflowID, String activityID)throws PersistenceException{
+	protected List<PEStatus> getStatus(String workflowID, String activityID) throws Exception {
 		WorkflowContainer workflowInfo=PEConfig.getInstance().getPersistence().read(workflowID);
 		return workflowInfo.getActivityStatus(activityID,true);
 	}

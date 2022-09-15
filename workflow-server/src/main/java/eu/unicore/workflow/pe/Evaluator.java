@@ -5,11 +5,9 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.JobClient;
@@ -317,11 +315,11 @@ public class Evaluator implements EvaluationFunctions {
 				new JWTServerProperties(kernel.getContainerProperties().getRawProperties()), user);
 	}
 
-	private String findJobReference(String activityID, String iteration)throws TimeoutException,PersistenceException{
+	private String findJobReference(String activityID, String iteration)throws Exception{
 		return findStatus(activityID,iteration).getJobURL();
 	}
 
-	private PEStatus findStatus(String activityID,String iteration)throws TimeoutException,PersistenceException{
+	private PEStatus findStatus(String activityID,String iteration)throws Exception{
 		SubflowContainer wf=PEConfig.getInstance().getPersistence().read(workflowID);
 		SubflowContainer ac=wf.findSubFlowContainingActivity(activityID);
 		if(iteration!=null){
@@ -338,7 +336,7 @@ public class Evaluator implements EvaluationFunctions {
 		return null;
 	}  
 
-	private String getUserDN()throws PersistenceException, TimeoutException{
+	private String getUserDN()throws Exception {
 		return PEConfig.getInstance().getPersistence().read(workflowID).getUserDN();
 	}  
 

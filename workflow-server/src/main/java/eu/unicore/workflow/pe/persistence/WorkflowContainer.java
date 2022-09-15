@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.persist.annotations.ID;
 import de.fzj.unicore.persist.annotations.Table;
 import de.fzj.unicore.persist.util.JSON;
@@ -69,7 +68,7 @@ public class WorkflowContainer extends SubflowContainer implements AutoCloseable
 	}
 
 	@Override
-	public void close() throws PersistenceException {
+	public void close() throws Exception {
 		PEConfig.getInstance().getPersistence().write(this);
 	}
 

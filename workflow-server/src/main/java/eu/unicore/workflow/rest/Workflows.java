@@ -32,7 +32,6 @@ import org.chemomentum.dsws.WorkflowModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.uas.json.JSONUtil;
 import de.fzj.unicore.uas.util.UnitParser;
 import eu.unicore.security.AuthorisationException;
@@ -326,7 +325,7 @@ public class Workflows extends ServicesBase {
 		links.add(new Link("files", base+"/files", "File list"));
 	}
 
-	synchronized WorkflowFactoryImpl getFactory() throws PersistenceException {
+	synchronized WorkflowFactoryImpl getFactory() throws Exception {
 		Home home = kernel.getHome(WorkflowFactoryHomeImpl.SERVICE_NAME);
 		Client client = AuthZAttributeStore.getClient();
 		List<String> factories = home.getAccessibleResources(client);

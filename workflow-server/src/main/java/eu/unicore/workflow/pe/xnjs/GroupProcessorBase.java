@@ -153,8 +153,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 	 * @throws PersistenceException
 	 * @throws InterruptedException
 	 */
-	protected void cleanupSubAction(Action sub)
-	throws ExecutionException, ProcessingException, PersistenceException, InterruptedException{
+	protected void cleanupSubAction(Action sub) throws Exception {
 		//copy results
 		ProcessVariables pv=sub.getProcessingContext().get(ProcessVariables.class);
 		if(pv!=null){
