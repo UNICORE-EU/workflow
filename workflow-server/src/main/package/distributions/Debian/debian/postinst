@@ -68,12 +68,8 @@ case "$1" in
 	chown unicore:unicore /var/log/unicore
 	chmod 755 /var/log/unicore
 	
-
 	chown unicore:unicore /var/log/unicore/workflow
 	chmod 755 /var/log/unicore/workflow
-	
-	chown unicore:unicore /var/run/unicore
-	chmod 755 /var/run/unicore
 	
 	chown unicore:unicore /var/lib/unicore
 	chmod 750 /var/lib/unicore
@@ -82,13 +78,7 @@ case "$1" in
 	chown unicore:unicore /var/lib/unicore/workflow/data
 	chmod 750 /var/lib/unicore/workflow/data
 
-
-        if [ -e /sbin/insserv ]  
-        then
-          /sbin/insserv unicore-workflow
-        fi	
-	
-	;;
+    ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;

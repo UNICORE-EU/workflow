@@ -4,9 +4,11 @@ Description=UNICORE Workflow
 [Service]
 Type=forking
 User=unicore
+Group=unicore
+RuntimeDirectory=unicore
 ExecStart=/usr/sbin/unicore-workflow-start.sh
 ExecStop=/usr/sbin/unicore-workflow-stop.sh
 PIDFile=/var/run/unicore/workflow.pid
 
 [Install]
-WantedBy=multi-user.target
+#WantedBy=multi-user.target
