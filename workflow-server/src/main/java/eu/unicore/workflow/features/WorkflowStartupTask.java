@@ -88,7 +88,15 @@ public class WorkflowStartupTask implements Runnable{
 		}
 		WorkflowProperties wp=kernel.getAttribute(WorkflowProperties.class);
 		if(wp==null){
-			wp = new WorkflowProperties(kernel.getContainerProperties().getRawProperties());
+			Properties rawProperties = kernel.getContainerProperties().getRawProperties();
+			// handle special case of new libs with older properties file
+			if(!hasWorkflowSettings(rawProperties)) {
+				// assume we are "internal" if this looks like a UNICORE/X
+				boolean isInternal = kernel.getDeploymentManager().isFeatureEnabled("Base");
+				rawProperties.put("workflow.internalMode", String.valueOf(isInternal));
+				logger.info("No configuration for Workflow feature found. Setting internal mode = {}", isInternal);
+			}
+			wp = new WorkflowProperties(rawProperties);
 			kernel.addConfigurationHandler(WorkflowProperties.class, wp);
 		}
 		logger.info("UNICORE Workflow service, version {}", VERSION);
@@ -98,6 +106,14 @@ public class WorkflowStartupTask implements Runnable{
 		setupXNJS().start();
 	}
 
+	private boolean hasWorkflowSettings(Properties properties) {
+		 if(properties.get("workflow.internalMode")!=null)return true;
+		 for(Object key: properties.keySet()) {
+			 if(String.valueOf(key).startsWith("workflow."))return true;
+		 }
+		 return false;
+	}
+	
 	protected XNJS setupXNJS() throws Exception {
 		WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
 		ConfigurationSource cs = new ConfigurationSource();
