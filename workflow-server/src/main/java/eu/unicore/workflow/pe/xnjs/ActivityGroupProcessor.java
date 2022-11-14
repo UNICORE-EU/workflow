@@ -9,7 +9,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.http.HttpResponse;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -349,8 +348,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			Callable<String>task = new Callable<String>() {
 				@Override
 				public String call() throws Exception {
-					HttpResponse res = bc.post(msg);
-					bc.checkError(res);
+					bc.postQuietly(msg);
 					return "OK";
 				}
 			};

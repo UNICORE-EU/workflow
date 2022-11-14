@@ -6,19 +6,19 @@
   <description>UNICORE Workflow engine</description>
   <inceptionYear>2009</inceptionYear>
   <name>Workflow engine</name>
-  <version>3.4.1</version>
+  <version>3.5.0</version>
 
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.4.1</version>
+    <version>3.5.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <properties>
-    <specification.version>9.0.1</specification.version>
+    <specification.version>9.1.0</specification.version>
     <compiler.fork>false</compiler.fork>
-    <package.version>9.0.1</package.version>
+    <package.version>9.1.0</package.version>
     <package.release>1</package.release>
   </properties>
 

@@ -1,6 +1,5 @@
 package eu.unicore.workflow;
 
-import org.apache.http.HttpResponse;
 import org.json.JSONObject;
 
 import eu.unicore.client.Endpoint;
@@ -21,15 +20,8 @@ public class WorkflowFactoryClient extends BaseServiceClient {
 	}
 
 	public WorkflowClient submitWorkflow(JSONObject job) throws Exception {
-		HttpResponse resp = bc.post(job);
-		bc.checkError(resp);
-		if(201 != resp.getStatusLine().getStatusCode()){
-			throw new Exception("Unexpected return status: "+
-					resp.getStatusLine().getStatusCode());
-		}
-		String url = resp.getFirstHeader("Location").getValue();
-		Endpoint ep = endpoint.cloneTo(url);
-		return new WorkflowClient(ep, security, auth);
+		String url = bc.create(job);
+		return new WorkflowClient(endpoint.cloneTo(url), security, auth);
 	}
 	
 	/**

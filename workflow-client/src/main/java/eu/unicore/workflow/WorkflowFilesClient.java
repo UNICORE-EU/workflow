@@ -2,8 +2,6 @@ package eu.unicore.workflow;
 
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-
 import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
@@ -22,9 +20,8 @@ public class WorkflowFilesClient extends BaseServiceClient {
 	}
 	
 	public void register(Map<String,String> mappings) throws Exception {
-		HttpResponse res = bc.put(JSONUtil.asJSON(mappings));
-		bc.checkError(res);
-	}
+		bc.put(JSONUtil.asJSON(mappings));
+		}
 	
 	public Map<String,String> getMappings() throws Exception{
 		return JSONUtil.asMap(getProperties());
