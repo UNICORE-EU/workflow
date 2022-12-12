@@ -185,7 +185,7 @@ public class Workflows extends ServicesBase {
 	}
 	
 	@Override
-	protected void doHandleAction(String action, JSONObject json) throws Exception {
+	protected JSONObject doHandleAction(String action, JSONObject json) throws Exception {
 		WorkflowInstance job = getResource();
 		if("abort".equals(action)){
 			job.doAbort();
@@ -207,14 +207,14 @@ public class Workflows extends ServicesBase {
 				String status = params.get("status");
 				String statusMessage = params.get("statusMessage");
 				logger.debug("[{}] job <{}> is <{}>", resourceID, jobURL, status);
-				if("RUNNING".equals(status))return;
-				else {
+				if(!"RUNNING".equals(status)){
 					boolean success = "SUCCESSFUL".equals(status);
 					PEConfig.getInstance().getCallbackProcessor().handleCallback(resourceID, jobURL, statusMessage, success);
 				}
 			}
 			else throw new IllegalArgumentException("Action '"+action+"' is not known.");
 		}
+		return null;
 	}
 
 	@Override
