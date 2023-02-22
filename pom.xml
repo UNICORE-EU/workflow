@@ -7,7 +7,7 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>http://www.unicore.eu</url>
-  <version>3.5.1</version>
+  <version>3.5.2</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
@@ -32,7 +32,7 @@
   </scm>
 
   <properties>
-    <unicorex.version>2.5.1</unicorex.version>
+    <unicorex.version>2.5.2</unicorex.version>
   </properties>
 
   <modules>

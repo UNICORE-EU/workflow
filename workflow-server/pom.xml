@@ -6,12 +6,12 @@
   <description>UNICORE Workflow engine</description>
   <inceptionYear>2009</inceptionYear>
   <name>Workflow engine</name>
-  <version>3.5.1</version>
+  <version>3.5.2</version>
 
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.5.1</version>
+    <version>3.5.2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
