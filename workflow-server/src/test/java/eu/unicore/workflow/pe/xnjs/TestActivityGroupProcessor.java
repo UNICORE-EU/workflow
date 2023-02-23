@@ -19,9 +19,9 @@ public class TestActivityGroupProcessor extends TestBase {
 		agp.setAction(a);
 		try{
 			agp.incrementCounterAndCheckMaxActivities();
-			ActivityCounter c=a.getProcessingContext().get(ActivityCounter.class);
+			Integer c = (Integer)a.getProcessingContext().get(GroupProcessorBase.ACTIVITY_COUNTER_KEY);
 			assert c!=null;
-			assert 1==c.get();
+			assert c==1;
 		}catch(Exception ex){
 			assert 1==0;
 		}

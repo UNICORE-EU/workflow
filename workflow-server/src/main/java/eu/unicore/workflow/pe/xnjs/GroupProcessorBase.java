@@ -36,6 +36,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 	private static final Logger logger=LogUtil.getLogger(LogUtil.XNJS, GroupProcessorBase.class);
 	
 	private static final String SUBACTIONS_KEY = "SUBACTIONS";
+	public static final String ACTIVITY_COUNTER_KEY = "_ACTIVITY_COUNTER_";
 	
 	public GroupProcessorBase(XNJS configuration) {
 		super(configuration);
@@ -115,6 +116,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 		manager.addInternalAction(subAction);
 		return subAction.getUUID();
 	}
+
 	/**
 	 * check whether the maximum number of activities per group is exceeded <br/>
 	 * 
@@ -123,19 +125,20 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 	 * @throws ExecutionException - thrown if too many activities for the current group
 	 */
 	protected void incrementCounterAndCheckMaxActivities()throws ExecutionException{
-		int ac=getActivityCounter().incrementAndGet();
+		Integer ac = getActivityCount();
+		ac+=1;
 		WorkflowProperties wp = xnjs.get(WorkflowProperties.class);
 		Integer maxProp=wp.getIntValue(WorkflowProperties.MAX_ACTIVITIES_PER_GROUP);
 		if(ac>maxProp){
 			throw new ExecutionException("Maximum number <"+maxProp+"> of activities per group exceeded!"); 
 		}
+		action.getProcessingContext().put(ACTIVITY_COUNTER_KEY, ac);
 	}
 	
-	protected ActivityCounter getActivityCounter(){
-		ActivityCounter activityCounter=action.getProcessingContext().get(ActivityCounter.class);
+	protected Integer getActivityCount(){
+		Integer activityCounter = (Integer)action.getProcessingContext().get(ACTIVITY_COUNTER_KEY);
 		if(activityCounter==null){
-			activityCounter=new ActivityCounter();
-			action.getProcessingContext().put(ActivityCounter.class,activityCounter);
+			activityCounter = Integer.valueOf(0);
 		}
 		return activityCounter;
 	}
