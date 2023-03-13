@@ -32,7 +32,7 @@
   </scm>
 
   <properties>
-    <unicorex.version>2.5.2</unicorex.version>
+    <unicorex.version>2.5.3</unicorex.version>
   </properties>
 
   <modules>
