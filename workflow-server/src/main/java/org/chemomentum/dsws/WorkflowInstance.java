@@ -13,7 +13,7 @@ import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.services.InitParameters;
-import eu.unicore.services.messaging.Message;
+import eu.unicore.services.messaging.ResourceDeletedMessage;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
@@ -134,8 +134,8 @@ public class WorkflowInstance extends BaseResourceImpl {
 			Log.logException("Workflow not aborted.", e, logger);
 		}
 		try {
-			Message m = new Message("deleted:" + getUniqueID());
-			kernel.getMessaging().getChannel(getModel().getParentUID()).publish(m);
+			ResourceDeletedMessage rdm = new ResourceDeletedMessage(WorkflowHome.SERVICE_NAME, getUniqueID());
+			kernel.getMessaging().getChannel(getModel().getParentUID()).publish(rdm);
 		} catch (Exception e) {
 			Log.logException("Could not send internal message.", e, logger);
 		}

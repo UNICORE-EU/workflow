@@ -43,6 +43,7 @@ import eu.unicore.services.rest.Link;
 import eu.unicore.services.rest.PagingHelper;
 import eu.unicore.services.rest.USEResource;
 import eu.unicore.services.rest.impl.ServicesBase;
+import eu.unicore.services.rest.security.AuthNHandler;
 import eu.unicore.services.security.util.AuthZAttributeStore;
 import eu.unicore.services.utils.Utilities;
 import eu.unicore.util.Log;
@@ -265,6 +266,13 @@ public class Workflows extends ServicesBase {
 			rProps.put("availableRoles",r.getValidRoles());
 			props.put("role",rProps);
 		}
+		try {
+			String method = (String)AuthZAttributeStore.getTokens().getContext()
+					.get(AuthNHandler.USER_AUTHN_METHOD);
+			if(method!=null) {
+				props.put("authenticationMethod", method);
+			}
+		}catch(Exception e) {}
 		return props;
 	}
 	
@@ -349,4 +357,8 @@ public class Workflows extends ServicesBase {
 		return null;
 	}
 
+	@Override
+	public boolean usesKernelMessaging() {
+		return true;
+	}
 }

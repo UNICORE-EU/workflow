@@ -10,7 +10,9 @@ import de.fzj.unicore.uas.impl.BaseResourceImpl;
 import eu.unicore.security.SecurityTokens;
 import eu.unicore.services.Home;
 import eu.unicore.services.InitParameters;
+import eu.unicore.services.messaging.Message;
 import eu.unicore.services.messaging.PullPoint;
+import eu.unicore.services.messaging.ResourceDeletedMessage;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;
@@ -67,19 +69,16 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 
 	@Override
 	public void processMessages(PullPoint p){
-		//check for deleted workflow instances and remove them...
 		try{
 			while(p.hasNext()){
-				String m=(String)p.next().getBody();
-				logger.trace("Read: {}", m);
-				if(m.startsWith("deleted:")){
-					String id=m.substring(m.indexOf(":")+1);
-					logger.debug("Removing workflow instance <{}>", id);
+				Message m = p.next();
+				if(m instanceof ResourceDeletedMessage){
+					String id = ((ResourceDeletedMessage) m).getDeletedResource();
 					getModel().removeChild(id);
 				}
 			}
 		}catch(Exception e){
-			Log.logException("Error in customPostActivate()",e,logger);
+			Log.logException("Error processing messages", e, logger);
 		}
 	}
 
