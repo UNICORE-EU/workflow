@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.util.Wrapper;
 
 /**
  * An abstract container for activities

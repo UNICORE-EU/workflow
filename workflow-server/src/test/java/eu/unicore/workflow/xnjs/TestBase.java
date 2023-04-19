@@ -12,8 +12,6 @@ import org.junit.BeforeClass;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import de.fzj.unicore.persist.PersistenceProperties;
-import de.fzj.unicore.persist.impl.H2Persist;
 import de.fzj.unicore.xnjs.ConfigurationSource;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
@@ -24,6 +22,8 @@ import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.Manager;
 import de.fzj.unicore.xnjs.persistence.IActionStoreFactory;
 import de.fzj.unicore.xnjs.persistence.JDBCActionStoreFactory;
+import eu.unicore.persist.PersistenceProperties;
+import eu.unicore.persist.impl.H2Persist;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.features.WorkflowStartupTask;
 import eu.unicore.workflow.pe.PEConfig;

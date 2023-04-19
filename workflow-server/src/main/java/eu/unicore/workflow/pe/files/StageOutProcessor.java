@@ -8,13 +8,13 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.fzj.unicore.persist.Persist;
 import de.fzj.unicore.uas.impl.sms.SMSBaseImpl;
 import de.fzj.unicore.xnjs.io.FileSet;
 import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
+import eu.unicore.persist.Persist;
 import eu.unicore.workflow.Constants;
 import eu.unicore.workflow.pe.PEConfig;
 

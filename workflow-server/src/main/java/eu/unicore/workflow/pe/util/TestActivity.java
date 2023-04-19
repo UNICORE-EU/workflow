@@ -1,6 +1,6 @@
 package eu.unicore.workflow.pe.util;
 
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.util.Wrapper;
 import eu.unicore.workflow.pe.model.ActivityStatus;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;

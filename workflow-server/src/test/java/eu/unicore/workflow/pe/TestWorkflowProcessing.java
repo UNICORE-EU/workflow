@@ -9,9 +9,9 @@ import java.util.UUID;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import de.fzj.unicore.persist.Persist;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.InternalManager;
+import eu.unicore.persist.Persist;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.HoldActivity;
@@ -31,7 +31,7 @@ public class TestWorkflowProcessing extends TestBase {
 		Validate.clear();
 		String wfID=UUID.randomUUID().toString();
 		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
+		List<Activity>as = new ArrayList<>();
 		as.add(new TestActivity("a1",wfID));
 		as.add(new TestActivity("a2",wfID));
 		Transition t=new Transition("a1->a2",wfID,"a1","a2");

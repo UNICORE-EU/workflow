@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.util.Wrapper;
 
 /**
  * stores workflow variables and keeps track of which variables have

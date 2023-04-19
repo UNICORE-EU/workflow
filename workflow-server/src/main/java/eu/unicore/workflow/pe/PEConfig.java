@@ -1,8 +1,8 @@
 package eu.unicore.workflow.pe;
 
-import de.fzj.unicore.persist.Persist;
-import eu.unicore.services.Kernel;
 import eu.unicore.client.registry.IRegistryClient;
+import eu.unicore.persist.Persist;
+import eu.unicore.services.Kernel;
 import eu.unicore.services.rest.client.IAuthCallback;
 import eu.unicore.services.rest.jwt.JWTDelegation;
 import eu.unicore.services.rest.jwt.JWTServerProperties;

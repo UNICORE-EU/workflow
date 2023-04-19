@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.fzj.unicore.persist.annotations.ID;
-import de.fzj.unicore.persist.annotations.Table;
-import de.fzj.unicore.persist.util.JSON;
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.annotations.ID;
+import eu.unicore.persist.annotations.Table;
+import eu.unicore.persist.util.JSON;
+import eu.unicore.persist.util.Wrapper;
 
 
 /**

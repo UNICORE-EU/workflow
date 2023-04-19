@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe.model;
 
 import java.util.List;
 
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.util.Wrapper;
 
 public abstract class SingleBodyContainer extends ActivityContainer {
 	

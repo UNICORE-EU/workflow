@@ -2,8 +2,7 @@ package eu.unicore.workflow.pe.model;
 
 import java.io.Serializable;
 
-import de.fzj.unicore.persist.util.Wrapper;
-
+import eu.unicore.persist.util.Wrapper;
 import eu.unicore.workflow.pe.iterators.Iteration;
 
 /**

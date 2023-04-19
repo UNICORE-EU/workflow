@@ -1,6 +1,6 @@
 package eu.unicore.workflow.pe.model;
 
-import de.fzj.unicore.persist.util.Wrapper;
+import eu.unicore.persist.util.Wrapper;
 
 /**
  * A transition links parts of the workflow. It can

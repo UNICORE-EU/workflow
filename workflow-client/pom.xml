@@ -5,15 +5,19 @@
   <artifactId>workflow-client</artifactId>
   <description>Workflow system client API</description>
   <name>Workflow system client API</name>
-  <version>3.5.3</version>
+  <version>3.5.4</version>
   <packaging>jar</packaging>
 
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.5.3</version>
+    <version>3.5.4</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+
+  <properties>
+   <automatic.module.name>eu.unicore.workflow.client</automatic.module.name>
+  </properties>
 
   <repositories>
     <repository>

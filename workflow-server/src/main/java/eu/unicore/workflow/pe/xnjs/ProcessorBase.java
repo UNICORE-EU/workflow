@@ -2,13 +2,13 @@ package eu.unicore.workflow.pe.xnjs;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.persist.PersistenceException;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.Action;
 import de.fzj.unicore.xnjs.ems.ActionResult;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.ems.processors.DefaultProcessor;
+import eu.unicore.persist.PersistenceException;
 import eu.unicore.services.Kernel;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;
