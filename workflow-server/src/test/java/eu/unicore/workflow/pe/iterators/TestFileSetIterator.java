@@ -88,7 +88,7 @@ public class TestFileSetIterator {
 		iter.fillContext(vars);
 		
 		assert Boolean.TRUE.equals(vars.get(ForEachFileIterator.PV_IS_CHUNKED));
-		assert Integer.valueOf(5).equals(vars.get(ForEachFileIterator.PV_THIS_CHUNK_SIZE));
+		assert Integer.valueOf(5).equals(vars.get("IT"+ForEachFileIterator.PV_THIS_CHUNK_SIZE));
 
 		for(int i=0;i<19;i++){
 			vars.put(ForEachFileIterator.PV_IS_CHUNKED, null);
@@ -98,8 +98,8 @@ public class TestFileSetIterator {
 		}
 
 		assert Boolean.TRUE.equals(vars.get(ForEachFileIterator.PV_IS_CHUNKED));
-		assert Integer.valueOf(5).equals(vars.get(ForEachFileIterator.PV_THIS_CHUNK_SIZE));
-		assert "file_99".equals(vars.get(ForEachFileIterator.PV_FILENAME+"_5"));
+		assert Integer.valueOf(5).equals(vars.get("IT"+ForEachFileIterator.PV_THIS_CHUNK_SIZE));
+		assert "file_99".equals(vars.get("IT"+ForEachFileIterator.PV_FILENAME+"_5"));
 		
 		assert iter.hasNext()==false;
 	}
