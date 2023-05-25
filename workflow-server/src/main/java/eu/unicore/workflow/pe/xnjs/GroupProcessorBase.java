@@ -53,7 +53,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 		return res;
 	}
 
-	protected String submit(Activity a, SubflowContainer attr)throws ExecutionException{
+	protected String submit(Activity a, SubflowContainer attr)throws Exception {
 		ProcessVariables vars=new ProcessVariables();
 		vars.putAll(action.getProcessingContext().get(ProcessVariables.class).copy());
 		incrementCounterAndCheckMaxActivities();
@@ -76,7 +76,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 		return uuid;
 	}
 
-	protected String submit(ActivityGroup group, SubflowContainer attr)throws ExecutionException{
+	protected String submit(ActivityGroup group, SubflowContainer attr)throws Exception {
 		ProcessVariables vars=new ProcessVariables();
 		vars.putAll(action.getProcessingContext().get(ProcessVariables.class).copy());
 		incrementCounterAndCheckMaxActivities();
@@ -100,7 +100,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 	}
 
 
-	protected String submitToXNJS(Activity a, ProcessVariables vars, String iteration)throws ExecutionException{
+	protected String submitToXNJS(Activity a, ProcessVariables vars, String iteration)throws Exception {
 		Action subAction=new Action();
 		subAction.setType(a.getType());
 		subAction.setAjd(a.clone());

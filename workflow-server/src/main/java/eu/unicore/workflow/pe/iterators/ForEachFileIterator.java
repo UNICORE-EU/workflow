@@ -33,19 +33,23 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 	/**
 	 * how large is the current chunk (an Integer)
 	 */
-	public final static String PV_THIS_CHUNK_SIZE="__CHUNK_SIZE";
+	public final static String PV_THIS_CHUNK_SIZE="_CHUNK_SIZE";
 	
 	/**
 	 * what is the size of all the files in the current chunk (Long)
 	 */
 	public final static String PV_AGGREGATED_CHUNK_SIZE="__FILE_SIZE";
 
-
 	/**
 	 * Variable holding the filename
 	 */
-	public final static String PV_FILENAME="__FILENAME";
-	
+	public final static String PV_FILENAME="_FILENAME";
+
+	/**
+	 * Variable holding the file path
+	 */
+	public final static String PV_VALUE="_VALUE";
+
 	/**
 	 * filename format string
 	 */
@@ -112,7 +116,7 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 	}
 
 	/**
-	 * Create a new ChunkedFileIterator with the given file set and 
+	 * Create a new ForEachFileIterator with the given file set and
 	 * expression to calculate the chunk size
 	 *  
 	 * @param source - the underlying file set iterator
@@ -155,7 +159,9 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 			String k = key.toString();
 			if(k.startsWith(iteratorName+PV_FILENAME) 
 				|| k.startsWith(iteratorName+PV_ORIGINAL_FILENAMES)
-				|| k.startsWith(iteratorName+PV_ORIGINAL_FILENAME)){
+				|| k.startsWith(iteratorName+PV_ORIGINAL_FILENAME)
+				|| k.startsWith(iteratorName+PV_VALUE)
+				){
 				vars.remove(k);
 			}
 		}
@@ -181,10 +187,15 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 			if(source.hasNext()){
 				source.next(vars);
 				String currentFile=source.getCurrentUnderlyingValue();
-				vars.put(PV_FILENAME+"_"+(i+1), currentFile);
+				vars.put(iteratorName+PV_FILENAME+"_"+(i+1), currentFile);
 				if(chunkSize==1) {
+					// add variables without appended "_1" for this case
 					vars.put(iteratorName+PV_ORIGINAL_FILENAME,
 							source.getCurrentFileName());
+					vars.put(getIteratorName()+PV_FILENAME,
+							source.getCurrentFileName());
+					vars.put(getIteratorName()+PV_VALUE,
+							currentFile);
 				}
 				vars.put(iteratorName+PV_ORIGINAL_FILENAME+"_"+(i+1),
 						source.getCurrentFileName());
@@ -194,7 +205,7 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 			}
 			else break;
 		}
-		vars.put(PV_THIS_CHUNK_SIZE, Integer.valueOf(count));
+		vars.put(iteratorName+PV_THIS_CHUNK_SIZE, Integer.valueOf(count));
 		vars.put(iteratorName+PV_ORIGINAL_FILENAMES, filenames.toString());
 	}
 	

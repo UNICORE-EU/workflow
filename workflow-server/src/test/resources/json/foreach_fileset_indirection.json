@@ -4,11 +4,23 @@
 
   { "id": "generate-list",
     "job": {
-         "Executable": "echo",
-         "Arguments": [ "wf:/file_list"],
-          "Exports": [
+         "Executable": "/bin/bash",
+         "Arguments": [ "script.sh"],
+         "Imports": [
+           {"From": "inline://dummy", "To": "script.sh",
+           	"Data": ["echo 1 > file1.txt",
+           		"echo 2 > file2.txt",
+           		"echo 3 > file3.txt",
+           		"echo wf:/files/file1.txt",
+           		"echo wf:/files/file2.txt",
+           		"echo wf:/files/file3.txt"
+           	]
+           }
+         ],
+         "Exports": [
+              {"From": "file*.txt", "To": "wf:/files/"},
 	          {"From": "stdout", "To": "wf:/file_list"},
-	      ],
+	     ],
     }
   }
 
@@ -29,7 +41,7 @@
          "job": {
              "Executable": "echo",
              "Arguments": [ "processing ", "$NAME"],
-	         "Environment": ["NAME=${IT_FILENAME}"],
+	         "Environment": ["NAME=${IT_ORIGINAL_FILENAME}"],
              "Imports": [
                {"From": "${IT_VALUE}", "To": "infile"},
              ],

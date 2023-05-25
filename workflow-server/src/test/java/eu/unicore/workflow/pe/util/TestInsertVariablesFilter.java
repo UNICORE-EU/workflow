@@ -24,7 +24,6 @@ public class TestInsertVariablesFilter {
 		builder.stagein().from("${ForEachIterator}").to("infile");
 		builder.environment("x","${SOME_VAR}");
 		JSONObject doc = builder.getJSON();
-
 		JSONObject filtered = filter.filter(doc);
 		
 		assert 1==filtered.getJSONArray("Imports").length();

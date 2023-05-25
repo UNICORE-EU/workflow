@@ -16,7 +16,6 @@ import de.fzj.unicore.xnjs.ConfigurationSource;
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.BasicManager;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
 import de.fzj.unicore.xnjs.ems.IExecutionContextManager;
 import de.fzj.unicore.xnjs.ems.InternalManager;
 import de.fzj.unicore.xnjs.ems.Manager;
@@ -142,7 +141,7 @@ public abstract class TestBase {
 		return workflowInfo.getActivityStatus(activityID,true);
 	}
 	
-	public void waitForDone(String wfID) throws ExecutionException, InterruptedException {
+	public void waitForDone(String wfID) throws Exception {
 		int c=0;
 		int s = 0;
 		while(c<120){

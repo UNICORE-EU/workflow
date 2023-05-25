@@ -63,7 +63,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			logger.info("Processing workflow <{}>", ag.getWorkflowID());
 		}
 		else{
-			logger.info("Processing group <{}> in workflow <{}> iteration <{}>", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
+			logger.debug("Processing group <{}> in workflow <{}> iteration <{}>", ag.getID(), ag.getWorkflowID(), getCurrentIteration());
 		}
 		if(ag.isCoBrokerActivities()){
 			action.setStatus(ActionStatus.PREPROCESSING);
@@ -84,7 +84,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	
 	protected void performCoBrokering() throws ProcessingException{
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
-		logger.info("Co-brokering activities for <{}>", ag.getID());
+		logger.debug("Co-brokering activities for <{}>", ag.getID());
 		// first collect all Job activities
 		Map<String,JSONObject>jobs = new HashMap<>();
 		addJobs(jobs, ag, false);
@@ -213,13 +213,13 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 				String subActionID=iterator.next();
 				Action sub=manager.getAction(subActionID);
 				if(sub==null){
-					String msg="WARNING: Can't find subaction with id "+subActionID;
-					action.addLogTrace(msg);
+					action.addLogTrace("WARNING: Can't find subaction with id "
+							+subActionID);
 					iterator.remove();
 				}
 				else{
 					int status=sub.getStatus();
-					logger.trace("Sub-Action <{}> is ", subActionID, ActionStatus.toString(status));
+					logger.trace("Sub-Action <{}> is {}", subActionID, ActionStatus.toString(status));
 					
 					if(ActionStatus.DONE!=status){
 						stillRunning=true;

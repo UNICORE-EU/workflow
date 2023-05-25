@@ -41,7 +41,7 @@ public class InsertVariablesFilter {
 	}
 
 	/**
-	 * replace occurences of ${VARNAME} in the job
+	 * replace occurrences of ${VARNAME} in the job
 	 */
 	private JSONObject replaceVariables(JSONObject job) throws Exception{
 		String orig = job.toString();

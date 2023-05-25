@@ -141,12 +141,15 @@ public class TestForLoopProcessing extends TestBase {
 		total = 10;
 		size = 0;
 		FileSetIterator fsi=new FileSetIterator(null,fs);
-		fsi.setIteratorName("ForEach_Iterator");
+		fsi.setIteratorName("IT");
+
+		ForEachFileIterator iter = new ForEachFileIterator(fsi, 1);
+		iter.setIteratorName("IT");
 
 		String wfID=UUID.randomUUID().toString();
 
 		PEWorkflow wf=new PEWorkflow(wfID);
-		ActivityGroup body = new ActivityGroup("for1-body", wfID, fsi);
+		ActivityGroup body = new ActivityGroup("for1-body", wfID, iter);
 		TestActivity a1 = new TestActivity("a1",wfID);
 		body.setActivities(a1);
 		ForGroup fl = new ForGroup("for1",wfID,body);
@@ -191,7 +194,7 @@ public class TestForLoopProcessing extends TestBase {
 		FileSetIterator fsi = new FileSetIterator(null,fs);
 
 		ForEachFileIterator chunkedIterator = new ForEachFileIterator(fsi,chunkSize);
-		chunkedIterator.setIteratorName("ForEach_Iterator");
+		chunkedIterator.setIteratorName("IT");
 
 		String wfID=UUID.randomUUID().toString();
 
@@ -224,7 +227,7 @@ public class TestForLoopProcessing extends TestBase {
 		// compute chunk size as number of files per chunk
 		String expr="return TOTAL_NUMBER / 5;";
 		ForEachFileIterator chunkedIterator = new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.NUMBER);
-		chunkedIterator.setIteratorName("ForEach_Iterator");
+		chunkedIterator.setIteratorName("IT");
 
 		String wfID=UUID.randomUUID().toString();
 
@@ -259,7 +262,7 @@ public class TestForLoopProcessing extends TestBase {
 		// compute chunk size in kbytes
 		String expr="return TOTAL_SIZE / 5;";
 		ForEachFileIterator chunkedIterator=new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.SIZE);
-		chunkedIterator.setIteratorName("ForEach_Iterator");
+		chunkedIterator.setIteratorName("IT");
 
 		String wfID=UUID.randomUUID().toString();
 

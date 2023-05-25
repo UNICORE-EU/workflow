@@ -305,7 +305,7 @@ public class Converter {
 			iterate.setIteratorName(wf.optString("iterator_name", "IT"));
 		}
 		else{
-			result.addError("For-each loop '"+id+"' does not define an iterator.");
+			result.addError("For-each loop '"+id+"' is missing 'fileset', 'values' or 'variables' element(s).");
 		}
 		return iterate;
 	}
@@ -388,7 +388,7 @@ public class Converter {
 	/**
 	 * build an activity
 	 */
-	protected void processActivity(JSONObject a, 
+	protected void processActivity(JSONObject a,
 			WorkflowInfo workflowInfo,
 			List<eu.unicore.workflow.pe.model.Activity>activities,
 			ConversionResult result, List<String> outputFiles) throws JSONException {
@@ -431,7 +431,8 @@ public class Converter {
 				err = true;
 			}
 			else{
-				addVariableModification(a,outputFiles,activities,workflowInfo,result);
+				ModifyVariableActivity modVar = new ModifyVariableActivity(id,result.getWorkflowID(),name,expr);
+				activities.add(modVar);
 			}
 		}
 		else if ("START".equals(activityType)){
@@ -487,7 +488,7 @@ public class Converter {
 
 		if(err) {
 			// add a dummy activity with the correct ID to avoid follow-on errors 
-			// that "distract" the user from the real error
+			// that might distract the user from the real error
 			activities.add(new RoutingActivity(id, result.getWorkflowID()));
 		}
 	}
@@ -595,30 +596,6 @@ public class Converter {
 			}
 		}
 		target.setDeclarations(activities);
-	}
-
-	/**
-	 * add a variable modification activity 
-	 */
-	protected static void addVariableModification(JSONObject a, 
-			List<String>outputFiles, 
-			List<eu.unicore.workflow.pe.model.Activity>activities, 
-			WorkflowInfo workflowInfo,
-			ConversionResult result)
-	{
-		String id = null;
-		try{
-			id = a.getString("id");
-			String wfid = result.getWorkflowID();
-			String varName = getOption(a, "variable_name");
-			String expression = getOption(a, "expression");
-			String script = convertExpression(wfid, expression);
-			ModifyVariableActivity modVar = new ModifyVariableActivity(id,wfid,varName,script);
-			activities.add(modVar);
-		}
-		catch(Exception e){
-			result.addError(Log.createFaultMessage("Error converting activity <"+id+">",e));
-		}
 	}
 
 	static char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
