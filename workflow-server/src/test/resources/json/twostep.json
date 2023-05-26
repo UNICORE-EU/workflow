@@ -1,26 +1,21 @@
 {
 
-"activities" : [
+"activities" : {
 
- {
-   "id": "date1",
-   "type": "JOB",
-   "job": {
-     "ApplicationName": "Date",
-    },
- },
-
- {
-   "id": "date2",
-   "type": "JOB",
-   "job": {
-     "Executable": "date",
-    },
- },
-],
+   "date1": {
+     "job": {
+       "ApplicationName": "Date"
+      }
+   },
+   "date2": {
+     "job": {
+       "Executable": "date"
+      }
+   }
+},
 
 "transitions": [
- {"id": "12", "from": "date1", "to": "date2" }
+   { "id": "12", "from": "date1", "to": "date2" }
+]
 
-],
 }

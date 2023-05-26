@@ -1,8 +1,8 @@
 {
 
-"activities": [
+"activities": {
 
-  { "id": "generate-list",
+  "generate-list": {
     "job": {
          "Executable": "/bin/bash",
          "Arguments": [ "script.sh"],
@@ -19,39 +19,38 @@
          ],
          "Exports": [
               {"From": "file*.txt", "To": "wf:/files/"},
-	          {"From": "stdout", "To": "wf:/file_list"},
-	     ],
+	          {"From": "stdout", "To": "wf:/file_list"}
+	     ]
     }
   }
 
-],
+},
 
-"subworkflows": [
+"subworkflows": {
 
-{
-   "id": "for1", "type": "FOR_EACH",
+"for1": {
+   "type": "FOR_EACH",
    "iterator_name": "IT",
 
    "body":
    {
-     "activities": [
+     "activities": {
 
-       {
-         "id": "job",
+       "job": {
          "job": {
              "Executable": "echo",
              "Arguments": [ "processing ", "$NAME"],
 	         "Environment": ["NAME=${IT_ORIGINAL_FILENAME}"],
              "Imports": [
-               {"From": "${IT_VALUE}", "To": "infile"},
+               {"From": "${IT_VALUE}", "To": "infile"}
              ],
              "Exports": [
-	            {"From": "stdout", "To": "wf:/out_${IT}"},
-	         ],
+	            {"From": "stdout", "To": "wf:/out_${IT}"}
+	         ]
 	      }
-       },
+       }
 
-      ],
+      }
 
     },
 
@@ -59,12 +58,12 @@
       {
          "indirection": "true",
          "base": "wf:/",
-	     "include": ["file_list"],
+	     "include": ["file_list"]
       }
-    ],
+    ]
 }
-],
+},
 
-"transitions": [ {"from": "generate-list", "to": "for1" }, ]
+"transitions": [ {"from": "generate-list", "to": "for1" } ]
 
 }

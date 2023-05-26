@@ -1,56 +1,49 @@
 {
 
-  "subworkflows" : [
+  "subworkflows" : {
 
-   { "id": "while", type: "WHILE", 
+   "while": { "type": "WHILE", 
    
-    "variables": [
-	  {
-	    "name": "C",
+    "variables": {
+	  "C": {
 	    "type": "INTEGER",
-	    "initial_value": "1",
+	    "initial_value": "1"
 	  },
 	  
-	  {
-	    "name": "TEST",
+	  "TEST": {
 	    "type": "INTEGER",
-	    "initial_value": "123",
-	  },
-    ],
+	    "initial_value": "123"
+	  }
+    },
 
     "condition": "C<=2",
     
     "body": {
         "id": "while-body",
         
-        "activities" : [
-         {
-           "id": "job",
-   		   "job": {
+        "activities" : {
+         "job": {
+           "job": {
              "Executable": "echo",
              "Arguments": ["$TEST", " ", "${CURRENT_ITERATOR_VALUE}"],
      	     "Environment": ["TEST=${C}"],
      	     "Exports": [
                { "From": "stdout", "To": "wf:/out_${C}" }
 	    	 ]
-          },
+          }
          },
          
-         {
-           "id": "increment-counter",
+         "increment-counter": {
            "type": "MODIFY_VARIABLE",
            "variable_name": "C",
-           "expression": "C++",
+           "expression": "C++"
          }
          
-        ],
+        },
         "transitions":[
-          { "from": "job", "to": "increment-counter" },
-        ],
-    
-      },
- 
-  },
-  ],
-
+          { "from": "job", "to": "increment-counter" }
+        ]
+      }
+    }
+  }
 }

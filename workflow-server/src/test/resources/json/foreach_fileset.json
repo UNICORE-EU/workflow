@@ -1,41 +1,36 @@
 {
-
-"subworkflows": [
-
-{
-   "id": "for1", "type": "FOR_EACH",
-   "iterator_name": "IT",
-
-   "body":
-   {
-     "activities": [
-
-       {
-         "id": "job",
-         "job": {
-             "Executable": "echo",
-             "Arguments": [ "processing ", "$NAME"],
-	         "Environment": ["NAME=${IT_FILENAME}"],
-             "Imports": [
-               {"From": "${IT_VALUE}", "To": "infile"},
-             ],
-             "Exports": [
-	            {"From": "stdout", "To": "wf:/out_${IT}"},
-	         ],
-	      }
-       },
-
-      ],
-
-    },
-
-    "filesets": [
-      {
-         "base": "https://localhost:8080/VENUS/rest/core/storages/projects/files/txt/",
-	     "include": ["*.txt"],
-      }
-    ],
-}
-],
-
+  "subworkflows": {
+    "for1": {
+      "type": "FOR_EACH",
+      "iterator_name": "IT",
+      "body": {
+        "activities": {
+          "job": {
+            "job": {
+              "Executable": "echo",
+              "Arguments": [
+                "processing ",
+                "$NAME"
+              ],
+              "Environment": [
+                "NAME=${IT_FILENAME}"
+              ],
+              "Imports": [
+                { "From": "${IT_VALUE}", "To": "infile" }
+              ],
+              "Exports": [
+                { "From": "stdout", "To": "wf:/out_${IT}" }
+              ]
+            }
+          }
+        }
+      },
+      "filesets": [
+        {
+          "base": "https://localhost:8080/VENUS/rest/core/storages/projects/files/txt/",
+          "include": [ "*.txt" ]
+        }
+      ]
+    }
+  }
 }

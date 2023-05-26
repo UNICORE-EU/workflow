@@ -90,7 +90,6 @@ public class Converter {
 
 		WorkflowInfo workflowInfo = WorkflowInfo.buildSubflow(wf);
 		String subID = wf.getString("id");
-
 		ActivityGroup converted;
 
 		if(subID.equals(result.getWorkflowID())){
@@ -233,8 +232,7 @@ public class Converter {
 		Iteration iterate=null;
 		JSONArray values = wf.optJSONArray("values");
 		JSONArray fileSetDef = wf.optJSONArray("filesets");
-		JSONArray variableSets = wf.optJSONArray("variables");
-
+		List<JSONObject> vSets = WorkflowInfo.getItemsByKey(wf, "variables", "variable_name");
 		if(values!=null && values.length()>0){
 			iterate=new ValueSetIterator(JSONUtil.toArray(values));
 		}
@@ -282,10 +280,10 @@ public class Converter {
 			}
 			if(formatString!=null)((ForEachFileIterator)iterate).setFormatString(formatString);
 		}
-		else if(variableSets!=null && variableSets.length()>0){
+		else if(vSets!=null && vSets.size()>0){
 			List<VariableSet>varSets = new ArrayList<>();
-			for(int i=0; i<variableSets.length(); i++){
-				JSONObject var = variableSets.getJSONObject(i);
+			for(int i=0; i<vSets.size(); i++){
+				JSONObject var = vSets.get(i);
 				String vName = var.getString("variable_name");
 				String vType = var.optString("type", "INTEGER");
 				String expr = var.getString("expression");

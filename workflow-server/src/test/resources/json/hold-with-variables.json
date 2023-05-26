@@ -1,43 +1,36 @@
 {
 
-    "variables": [
-	{
-	    "id": "decl1",
-	    "name": "COUNTER",
+    "variables": {
+	  "COUNTER": {
 	    "type": "INTEGER",
-	    "initial_value": "123",
-	},
-    ],
-    
-    "activities" : [
+	    "initial_value": "123"
+	  }
+    },
 
-	{
-	    "id": "date1",
-	    "type": "JOB",
+    "activities" : {
+
+	  "date1": {
 	    "job": {
-		  "ApplicationName": "Date",
-	    },
+		  "ApplicationName": "Date"
+	    }
 	},
-	
-	{
-	    "id": "hold1",
+
+	"hold1": {
 	    "type": "HOLD",
-	    "sleep_time": "30m",
+	    "sleep_time": "30m"
 	},
-	
-	{
-	    "id": "date2",
-	    "type": "JOB",
+
+	"date2": {
 	    "job": {
-		  "Executable": "date",
-	    },
-	},
-    ],
+		  "Executable": "date"
+	    }
+	}
+
+    },
     
     "transitions": [
-	{"id": "1-hold", "from": "date1", "to": "hold1" },
-	{"id": "hold-2", "from": "hold1", "to": "date2" },
-	
-    ],
+	  {"id": "1-hold", "from": "date1", "to": "hold1" },
+	  {"id": "hold-2", "from": "hold1", "to": "date2" }
+	]
 
 }

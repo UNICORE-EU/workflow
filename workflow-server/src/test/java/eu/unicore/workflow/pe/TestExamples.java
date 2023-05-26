@@ -9,6 +9,10 @@ import org.junit.Test;
 
 import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.json.Converter;
+import eu.unicore.workflow.pe.iterators.VariableSetIterator;
+import eu.unicore.workflow.pe.model.Activity;
+import eu.unicore.workflow.pe.model.ActivityGroup;
+import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.xnjs.TestBase;
@@ -72,8 +76,15 @@ public class TestExamples  extends TestBase {
 		ConversionResult res = new Converter(true).convert(wfID, json);
 		assert !res.hasConversionErrors(): String.valueOf(res.getConversionErrors());
 		PEWorkflow wf = res.getConvertedWorkflow();
-		doProcess(wf);
+		ActivityGroup ag=res.getConvertedWorkflow();
+		assert ag!=null;
+		Activity a1=ag.getActivity("for1");
+		assert a1 instanceof ForGroup;
+		ForGroup fg = (ForGroup)a1;
+		VariableSetIterator vsi = (VariableSetIterator)fg.getBody().getIterate();
+		assert vsi.getVariableSets().length==2;
 		
+		doProcess(wf);
 		try (WorkflowContainer wfc = PEConfig.getInstance().getPersistence().getForUpdate(wfID)){
 			wfc.compact(0);
 			assert wfc.getSize()==0;

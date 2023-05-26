@@ -1,35 +1,28 @@
 {
-
-  "activities" : [
-   {
-     "id": "date1",
-     "type": "JOB",
-   	 "job": {
-       "ApplicationName": "Date",
+  "activities": {
+    "date1": {
+      "job": {
+        "ApplicationName": "Date"
       },
       "options": {}
-   },
-
-  ],
-
-  "subworkflows" : [
-
-   { "id": "sw1",
-
-    "activities" : [
-     {
-       "id": "sw1-date1",
-       "type": "JOB",
-   		"job": {
-         "ApplicationName": "Date",
-        },
-     },
-    ],
+    }
   },
-  ],
-
-  "transitions" : [
-    {"id": "t12", "from": "date1", "to": "sw1" },
-  ],
-
+  "subworkflows": {
+    "sw1": {
+      "activities": {
+        "sw1-date1": {
+          "job": {
+            "ApplicationName": "Date"
+          }
+        }
+      }
+    }
+  },
+  "transitions": [
+    {
+      "id": "t12",
+      "from": "date1",
+      "to": "sw1"
+    }
+  ]
 }

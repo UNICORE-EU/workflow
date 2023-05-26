@@ -1,0 +1,26 @@
+{
+
+    "variables": {
+
+	  "COUNTER": {
+	    "name": "COUNTER",
+	    "type": "INTEGER",
+	    "initial_value": "123"
+  	  },
+
+	  "FOO": {
+	    "type": "STRING",
+	    "initial_value": "abc"
+   	  }
+    },
+
+    "activities" : {
+	   "echo1": {
+	      "job": {
+		    "Executable": "echo",
+		    "Arguments": [ "${COUNTER}", "${FOO}" ]
+	      }
+	   }
+	}
+
+}

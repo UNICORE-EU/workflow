@@ -1,6 +1,7 @@
 package eu.unicore.workflow.json;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONArray;
@@ -12,6 +13,7 @@ import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
+import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.HoldActivity;
 import eu.unicore.workflow.pe.model.JSONExecutionActivity;
@@ -241,6 +243,24 @@ public class TestConversion {
 		assert ag.getActivities().size()==3;
 		HoldActivity hold = (HoldActivity)ag.getActivity("hold1");
 		assert 1800==hold.getSleepTime();
+	}
+	
+	@Test
+	public void testConvertVariables() throws Exception {
+		String file="src/test/resources/json/variables.json";
+		String wfID="1";
+		JSONObject wf = new JSONObject(IOUtils.readFile(new File(file)));
+		assert wf!=null;
+		ConversionResult res = new Converter().convert(wfID, wf);
+		assert res!=null;
+		printErrors(res);
+		assert !res.hasConversionErrors();
+		PEWorkflow ag=res.getConvertedWorkflow();
+		assert ag.getActivities().size()==1;
+		assert ag.getDeclarations().size()==2;
+		for (DeclareVariableActivity a: ag.getDeclarations()) {
+			assert Arrays.asList("FOO","COUNTER").contains(a.getVariableName());
+		}
 	}
 	
 	protected void printErrors(ConversionResult res){

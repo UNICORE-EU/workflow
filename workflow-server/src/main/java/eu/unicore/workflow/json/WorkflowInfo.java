@@ -212,7 +212,7 @@ public class WorkflowInfo {
 		return getItemsByKey(source, name, "id");
 	}
 	
-	private static List<JSONObject>getItemsByKey(JSONObject source, String name, String target) throws JSONException {
+	public static List<JSONObject>getItemsByKey(JSONObject source, String name, String target) throws JSONException {
 		List<JSONObject>result = new ArrayList<>();
 		Object itemsDecl = source.opt(name);
 		if(itemsDecl!=null && itemsDecl instanceof JSONArray) {

@@ -1,21 +1,26 @@
 {
-
-"Tags": ["testing"],
-
-"activities" : {
-  "date1": {
-    "job": {
-      "ApplicationName": "Date",
-      "Exports": [
-        {"From": "stdout", "To": "wf:date1/out",},
-        {"From": "stderr", "To": "wf:date1/err",},
-      ],
-    },
-    "options": {
-     "IGNORE_FAILURE" : true,
-     "MAX_RESUBMITS": 10,
-    },
-   },
-},
-
+  "Tags": [
+    "testing"
+  ],
+  "activities": {
+    "date1": {
+      "job": {
+        "ApplicationName": "Date",
+        "Exports": [
+          {
+            "From": "stdout",
+            "To": "wf:date1/out"
+          },
+          {
+            "From": "stderr",
+            "To": "wf:date1/err"
+          }
+        ]
+      },
+      "options": {
+        "IGNORE_FAILURE": true,
+        "MAX_RESUBMITS": 10
+      }
+    }
+  }
 }

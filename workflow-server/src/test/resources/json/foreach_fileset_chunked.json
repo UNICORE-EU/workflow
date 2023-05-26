@@ -1,31 +1,30 @@
 {
 
-"subworkflows": [
+"subworkflows": {
 
-{
-   "id": "for1", "type": "FOR_EACH",
-   "iterator_name": "IT",
+  "for1": {
+     "type": "FOR_EACH",
+     "iterator_name": "IT",
 
-   "body":
-   {
-     "activities": [
+     "body":
+     {
+       "activities": {
 
-       {
-         "id": "job",
          "job": {
+           "job": {
              "Executable": "echo",
              "Arguments": [ "processing ", "$NAME"],
 	         "Environment": ["NAME=${IT_FILENAME}"],
              "Imports": [
-               {"From": "${IT_VALUE}", "To": "infile"},
+               {"From": "${IT_VALUE}", "To": "infile"}
              ],
              "Exports": [
-	            {"From": "stdout", "To": "wf:/out_${IT}"},
-	         ],
+	            {"From": "stdout", "To": "wf:/out_${IT}"}
+	         ]
 	      }
-       },
+       }
 
-      ],
+      }
 
     },
 
@@ -34,10 +33,10 @@
     "filesets": [
       {
          "base": "https://localhost:8080/VENUS/rest/core/storages/projects/files/txt/",
-	     "include": ["*.txt"],
+	     "include": ["*.txt"]
       }
-    ],
+    ]
 }
-],
+}
 
 }

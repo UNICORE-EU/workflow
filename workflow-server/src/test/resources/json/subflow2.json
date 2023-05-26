@@ -5,10 +5,10 @@
    "date1": {
      "type": "JOB",
    	 "job": {
-       "ApplicationName": "Date",
+       "ApplicationName": "Date"
       },
       "options": {}
-   },
+   }
 
   },
 
@@ -20,15 +20,15 @@
         "sw1-date1": {
           "type": "JOB",
    		  "job": {
-             "ApplicationName": "Date",
-          },
-         },
-      },
-    },
+             "ApplicationName": "Date"
+          }
+         }
+      }
+    }
   },
   
   "transitions" : [
-    {"id": "t12", "from": "date1", "to": "sw1" },
-  ],
+    { "id": "t12", "from": "date1", "to": "sw1" }
+  ]
 
 }

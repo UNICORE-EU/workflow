@@ -1,47 +1,43 @@
 {
 
-"activities": [
+"activities": {
 
-  {"id": "branch", "type": "BRANCH" },
+  "branch": { "type": "BRANCH" },
 
-  {
-   "id": "if-job",
+  "if-job": {
    "job": { "ApplicationName": "Date" }
   },
 
-  {
-   "id": "else-job",
-   "job": { "ApplicationName": "Date" },
-  },
-
-  {"id": "merge", "type": "MERGE" },
-
-  {"id": "branch2", "type": "BRANCH" },
-
-  {
-   "id": "if-job2",
+  "else-job": {
    "job": { "ApplicationName": "Date" }
   },
 
-  {
-   "id": "else-job2",
-   "job": { "ApplicationName": "Date" },
+  "merge": { "type": "MERGE" },
+
+  "branch2": { "type": "BRANCH" },
+
+  "if-job2": {
+   "job": { "ApplicationName": "Date" }
   },
+
+  "else-job2": {
+   "job": { "ApplicationName": "Date" }
+  }
   
-],
+},
 
 "transitions": [
-   {"from": "branch", "to": "if-job", "condition": "2+2==4"},
-   {"from": "branch", "to": "else-job" },
+   { "from": "branch", "to": "if-job", "condition": "2+2==4" },
+   { "from": "branch", "to": "else-job" },
    
-   {"from": "if-job",   "to": "merge", },
-   {"from": "else-job", "to": "merge", },
+   { "from": "if-job", "to": "merge" },
+   { "from": "else-job", "to": "merge" },
    
-   {"from": "merge", "to": "branch2", },
+   { "from": "merge", "to": "branch2" },
    
-   {"from": "branch2", "to": "if-job2", "condition": "2+2==5"},
-   {"from": "branch2", "to": "else-job2" },
+   { "from": "branch2", "to": "if-job2", "condition": "2+2==5" },
+   { "from": "branch2", "to": "else-job2" }
    
-],
+]
 
 }

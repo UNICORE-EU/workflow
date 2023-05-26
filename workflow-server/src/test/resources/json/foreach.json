@@ -1,39 +1,36 @@
 {
 
     
-  "activities" : [
-         {
-           "id": "start",
-           "type": "START"
-           }
-   ],
+  "activities" : {
+         "start": { "type": "START" }
+   },
 
-"subworkflows" : [
+  "subworkflows" : {
 
-{
-   "id": "for1", "type": "FOR_EACH",
-   "options": { "maxConcurrentActivities": "17" },
+  "for1": {
+     "type": "FOR_EACH",
+     "options": { "maxConcurrentActivities": "17" },
 
-   "body": {
-     "id": "for1_body",
-     "activities": [
-       { "id": "RunScript", "type": "JOB",
-         "job":
-         {
-           "Executable": "echo",
-           "Arguments": [ "${CURRENT_ITERATOR_VALUE}" ],
-         }
-        },
-      ],
+     "body": {
+       "id": "for1_body",
+       "activities": {
+         "RunScript": { 
+             "job": {
+               "Executable": "echo",
+               "Arguments": [ "${CURRENT_ITERATOR_VALUE}" ]
+             }
+          }
+      }
   },
  
-  "values": [ "a", "b", "c" ],
-},
- 
-],
+  "values": [ "a", "b", "c" ]
 
-      "transitions":[
-          {"from": "start", "to": "for1",},
-        ],
+}
+ 
+},
+
+      "transitions": [
+          { "from": "start", "to": "for1" }
+      ]
 
 }

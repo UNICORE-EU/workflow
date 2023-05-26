@@ -1,55 +1,50 @@
 {
 
     
-  "activities" : [
-         {
-           "id": "start",
-           "type": "START"
-           }
-   ],
+  "activities" : {
+    "start": {
+      "type": "START"
+    }
+  },
 
-"subworkflows" : [
+"subworkflows" : {
 
-{
-   "id": "for1", "type": "FOR_EACH",
-
+ "for1": {
+   "type": "FOR_EACH",
    "body": {
      "id": "for1_body",
-     "activities": [
-       { "id": "RunScript", "type": "JOB",
-         "job":
-         {
+     "activities": {
+       "RunScript": {
+         "job": {
            "Executable": "echo",
-           "Arguments": [ "${CURRENT_ITERATOR_VALUE}" ],
+           "Arguments": [ "${CURRENT_ITERATOR_VALUE}" ]
          }
-        },
-      ],
-  },
+        }
+      }
+   },
   
-  "variables": [
-  {
-   "variable_name": "X",
-   "type": "INTEGER",
-   "start_value": "0",
-   "expression": "X++",
-   "end_condition": "X<2"
-  },
+   "variables": {
+     "X": {
+      "type": "INTEGER",
+      "start_value": "0",
+      "expression": "X++",
+      "end_condition": "X<2"
+     },
   
-  {
-   "variable_name": "Y",
-   "type": "INTEGER",
-   "start_value": "0",
-   "expression": "Y++",
-   "end_condition": "Y<2"
-  },
+     "Y": {
+      "type": "INTEGER",
+      "start_value": "0",
+      "expression": "Y++",
+      "end_condition": "Y<2"
+    }
   
-  ]
-},
+  }
+}
  
-],
+},
 
-      "transitions":[
-          {"from": "start", "to": "for1",},
-        ],
+  "transitions":[
+    { "from": "start", "to": "for1" }
+  ]
 
 }

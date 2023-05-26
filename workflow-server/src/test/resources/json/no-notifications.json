@@ -1,16 +1,15 @@
 {
-
-"Tags": ["testing"],
-
-"activities" : {
-  "date1": {
-    "job": {
-      "ApplicationName": "Date",
-    },
-    "options": {
-     "DISABLE_NOTIFICATIONS" : "true",
-    },
-   },
-},
-
+  "Tags": [
+    "testing"
+  ],
+  "activities": {
+    "date1": {
+      "job": {
+        "ApplicationName": "Date"
+      },
+      "options": {
+        "DISABLE_NOTIFICATIONS": "true"
+      }
+    }
+  }
 }

@@ -35,6 +35,6 @@
    {"from": "date2a", "to": "merge" },
    {"from": "date2b", "to": "merge" },
    {"from": "merge", "to": "date3" }
-],
+]
 
 }
