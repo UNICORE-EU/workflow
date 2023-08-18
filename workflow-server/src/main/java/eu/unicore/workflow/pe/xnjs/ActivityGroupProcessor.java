@@ -342,17 +342,11 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			}
 			final String user = wfc.getUserDN();
 			final IAuthCallback auth = PEConfig.getInstance().getAuthCallback(user);
-			IClientConfiguration security = kernel.getClientConfiguration().clone();
+			IClientConfiguration security = kernel.getClientConfiguration();
 			final BaseClient bc = new BaseClient(url, security, auth);
-			
-			Callable<String>task = new Callable<String>() {
-				@Override
-				public String call() throws Exception {
-					bc.postQuietly(msg);
-					return "OK";
-				}
-			};
-			String res = new TimeoutRunner<String>(task, kernel.getContainerProperties().getThreadingServices(), 30, TimeUnit.SECONDS).call();
+			String res = new TimeoutRunner<String>( () -> {bc.postQuietly(msg); return "OK";},
+					kernel.getContainerProperties().getThreadingServices(),
+					30, TimeUnit.SECONDS).call();
 			if(res==null)throw new TimeoutException("Timeout waiting for notification send/reply");
 			
 		}catch(Exception ex) {

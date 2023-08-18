@@ -1,6 +1,7 @@
 package eu.unicore.workflow.pe;
 
 import eu.unicore.client.registry.IRegistryClient;
+import eu.unicore.client.registry.RegistryClient;
 import eu.unicore.persist.Persist;
 import eu.unicore.services.Kernel;
 import eu.unicore.services.rest.client.IAuthCallback;
@@ -11,10 +12,8 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.util.ClientConfigProvider;
 
 /**
- * local configuration of the process engine
- *  
- * TODO many things need to go to a properties file 
- * 
+ * utility for accessing common components
+ *
  * @author schuller
  */
 public class PEConfig {
@@ -41,7 +40,7 @@ public class PEConfig {
 
 	private Kernel kernel;
 	
-	private IRegistryClient registry;
+	private String registryURL;
 	
 	private boolean keepAllActions=false;
 	
@@ -84,13 +83,13 @@ public class PEConfig {
 	public Kernel getKernel(){
 		return kernel;
 	}
-	
+
 	public IRegistryClient getRegistry() {
-		return registry;
+		return new RegistryClient(registryURL, kernel.getClientConfiguration(), null);
 	}
 
-	public void setRegistry(IRegistryClient registry) {
-		this.registry = registry;
+	public void setRegistryURL(String registryURL) {
+		this.registryURL = registryURL;
 	}
 	
 	public boolean isKeepAllActions() {

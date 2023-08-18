@@ -99,7 +99,7 @@ public abstract class ProcessorBase extends DefaultProcessor implements Constant
 	protected IClientConfiguration getSecurityConfig()throws PersistenceException{
 		Kernel kernel = xnjs.get(Kernel.class);
 		if(kernel==null)return null;
-		return kernel.getClientConfiguration().clone();
+		return kernel.getClientConfiguration();
 	}
 	
 	/**

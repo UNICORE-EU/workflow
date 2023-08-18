@@ -66,10 +66,11 @@ public class WorkflowFileResolver extends SMSResolver {
 				if(match(logicalName, loc) && !isExcluded(logicalName, fileSet)){
 					String physicalLocation = locations.getLocations().get(logicalName);
 					if(smsClient==null || !physicalLocation.contains(smsClient.getEndpoint().getUrl())){
-						smsClient = getSMSClient(extractStorageURL(physicalLocation), workflowID, kernel.getClientConfiguration());
+						smsClient = getSMSClient(extractStorageURL(physicalLocation),
+								workflowID, kernel.getClientConfiguration());
 					}
 					long size = getFileSize(smsClient, physicalLocation);
-					if(size>-1)results.add(new Pair<String,Long>(physicalLocation, size));
+					if(size>-1)results.add(new Pair<>(physicalLocation, size));
 				}
 			}	
 		}

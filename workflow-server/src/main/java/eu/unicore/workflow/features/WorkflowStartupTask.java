@@ -136,7 +136,8 @@ public class WorkflowStartupTask implements Runnable{
 			String type="standard";
 			//configure registry
 			String url = null;
-			RegistryHandler rh=kernel.getAttribute(RegistryHandler.class);
+			RegistryHandler rh = RegistryHandler.get(kernel);
+			rh.getExternalRegistryClient();
 			if(wp.isInternal() || !rh.usesExternalRegistry()) {
 				type="internal";
 				url = kernel.getContainerProperties().getContainerURL()+"/rest/registries/default_registry";
@@ -146,16 +147,14 @@ public class WorkflowStartupTask implements Runnable{
 			}
 			if(url.contains("/services/Registry")){
 				url = convertToREST(url);
-				logger.info("Using converted Registry URL {}", url);
+				logger.warn("Config has obsolete Registry URL, please use {}", url);
 			}
-			eu.unicore.client.registry.IRegistryClient registry = 
-					new eu.unicore.client.registry.RegistryClient(url, kernel.getClientConfiguration(), null);
-			PEConfig.getInstance().setRegistry(registry);
+			PEConfig.getInstance().setRegistryURL(url);
 			logger.info("Workflow engine running in {} mode, using registry <{}>", type, url);
 		}
 		return xnjs;
 	}
-	
+
 
 	private String convertToREST(String soapURL) {
 		String base = soapURL.split("/services/")[0];

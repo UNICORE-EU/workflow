@@ -261,7 +261,7 @@ public class Evaluator implements EvaluationFunctions {
 		String url = tok[0];
 		String file = tok[1];
 		Kernel kernel = PEConfig.getInstance().getKernel();
-		IClientConfiguration sp = kernel.getClientConfiguration().clone();
+		IClientConfiguration sp = kernel.getClientConfiguration();
 		StorageClient sms = new StorageClient(new Endpoint(url), sp, getAuth());
 		return sms.stat(file).size;
 	}
@@ -283,7 +283,7 @@ public class Evaluator implements EvaluationFunctions {
 		String url = tok[0];
 		String file = tok[1];
 		Kernel kernel = PEConfig.getInstance().getKernel();
-		IClientConfiguration sp = kernel.getClientConfiguration().clone();
+		IClientConfiguration sp = kernel.getClientConfiguration();
 		return new Pair<>(new StorageClient(new Endpoint(url), sp, getAuth()), file);
 	}
 
@@ -304,8 +304,7 @@ public class Evaluator implements EvaluationFunctions {
 	private JobClient getJobClient(String activityID, String iteration)throws Exception{
 		String url = findJobReference(activityID, iteration);
 		Kernel kernel = PEConfig.getInstance().getKernel();
-		IClientConfiguration sp = kernel.getClientConfiguration().clone();
-		return new JobClient(new Endpoint(url), sp, getAuth());
+		return new JobClient(new Endpoint(url), kernel.getClientConfiguration(), getAuth());
 	}
 
 	private IAuthCallback getAuth() throws Exception {

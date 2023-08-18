@@ -2,18 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.unicore.workflow</groupId>
-  <artifactId>workflow-client</artifactId>
-  <description>Workflow system client API</description>
-  <name>Workflow system client API</name>
-  <version>3.5.4</version>
-  <packaging>jar</packaging>
 
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.5.4</version>
+    <version>3.5.5</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+
+  <artifactId>workflow-client</artifactId>
+  <description>Workflow system client API</description>
+  <name>Workflow system client API</name>
+  <version>${project.parent.version}</version>
+  <packaging>jar</packaging>
 
   <properties>
    <automatic.module.name>eu.unicore.workflow.client</automatic.module.name>
