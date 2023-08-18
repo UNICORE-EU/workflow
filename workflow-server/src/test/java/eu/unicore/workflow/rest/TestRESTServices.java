@@ -33,7 +33,6 @@ public class TestRESTServices extends WSSTestBase {
 	
 	@Test
 	public void testRunDate()throws Exception{
-		PEConfig.getInstance().setRegistryURL(null);
 		String wfFileName = "src/test/resources/json/date1.json";
 		JSONObject wf = new JSONObject(FileUtils.readFileToString(new File(wfFileName), "UTF-8"));
 		wf.put("notification", kernel.getContainerProperties().getContainerURL()+"/rest/callbacks");

@@ -368,7 +368,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				action.setStatus(ActionStatus.POSTPROCESSING);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, msg);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "SUBMIT_FAILED");
-				sleep(60, TimeUnit.SECONDS);
+				sleep(2, TimeUnit.SECONDS);
 			}
 		}
 		else{
