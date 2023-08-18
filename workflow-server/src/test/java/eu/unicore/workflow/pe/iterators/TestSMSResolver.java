@@ -8,7 +8,7 @@ public class TestSMSResolver {
 
 	@Test
 	public void testMakeURL()throws Exception{
-		SMSResolver r=new SMSResolver();
+		StorageResolver r=new StorageResolver();
 		String b1="BFT:http://localhost:8080/site/rest/core/storages/WORK/files/basedir";
 		String u1=r.extractStorageURL(b1);
 		assert "http://localhost:8080/site/rest/core/storages/WORK".equals(u1);
@@ -18,7 +18,7 @@ public class TestSMSResolver {
 	
 	@Test
 	public void testMatchIncludes(){
-		SMSResolver r=new SMSResolver();
+		StorageResolver r=new StorageResolver();
 		String[]includes=new String[]{"*.pdf"};
 		FileSet f=new FileSet("/",includes,null,false,false);
 		
@@ -31,7 +31,7 @@ public class TestSMSResolver {
 	
 	@Test
 	public void testMatchExcludes(){
-		SMSResolver r=new SMSResolver();
+		StorageResolver r=new StorageResolver();
 		String[]excludes=new String[]{"*.txt"};
 		FileSet f=new FileSet("/",null,excludes,false,false);
 		
@@ -44,7 +44,7 @@ public class TestSMSResolver {
 	
 	@Test
 	public void testMatchIncludeExclude(){
-		SMSResolver r=new SMSResolver();
+		StorageResolver r=new StorageResolver();
 		String[]includes=new String[]{"*.txt"};
 		String[]excludes=new String[]{"a.txt"};
 		FileSet f=new FileSet("/",includes,excludes,false,false);

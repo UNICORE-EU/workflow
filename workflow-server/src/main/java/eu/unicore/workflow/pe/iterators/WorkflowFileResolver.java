@@ -22,7 +22,7 @@ import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
  * 
  * @author schuller
  */
-public class WorkflowFileResolver extends SMSResolver {
+public class WorkflowFileResolver extends StorageResolver {
 
 	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, WorkflowFileResolver.class);
 

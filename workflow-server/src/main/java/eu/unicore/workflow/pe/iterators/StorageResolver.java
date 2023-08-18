@@ -25,7 +25,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
  *
  * @author schuller
  */
-public class SMSResolver implements Resolver{
+public class StorageResolver implements Resolver{
 
 	// TODO how to specify the preferred protocol ?
 	// private String protocol = "BFT";
@@ -63,7 +63,7 @@ public class SMSResolver implements Resolver{
 			else{
 				if(matches(name,fileSet)){
 					Long size=Long.valueOf(file.size);
-					result.add(new Pair<String,Long>(urlBase+name,size));
+					result.add(new Pair<>(urlBase+name,size));
 				}
 			}
 		}
@@ -175,10 +175,10 @@ public class SMSResolver implements Resolver{
 
 	public StorageClient getSMSClient(String url, String workflowID, IClientConfiguration sp)throws Exception{
 		String user = readWF(workflowID).getUserDN();
-		return getSMSClient(url, sp, user);
+		return getStorageClient(url, sp, user);
 	}
 	
-	public StorageClient getSMSClient(String url, IClientConfiguration sp, String user)throws Exception{
+	public StorageClient getStorageClient(String url, IClientConfiguration sp, String user)throws Exception{
 		return new StorageClient(new Endpoint(url), sp, PEConfig.getInstance().getAuthCallback(user));
 	}
 	
@@ -187,7 +187,7 @@ public class SMSResolver implements Resolver{
 	}
 	
 	public boolean equals(Object other){
-		return (other!=null && other instanceof SMSResolver);
+		return (other!=null && other instanceof StorageResolver);
 	}
 		
 	protected WorkflowContainer readWF(String wfID) throws Exception {

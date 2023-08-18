@@ -14,6 +14,7 @@ import eu.unicore.services.Kernel;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.workflow.pe.iterators.ResolverFactory;
 import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
 
 /**
@@ -29,6 +30,7 @@ public abstract class WSSTestBase {
 	public void cleanup()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data/WORK"));
 		FileUtils.forceMkdir(new File("target/data/WORK"));
+		ResolverFactory.reset();
 	}
 	
 	@BeforeClass

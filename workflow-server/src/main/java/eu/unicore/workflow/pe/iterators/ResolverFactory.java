@@ -19,7 +19,7 @@ public class ResolverFactory {
 	static final Set<Class<? extends Resolver>> resolvers = new HashSet<>();
 
 	static {
-		resolvers.add(SMSResolver.class);
+		resolvers.add(StorageResolver.class);
 		resolvers.add(WorkflowFileResolver.class);
 	}
 
@@ -29,7 +29,7 @@ public class ResolverFactory {
 
 	public static synchronized void reset(){
 		resolvers.clear();
-		resolvers.add(SMSResolver.class);
+		resolvers.add(StorageResolver.class);
 		resolvers.add(WorkflowFileResolver.class);
 	};
 	

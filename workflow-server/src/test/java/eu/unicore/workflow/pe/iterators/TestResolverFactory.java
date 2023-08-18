@@ -11,13 +11,13 @@ public class TestResolverFactory {
 	@BeforeClass
 	public static void cleanUp() {
 		ResolverFactory.clear();
-		ResolverFactory.registerResolver(SMSResolver.class);
+		ResolverFactory.registerResolver(StorageResolver.class);
 		ResolverFactory.registerResolver(WorkflowFileResolver.class);
 	}
 	
     @Test
 	public void testDuplicateResolverRegistration(){
-    	ResolverFactory.registerResolver(SMSResolver.class);
+    	ResolverFactory.registerResolver(StorageResolver.class);
 		assert 2==ResolverFactory.resolvers.size();
 		ResolverFactory.registerResolver(WorkflowFileResolver.class);
 		assert 2==ResolverFactory.resolvers.size();
@@ -27,7 +27,7 @@ public class TestResolverFactory {
 	public void testResolveSMS()throws ProcessingException{
 		Resolver r=ResolverFactory.getResolver("https://unicore/rest/core/storages/...");
 		assert r!=null;
-		assert r instanceof SMSResolver;
+		assert r instanceof StorageResolver;
 	}
 	
 	@Test(expected=ProcessingException.class)

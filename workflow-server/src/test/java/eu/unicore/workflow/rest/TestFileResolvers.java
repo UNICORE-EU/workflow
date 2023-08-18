@@ -20,7 +20,7 @@ import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.pe.iterators.FileIndirectionHelper;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
-import eu.unicore.workflow.pe.iterators.SMSResolver;
+import eu.unicore.workflow.pe.iterators.StorageResolver;
 import eu.unicore.workflow.pe.iterators.WorkflowFileResolver;
 
 public class TestFileResolvers extends WSSTestBase {
@@ -37,7 +37,7 @@ public class TestFileResolvers extends WSSTestBase {
 		System.out.println(results);
 		Assert.assertEquals(2, results.size());
 		
-		SMSResolver smsResolver = new SMSResolver();
+		StorageResolver smsResolver = new StorageResolver();
 		EnumerationClient jobList = client.getJobList();
 		String jobURL = jobList.getUrls(0, 10).get(0);
 		JobClient jc = jobList.createClient(jobURL, JobClient.class);
@@ -65,7 +65,7 @@ public class TestFileResolvers extends WSSTestBase {
 		ftc.delete();
 
 		Collection<Pair<String,Long>>source = new ArrayList<>();
-		source.add(new Pair<String,Long>(smsURL+"/files/file_list.txt",1l));
+		source.add(new Pair<>(smsURL+"/files/file_list.txt",1l));
 		FileIndirectionHelper fih = new FileIndirectionHelper(source, wfID);
 		Collection<Pair<String,Long>> results = fih.resolve();
 		System.out.println(results);

@@ -14,12 +14,12 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <version>${project.parent.version}</version>
+  <version>3.5.5</version>
 
   <properties>
-    <specification.version>9.2.2</specification.version>
+    <specification.version>9.2.3</specification.version>
     <compiler.fork>false</compiler.fork>
-    <package.version>9.2.2</package.version>
+    <package.version>9.2.3</package.version>
     <package.release>1</package.release>
   </properties>
 

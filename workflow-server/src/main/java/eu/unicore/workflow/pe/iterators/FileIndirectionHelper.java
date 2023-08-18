@@ -65,8 +65,8 @@ public class FileIndirectionHelper {
 		// iterate over the given source files which contain the real file names
 		Iterator<Pair<String,Long>>sourceIterator=source.iterator();
 		while(sourceIterator.hasNext()){
-			Pair<String,Long>currentVal=sourceIterator.next();
-			String currentFile=currentVal.getM1();
+			Pair<String,Long>currentVal = sourceIterator.next();
+			String currentFile = currentVal.getM1();
 			currentOpenFile = getContentsOfUrl(workflowID,currentFile);
 			currentFileScanner = new Scanner(currentOpenFile);
 
@@ -77,7 +77,7 @@ public class FileIndirectionHelper {
 				for (String file : files) {
 					FileSet toResolve = reformatStorageURI(file);
 					try{
-						ResolverFactory.Resolver r=ResolverFactory.getResolver(toResolve.base);
+						ResolverFactory.Resolver r = ResolverFactory.getResolver(toResolve.base);
 						results.addAll(r.resolve(workflowID, toResolve));           
 					} catch (Exception ex) {
 						Log.logException("Exception at resolving file: " + file ,ex);
@@ -90,7 +90,7 @@ public class FileIndirectionHelper {
 
 	public StorageClient getStorageClientForFileSet(String workflowID, String url_base) throws ProcessingException {
 		try{
-			return getSMSClient(getURL(url_base), workflowID);
+			return getStorageClient(getURL(url_base), workflowID);
 		}catch(Exception ex){
 			throw new ProcessingException(ex);
 		}
@@ -141,9 +141,9 @@ public class FileIndirectionHelper {
 		}
 	}
 
-	protected StorageClient getSMSClient(String url, String workflowID) throws Exception{
+	protected StorageClient getStorageClient(String url, String workflowID) throws Exception{
 		IClientConfiguration props=PEConfig.getInstance().getKernel().getClientConfiguration();
-		return new SMSResolver().getSMSClient(url, workflowID, props);
+		return new StorageResolver().getSMSClient(url, workflowID, props);
 	}
 
 	/**
