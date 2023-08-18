@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -270,7 +269,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			submitAllEligibleActivities(stillRunning);
 		}
 		if(stillRunning){
-			sleep(10);
+			sleep(10, TimeUnit.SECONDS);
 		}
 	}
 

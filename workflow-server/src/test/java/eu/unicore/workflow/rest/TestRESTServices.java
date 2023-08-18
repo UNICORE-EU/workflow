@@ -1,5 +1,7 @@
 package eu.unicore.workflow.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class TestRESTServices extends WSSTestBase {
 	
 	@Test
 	public void testRunDate()throws Exception{
+		PEConfig.getInstance().setRegistryURL(null);
 		String wfFileName = "src/test/resources/json/date1.json";
 		JSONObject wf = new JSONObject(FileUtils.readFileToString(new File(wfFileName), "UTF-8"));
 		wf.put("notification", kernel.getContainerProperties().getContainerURL()+"/rest/callbacks");
@@ -40,8 +43,8 @@ public class TestRESTServices extends WSSTestBase {
 		waitWhileRunning(client);
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
-		assert wfProps.getJSONArray("tags").length()==1;
-		assert 1 == client.getJobList().getUrls(0, 100).size();
+		assertEquals(1, wfProps.getJSONArray("tags").length());
+		assertEquals(1, client.getJobList().getUrls(0, 100).size());
 		client.abort();
 		client.delete();
 	}

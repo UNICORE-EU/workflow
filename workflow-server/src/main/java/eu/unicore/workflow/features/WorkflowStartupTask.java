@@ -124,7 +124,7 @@ public class WorkflowStartupTask implements Runnable{
 		XNJS xnjs = new XNJS(cs, xnjsID);
 		configureProcessing(xnjs);
 		
-		//configure persistence
+		// configure persistence
 		PersistenceProperties pp = kernel.getPersistenceProperties();
 		PEConfig.getInstance().setPersistence(PersistenceFactory.get(pp).getPersist(WorkflowContainer.class));
 		PEConfig.getInstance().setLocationStore(PersistenceFactory.get(pp).getPersist(Locations.class));
@@ -132,26 +132,25 @@ public class WorkflowStartupTask implements Runnable{
 		PEConfig.getInstance().setProcessEngine(new XNJSProcessEngine(xnjs));
 		PEConfig.getInstance().setCallbackProcessor(new CallbackProcessorImpl(xnjs));
 
-		if(PEConfig.getInstance().getRegistry()==null){
-			String type="standard";
-			//configure registry
-			String url = null;
-			RegistryHandler rh = RegistryHandler.get(kernel);
-			rh.getExternalRegistryClient();
-			if(wp.isInternal() || !rh.usesExternalRegistry()) {
-				type="internal";
-				url = kernel.getContainerProperties().getContainerURL()+"/rest/registries/default_registry";
-			}
-			else {
-				url = rh.getExternalRegistryURLs()[0];
-			}
-			if(url.contains("/services/Registry")){
-				url = convertToREST(url);
-				logger.warn("Config has obsolete Registry URL, please use {}", url);
-			}
-			PEConfig.getInstance().setRegistryURL(url);
-			logger.info("Workflow engine running in {} mode, using registry <{}>", type, url);
+		// configure registry
+		String type="standard";
+		String url = null;
+		RegistryHandler rh = RegistryHandler.get(kernel);
+		rh.getExternalRegistryClient();
+		if(wp.isInternal() || !rh.usesExternalRegistry()) {
+			type="internal";
+			url = kernel.getContainerProperties().getContainerURL()+"/rest/registries/default_registry";
 		}
+		else {
+			url = rh.getExternalRegistryURLs()[0];
+		}
+		if(url.contains("/services/Registry")){
+			url = convertToREST(url);
+			logger.warn("Config has obsolete Registry URL, please use {}", url);
+		}
+		PEConfig.getInstance().setRegistryURL(url);
+		logger.info("Workflow engine running in {} mode, using registry <{}>", type, url);
+
 		return xnjs;
 	}
 

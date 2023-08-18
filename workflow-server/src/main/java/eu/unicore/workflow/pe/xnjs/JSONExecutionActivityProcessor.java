@@ -243,7 +243,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			case QUEUED:
 			case RUNNING:
 			case STAGINGOUT:
-				sleep(properties.getStatusPollingInterval()*1000);
+				sleep(properties.getStatusPollingInterval(), TimeUnit.SECONDS);
 				return;
 
 			case SUCCESSFUL:
@@ -368,7 +368,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 				action.setStatus(ActionStatus.POSTPROCESSING);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION, msg);
 				action.getProcessingContext().put(JSONExecutionActivityProcessor.LAST_ERROR_CODE, "SUBMIT_FAILED");
-				sleep(60);
+				sleep(60, TimeUnit.SECONDS);
 			}
 		}
 		else{

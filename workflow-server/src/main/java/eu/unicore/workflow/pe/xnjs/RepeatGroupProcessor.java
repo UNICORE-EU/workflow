@@ -2,6 +2,7 @@ package eu.unicore.workflow.pe.xnjs;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
@@ -145,7 +146,7 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 			throw new ProcessingException(ex);
 		}
 		if(subTasksStillRunning){
-			sleep(5);
+			sleep(5, TimeUnit.SECONDS);
 		}
 
 	}
