@@ -225,7 +225,7 @@ public class TestForLoopProcessing extends TestBase {
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size as number of files per chunk
-		String expr="return TOTAL_NUMBER / 5;";
+		String expr="TOTAL_NUMBER / 5";
 		ForEachFileIterator chunkedIterator = new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.NUMBER);
 		chunkedIterator.setIteratorName("IT");
 
@@ -260,7 +260,7 @@ public class TestForLoopProcessing extends TestBase {
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size in kbytes
-		String expr="return TOTAL_SIZE / 5;";
+		String expr="TOTAL_SIZE / 5";
 		ForEachFileIterator chunkedIterator=new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.SIZE);
 		chunkedIterator.setIteratorName("IT");
 
@@ -295,8 +295,7 @@ public class TestForLoopProcessing extends TestBase {
 		FileSetIterator fsi=new FileSetIterator(null,fs);
 
 		// compute chunk size in kbytes
-		String expr="if(TOTAL_SIZE > 5) return 2; \n" +
-				"return 1;";
+		String expr="TOTAL_SIZE > 5 ? 2 : 1";
 		ForEachFileIterator chunkedIterator=new ForEachFileIterator(fsi,expr,ForEachFileIterator.Type.NUMBER);
 		chunkedIterator.setIteratorName("ForEach_Iterator");
 
@@ -397,8 +396,7 @@ public class TestForLoopProcessing extends TestBase {
 
 		TestActivity a1=new TestActivity("inner-a1",wfID);
 		TestActivity a2=new TestActivity("inner-a2",wfID);
-		String innerScript="\"1:::2\".equals(new "+ContextFunctions.class.getName()
-				+"(\"wf\", "+Constants.VAR_KEY_CURRENT_TOTAL_ITERATION+").getIteration())";
+		String innerScript="\"1:::2\".equals(getIteration())";
 		Condition c=new ScriptCondition("inner_conditon",wfID,innerScript);
 		Transition t1=new Transition("inner-a1->inner-a2",wfID,"inner-a1", "inner-a2",c);
 

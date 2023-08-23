@@ -12,7 +12,7 @@ public class TestVariableSetIterator {
 	@Test
 	public void testVariableSetBuildValues()throws Exception{
 		int N=10;
-		VariableSet vs=new VariableSet("TEST","0","TEST<"+N+";","TEST++;");
+		VariableSet vs=new VariableSet("TEST","0","TEST<"+N,"TEST++");
 		ProcessVariables vars=new ProcessVariables();
 		List<String> values=vs.values(vars);
 		assert values.size()==N;
@@ -24,7 +24,7 @@ public class TestVariableSetIterator {
 	@Test
 	public void testVariableSetIterator()throws Exception{
 		int N=10;
-		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N+";","FOO++;");
+		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N,"FOO++");
 		VariableSetIterator vsi = new VariableSetIterator(vs1);
 		ProcessVariables vars=new ProcessVariables();
 		vsi.reInit(vars);
@@ -38,8 +38,8 @@ public class TestVariableSetIterator {
 	@Test
 	public void testVariableSetFoldValues()throws Exception{
 		int N=10;
-		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N+";","FOO++;");
-		VariableSet vs2=new VariableSet("BAR","0","BAR<"+N+";","BAR++;");
+		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N,"FOO++");
+		VariableSet vs2=new VariableSet("BAR","0","BAR<"+N,"BAR++");
 		VariableSetIterator vsi = new VariableSetIterator(vs1, vs2);
 		ProcessVariables vars=new ProcessVariables();
 		vsi.reInit(vars);
@@ -51,7 +51,7 @@ public class TestVariableSetIterator {
 	
 	@Test
 	public void testEmptySet()throws Exception{
-		VariableSet vs=new VariableSet("TEST","0","TEST<0;","TEST++;");
+		VariableSet vs=new VariableSet("TEST","0","TEST<0","TEST++");
 		ProcessVariables vars=new ProcessVariables();
 		List<String> values=vs.values(vars);
 		assert values.size()==0;
@@ -60,8 +60,8 @@ public class TestVariableSetIterator {
 	@Test
 	public void testGenerateNewValuesUsingOtherVariables()throws Exception{
 		int N=3;
-		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N+";","FOO++;");
-		VariableSet vs2=new VariableSet("BAR","0","BAR<"+N+";","BAR=FOO+BAR+1;");
+		VariableSet vs1=new VariableSet("FOO","0","FOO<"+N,"FOO++");
+		VariableSet vs2=new VariableSet("BAR","0","BAR<"+N,"BAR=FOO+BAR+1");
 		VariableSetIterator vsi = new VariableSetIterator(vs1, vs2);
 		ProcessVariables vars=new ProcessVariables();
 		vsi.reInit(vars);
