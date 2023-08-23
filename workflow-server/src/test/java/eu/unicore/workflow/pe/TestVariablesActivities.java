@@ -79,8 +79,8 @@ public class TestVariablesActivities extends TestBase {
 		String wfID=UUID.randomUUID().toString();
 		ActivityGroup job=new ActivityGroup("1234",wfID);
 		int targetValue=2;
-		List<Activity>as=new ArrayList<Activity>();
-		as.add(new ModifyVariableActivity("a1",job.getWorkflowID(),"test1","test1++;"));
+		List<Activity>as = new ArrayList<>();
+		as.add(new ModifyVariableActivity("a1", job.getWorkflowID(), "test1", "test1++"));
 		job.setActivities(as);
 		job.init();
 		
@@ -113,8 +113,8 @@ public class TestVariablesActivities extends TestBase {
 		ActivityGroup job=new ActivityGroup("1234",wfID);
 		
 		List<Activity>as=new ArrayList<Activity>();
-		as.add(new ModifyVariableActivity("modify1",job.getWorkflowID(),"test1","test1++;"));
-		as.add(new ModifyVariableActivity("modify2",job.getWorkflowID(),"test2","test2++;"));
+		as.add(new ModifyVariableActivity("modify1",job.getWorkflowID(),"test1","test1++"));
+		as.add(new ModifyVariableActivity("modify2",job.getWorkflowID(),"test2","test2++"));
 		job.setActivities(as);
 		job.init();
 		
@@ -153,7 +153,7 @@ public class TestVariablesActivities extends TestBase {
 		List<Activity>as = new ArrayList<>();
 		
 		// malicious script
-		as.add(new ModifyVariableActivity("a1",job.getWorkflowID(),"test1","System.exit(1);"));
+		as.add(new ModifyVariableActivity("a1",job.getWorkflowID(),"test1","System.exit(1)"));
 		
 		job.setActivities(as);
 		job.init();

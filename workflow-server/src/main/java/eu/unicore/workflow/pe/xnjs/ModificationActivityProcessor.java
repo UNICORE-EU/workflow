@@ -1,15 +1,17 @@
 package eu.unicore.workflow.pe.xnjs;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.xnjs.XNJS;
 import de.fzj.unicore.xnjs.ems.ActionStatus;
 import de.fzj.unicore.xnjs.ems.ProcessingException;
+import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
+import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.model.ModifyVariableActivity;
-import eu.unicore.workflow.pe.util.ScriptSandbox;
-import groovy.lang.GroovyShell;
 
 /**
  * Modifies a named variable <br/>
@@ -32,17 +34,18 @@ public class ModificationActivityProcessor extends ProcessorBase{
 		String name = activity.getVariableName();
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);
 		logger.debug("Start processing activity <{}> in iteration <{}>", activity.getID(), myIteration);
-		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
-		if(vars==null){
-			vars=new ProcessVariables();
-			action.getProcessingContext().put(ProcessVariables.class,vars);
+		ProcessVariables pv = action.getProcessingContext().get(ProcessVariables.class);
+		if(pv==null){
+			pv = new ProcessVariables();
+			action.getProcessingContext().put(ProcessVariables.class, pv);
 		}
 		try{
-			GroovyShell interpreter = new GroovyShell();
-			prepareInterpreter(interpreter, vars, myIteration);
+			Map<String, Object> vars = pv.asMap();
+			vars.put(VAR_KEY_CURRENT_TOTAL_ITERATION, myIteration);
+			ContextFunctions contextFunctions = new ContextFunctions(getParentWorkflowID(), myIteration);
 			logger.debug("Executing script {}", activity.getScript());
-	        new ScriptSandbox().eval(interpreter, activity.getScript());
-	        readResults(interpreter, vars, name);
+			ScriptEvaluator.evaluate(activity.getScript(), vars, contextFunctions);
+	        readResult(vars, pv, name);
 			setToDoneSuccessfully();
 		}
 		catch(Exception iae){
@@ -53,23 +56,15 @@ public class ModificationActivityProcessor extends ProcessorBase{
 		
 	}
 
-	private void prepareInterpreter(GroovyShell interpreter, ProcessVariables vars, String myIteration){
-		for(String key: vars.keySet()){
-			Object val=vars.get(key);
-			interpreter.setVariable(key, val);
-		}
-		interpreter.setVariable(VAR_KEY_CURRENT_TOTAL_ITERATION,myIteration);
-	}
-	
 	/*
 	 * copies only the named variable, preventing side effects
 	 */
-	private void readResults(GroovyShell interpreter, ProcessVariables vars, String varName){
+	private void readResult(Map<String, Object> vars, ProcessVariables pv, String varName){
 		if(varName==null)return;
-		Object res=interpreter.getVariable(varName);
+		Object res = vars.get(varName);
 		if(res!=null){
-			vars.put(varName,res);
-			vars.markModified(varName);
+			pv.put(varName,res);
+			pv.markModified(varName);
 		}
 	}
 	

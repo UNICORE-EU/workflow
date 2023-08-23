@@ -10,7 +10,7 @@ import org.junit.Test;
 import eu.unicore.client.Endpoint;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
-import eu.unicore.workflow.pe.Evaluator;
+import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.model.EvaluationException;
 
 public class TestEvaluator extends WSSTestBase {
@@ -21,7 +21,7 @@ public class TestEvaluator extends WSSTestBase {
 		waitWhileRunning(client);
 		String url = client.getEndpoint().getUrl();
 		String wfID = url.substring(url.lastIndexOf("/")+1);
-		Evaluator ev = new Evaluator(wfID, "");
+		ContextFunctions ev = new ContextFunctions(wfID, "");
 		assert ev.exitCodeEquals("date1", 0);
 		assert ev.exitCodeNotEquals("date1", 123);
 		assert ev.fileExists("date1", "stdout");
@@ -30,7 +30,7 @@ public class TestEvaluator extends WSSTestBase {
 		assert ev.fileLengthGreaterThanZero("date1", "wf:date1/out");
 		assert 0 == ev.fileLength("date1", "stderr");
 		assert 0 < ev.fileLength("date1", "wf:date1/out");
-		ev = new Evaluator(wfID, null); // for coverage
+		ev = new ContextFunctions(wfID, null); // for coverage
 		String s1 = ev.fileContent("date1", "stdout");
 		String s2 = ev.fileContent("date1", "wf:date1/out");
 		assert s1.equals(s2);
@@ -46,14 +46,14 @@ public class TestEvaluator extends WSSTestBase {
 	@Test
 	public void testDateFormat() throws Exception {
 		String test="2000-01-01 12:30";
-		assert(new Evaluator("",null).after(test));
-		assert(!new Evaluator("",null).before(test));
+		assert(new ContextFunctions("",null).after(test));
+		assert(!new ContextFunctions("",null).before(test));
 	}
 	
 	@Test
 	public void testDateFormat2()throws Exception{
 		Calendar c=Calendar.getInstance();
-		Evaluator e=new Evaluator("",null);
+		ContextFunctions e=new ContextFunctions("",null);
 		String test=e.getFormatted(c);
 		System.out.println(test);
 		Thread.sleep(2000);

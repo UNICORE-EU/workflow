@@ -34,15 +34,15 @@ import eu.unicore.workflow.pe.persistence.SubflowContainer;
  * 
  * @author schuller
  */
-public class Evaluator implements EvaluationFunctions {
+public class ContextFunctions implements EvaluationFunctions {
 
-	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, Evaluator.class);
+	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ContextFunctions.class);
 
 	private final String workflowID;
 
 	private final String iteration;
 
-	public Evaluator(String workflowID, String iteration){
+	public ContextFunctions(String workflowID, String iteration){
 		this.workflowID=workflowID;
 		this.iteration=iteration;
 	}

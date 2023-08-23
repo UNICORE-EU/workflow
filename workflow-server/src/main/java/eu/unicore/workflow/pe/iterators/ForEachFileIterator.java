@@ -1,9 +1,10 @@
 package eu.unicore.workflow.pe.iterators;
 
 import java.text.MessageFormat;
+import java.util.Map;
 
+import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.model.ForEachIterate;
-import eu.unicore.workflow.pe.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 /**
@@ -288,12 +289,10 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 	}
 	
 	protected int calculateChunkSize(ProcessVariables varsOrig){
-		// use a copy to prevent side effects
-		ProcessVariables vars=varsOrig.copy();
+		Map<String,Object> vars = varsOrig.asMap();
 		vars.put(EXPR_TOTAL_NUMBER, source.getTotalNumberOfFiles());
 		vars.put(EXPR_TOTAL_SIZE, source.getTotalFileSize());
-		ScriptEvaluator eval=new ScriptEvaluator();
-		Object res=eval.evaluateDirect(chunkSizeExpression, vars);
+		Object res = ScriptEvaluator.evaluate(chunkSizeExpression, vars, null);
 		try{
 			return Integer.valueOf(String.valueOf(res));
 		}

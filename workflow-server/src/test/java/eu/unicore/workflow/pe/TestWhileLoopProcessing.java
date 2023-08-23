@@ -17,7 +17,6 @@ import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.model.WhileGroup;
 import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.util.TestActivity;
-import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 
@@ -32,12 +31,12 @@ public class TestWhileLoopProcessing extends TestBase {
 		PEWorkflow wf=new PEWorkflow(wfID);
 		
 		DeclareVariableActivity declare=new DeclareVariableActivity("decl",wfID,"C","INTEGER","0");
-		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++;");
+		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++");
 		
 		int N=3;
 		
 		Iteration iter=new Iteration();
-		String expr="C<"+N+";";
+		String expr="C<"+N;
 		iter.setIteratorName("C");
 		Condition condition=new ScriptCondition("while_cond",wfID,expr);
 		TestActivity a1=new TestActivity("a1",wfID);
@@ -77,12 +76,12 @@ public class TestWhileLoopProcessing extends TestBase {
 		PEWorkflow wf=new PEWorkflow(wfID);
 		
 		DeclareVariableActivity declare=new DeclareVariableActivity("decl",wfID,"C","INTEGER","0");
-		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++;");
+		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++");
 		
 		int N=3;
 		
 		Iteration iter=new Iteration();
-		String expr="C<"+N+";";
+		String expr="C<"+N;
 		iter.setIteratorName("C");
 		Condition condition=new ScriptCondition("while_cond",wfID,expr);
 		TestActivity a1=new TestActivity("a1",wfID);
@@ -90,8 +89,7 @@ public class TestWhileLoopProcessing extends TestBase {
 		whileBody.setLoopIteratorName("C");
 		Transition tr=new Transition("mod->a1",wfID,"mod", "a1");
 		TestActivity a2=new TestActivity("a2",wfID);
-		String innerScript="\"0\".equals(new "+Evaluator.class.getName()+
-				"(\"wf\", "+Constants.VAR_KEY_CURRENT_TOTAL_ITERATION+").getIteration())";
+		String innerScript="\"0\".equals(getIteration())";
 		Condition cond=new ScriptCondition("inner_conditon",wfID,innerScript);
 		Transition tr2=new Transition("a1->a2",wfID,"a1", "a2",cond);
 		whileBody.setTransitions(tr,tr2);
@@ -127,12 +125,12 @@ public class TestWhileLoopProcessing extends TestBase {
 		PEWorkflow wf=new PEWorkflow(wfID);
 		
 		DeclareVariableActivity declare=new DeclareVariableActivity("decl",wfID,"C","INTEGER","0");
-		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++;");
+		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++");
 		
 		int N=3;
 		
 		Iteration iter=new Iteration();
-		String expr="C<"+N+";";
+		String expr="C<"+N;
 		iter.setIteratorName("C");
 		Condition condition=new ScriptCondition("while_cond",wfID,expr);
 		
@@ -141,8 +139,7 @@ public class TestWhileLoopProcessing extends TestBase {
 		whileBody.setLoopIteratorName("C");
 		Transition tr=new Transition("mod->a1",wfID,"mod", "a1");
 		TestActivity a2=new TestActivity("a2",wfID);
-		String innerScript="\"0\".equals(new "+Evaluator.class.getName()
-				+"(\"wf\", "+Constants.VAR_KEY_CURRENT_TOTAL_ITERATION+").getIteration())";
+		String innerScript="\"0\".equals(getIteration())";
 		Condition cond=new ScriptCondition("inner_conditon",wfID,innerScript);
 		Transition tr2=new Transition("a1->a2",wfID,"a1", "a2",cond);
 		whileBody.setTransitions(tr,tr2);
@@ -177,13 +174,11 @@ public class TestWhileLoopProcessing extends TestBase {
 		PEWorkflow wf=new PEWorkflow(wfID);
 		
 		DeclareVariableActivity declare=new DeclareVariableActivity("decl",wfID,"C","INTEGER","0");
-		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++;");
-		
-		int N=3;
+		ModifyVariableActivity modify=new ModifyVariableActivity("mod",wfID,"C","C++");
 		
 		Iteration iter=new Iteration();
 		// this is a faulty expression
-		String expr="XXXX<"+N+";";
+		String expr="XXXX<11";
 		iter.setIteratorName("C");
 		Condition condition=new ScriptCondition("while_cond",wfID,expr);
 		

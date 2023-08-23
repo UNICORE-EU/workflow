@@ -1,6 +1,5 @@
 package eu.unicore.workflow.json;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONArray;
@@ -19,8 +16,6 @@ import org.json.JSONObject;
 import de.fzj.unicore.uas.json.JSONUtil;
 import de.fzj.unicore.xnjs.util.UnitParser;
 import eu.unicore.util.Log;
-import eu.unicore.workflow.EvaluationFunctions;
-import eu.unicore.workflow.pe.Evaluator;
 import eu.unicore.workflow.pe.iterators.CounterIteration;
 import eu.unicore.workflow.pe.iterators.FileSetIterator;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
@@ -45,7 +40,6 @@ import eu.unicore.workflow.pe.model.RoutingActivity;
 import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.WhileGroup;
 import eu.unicore.workflow.pe.util.TestActivity;
-import eu.unicore.workflow.pe.xnjs.Constants;
 
 public class Converter {
 
@@ -377,9 +371,8 @@ public class Converter {
 	 */
 	protected static eu.unicore.workflow.pe.model.Condition buildCondition(JSONObject wf, String wfID) throws Exception {
 		String expr = wf.getString("condition");
-		String convertedExpr = convertExpression(wfID, expr);
 		String cID = wf.getString("id")+"_condition";
-		ScriptCondition result = new ScriptCondition(cID, wfID, convertedExpr);
+		ScriptCondition result = new ScriptCondition(cID, wfID, expr);
 		return result;
 	}
 
@@ -521,9 +514,8 @@ public class Converter {
 			try{
 				String condition = t.optString("condition", null);
 				if(condition!=null){
-					String convertedExpr = convertExpression(result.getWorkflowID(), condition);
 					convertedCondition = new eu.unicore.workflow.pe.model.ScriptCondition("condition-"
-							+transitionID, result.getWorkflowID(), convertedExpr);
+							+transitionID, result.getWorkflowID(), condition);
 				}
 			}catch(IllegalArgumentException iae){
 				String msg=Log.createFaultMessage("Transition '"+transitionID+"': error processing.", iae);
@@ -643,35 +635,4 @@ public class Converter {
 		return result.getConversionErrors().size()>initialErrors;
 	}
 
-
-	// available evaluation functions
-	private static final List<Pattern> methodPatterns=new ArrayList<>();
-
-	static {
-		for(Method m: EvaluationFunctions.class.getMethods()){
-			methodPatterns.add(Pattern.compile(m.getName()+"\\([^\\)]*\\)"));
-		}
-	}
-
-	/**
-	 * replace all occurrences of evaluation functions by full, working
-	 * Groovy code for running the function
-	 * 
-	 * @param workflowID
-	 * @param expression
-	 */
-	public static String convertExpression(String workflowID,String expression){
-		String res=expression;
-		for(Pattern p: methodPatterns){
-			Matcher m=p.matcher(res);
-			while(m.find()){
-				String matched = m.group();
-				String replacement = "(new "+Evaluator.class.getName()+"(\""+workflowID+"\", "+
-						Constants.VAR_KEY_CURRENT_TOTAL_ITERATION+")."+matched+")";
-				res = res.replace(matched, replacement);
-			}
-		}
-		return res;
-
-	}
 }

@@ -13,7 +13,7 @@
   <artifactId>workflow-client</artifactId>
   <description>Workflow system client API</description>
   <name>Workflow system client API</name>
-  <version>${project.parent.version}</version>
+  <version>3.5.5</version>
   <packaging>jar</packaging>
 
   <properties>

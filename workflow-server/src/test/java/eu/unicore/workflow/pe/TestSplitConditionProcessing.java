@@ -27,7 +27,7 @@ public class TestSplitConditionProcessing extends TestBase {
 		TestActivity a3=new TestActivity("a3",wfID);
 		PEWorkflow wf=new PEWorkflow(wfID);
 		wf.setActivities(a1,a2,a3);
-		Condition cond=new ScriptCondition("cond1",wfID,"true;");
+		Condition cond = new ScriptCondition("cond1", wfID, "true");
 		Transition t1=new Transition("a1->a2",wfID,"a1","a2",cond);
 		Transition t2=new Transition("a1->a3",wfID,"a1","a3");
 		wf.setTransitions(t1,t2);
@@ -53,7 +53,7 @@ public class TestSplitConditionProcessing extends TestBase {
 		a4.setMergeType(MergeType.MERGE);
 		PEWorkflow wf=new PEWorkflow(wfID);
 		wf.setActivities(a1,a2,a3,a4);
-		Condition cond=new ScriptCondition("cond1",wfID,"true;");
+		Condition cond = new ScriptCondition("cond1", wfID, "true");
 		Transition t1=new Transition("a1->a2",wfID,"a1","a2",cond);
 		Transition t2=new Transition("a1->a3",wfID,"a1","a3");
 		Transition t3=new Transition("a2->a4",wfID,"a2","a4");
@@ -85,7 +85,7 @@ public class TestSplitConditionProcessing extends TestBase {
 		a4.setMergeType(MergeType.MERGE);
 		PEWorkflow wf=new PEWorkflow(wfID);
 		wf.setActivities(a0,a1,a2,a3,a4);
-		Condition cond=new ScriptCondition("cond1",wfID,"true;");
+		Condition cond = new ScriptCondition("cond1", wfID, "true");
 		Transition t1=new Transition("a1->a2",wfID,"a1","a2",cond);
 		Transition t2=new Transition("a1->a3",wfID,"a1","a3");
 		Transition t3=new Transition("a2->a4",wfID,"a2","a4");

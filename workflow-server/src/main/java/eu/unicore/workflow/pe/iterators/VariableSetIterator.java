@@ -3,17 +3,18 @@ package eu.unicore.workflow.pe.iterators;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
 import de.fzj.unicore.xnjs.ems.ProcessingException;
 import de.fzj.unicore.xnjs.util.ErrorCode;
+import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.VariableConstants;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
-import eu.unicore.workflow.pe.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
 /**
@@ -142,18 +143,18 @@ public class VariableSetIterator extends ValueSetIterator {
 		}
 		
 		public List<String> values(ProcessVariables ctx)throws EvaluationException{
-			List<String>values=new ArrayList<String>();
-			ProcessVariables vars=ctx.copy();
+			List<String>values = new ArrayList<>();
+			Map<String, Object> vars = ctx.asMap();
 			vars.put(variableName, VariableUtil.create(variableType,startValue));
 			String nextValue=startValue;
-			ScriptEvaluator eval=new ScriptEvaluator();
 			int c=0;
 			try{
 				while(true){
-					boolean cont=eval.evaluate(condition, vars);
-					if(!cont)break;
+					Boolean cont = (Boolean)ScriptEvaluator.evaluate(condition, vars, null);
+					if(cont==null || !cont)break;
 					values.add(nextValue);
-					Object next=eval.evaluate(modifier, variableName, vars);
+					ScriptEvaluator.evaluate(modifier, vars, null);
+					Object next = vars.get(variableName);
 					vars.put(variableName, next);
 					if(nextValue.equals(String.valueOf(next))){
 						throw new ProcessingException(new ErrorCode(0,"Evaluation error: variable value did not change in loop iteration."));

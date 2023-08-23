@@ -94,4 +94,12 @@ public class ProcessVariables implements Serializable {
 		sb.append("\n}");
 		return sb.toString();
 	}
+	
+	public Map<String,Object> asMap(){
+		Map<String,Object> vars = new HashMap<>();
+		for(String key: entries.keySet()) {
+			vars.put(key, get(key));
+		}
+		return vars;
+	}
 }

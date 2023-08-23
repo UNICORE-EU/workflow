@@ -123,16 +123,7 @@ public class TestConversion {
 		assert 2==cfi.getChunkSize();
 		assert "file_{0}.{2}".equals(cfi.getFormatString());
 	}
-	
-	@Test
-	public void testExpressions() throws Exception {
-		String wfID = "1";
-		String expr = "exitCode(\"blah\")>0";
-		String expect = "(new eu.unicore.workflow.pe.Evaluator(\"1\", CURRENT_TOTAL_ITERATOR).exitCode(\"blah\"))>0";
-		String actual = Converter.convertExpression(wfID, expr);
-		assert expect.equals(actual) : "got: "+actual;
-	}
-	
+
 	@Test
 	public void testConvertStaging()throws Exception{
 		String file="src/test/resources/json/two-with-outputs.json";
@@ -211,7 +202,7 @@ public class TestConversion {
 		PEWorkflow ag=res.getConvertedWorkflow();
 		WhileGroup whileGrp = (WhileGroup)ag.getActivity("while");
 		ScriptCondition sc = (ScriptCondition) whileGrp.getCondition();
-		assert "C<=2;".equals(sc.getScript()): sc.getScript();
+		assert "C<=2".equals(sc.getScript()): sc.getScript();
 	}
 	
 	@Test

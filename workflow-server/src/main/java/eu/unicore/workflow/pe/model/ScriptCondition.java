@@ -1,11 +1,13 @@
 package eu.unicore.workflow.pe.model;
 
-import eu.unicore.workflow.pe.util.ScriptSandbox;
+import java.util.Map;
+
+import de.fzj.unicore.xnjs.util.ScriptEvaluator;
+import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.xnjs.Constants;
-import groovy.lang.GroovyShell;
 
 /**
- * Evaluate a condition that is based on a Groovy script
+ * Evaluate a condition that is based on a script
  * 
  * @author schuller
  */
@@ -19,29 +21,19 @@ public class ScriptCondition extends Condition{
 	 * create a new ScriptCondition
 	 * @param id -  the ID of this condition
 	 * @param workflowID - the workflow ID
-	 * @param script - the beanshell expression to evaluate
+	 * @param script - the expression to evaluate
 	 */
 	public ScriptCondition(String id, String workflowID, String script) {
 		super(id, workflowID);
-		if(script.trim().endsWith(";")){
-			this.script=script.trim();	
-		}else{
-			this.script=script.trim()+";";
-		}
+		this.script = script;
 	}
 
 	public synchronized boolean evaluate()throws EvaluationException{
 		Object o=null;
 		try{
-			StringBuilder sb = new StringBuilder();
-			GroovyShell shell=new GroovyShell();
-			for(String key: processVariables.keySet()){
-				shell.setVariable(key, processVariables.get(key));
-			}
-			shell.setVariable(Constants.VAR_KEY_CURRENT_TOTAL_ITERATION, iterationValue);
-			ScriptSandbox sandbox=new ScriptSandbox();
-			sb.append(script);
-			o=sandbox.eval(shell,sb.toString());
+			Map<String, Object> vars = processVariables.asMap();
+			vars.put(Constants.VAR_KEY_CURRENT_TOTAL_ITERATION, iterationValue);
+			o = ScriptEvaluator.evaluate(script, vars, new ContextFunctions(workflowID, iterationValue));
 			if(o instanceof Boolean)return (Boolean)o;
 		}
 		catch(Exception ex){

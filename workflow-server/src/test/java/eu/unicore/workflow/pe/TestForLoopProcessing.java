@@ -397,7 +397,7 @@ public class TestForLoopProcessing extends TestBase {
 
 		TestActivity a1=new TestActivity("inner-a1",wfID);
 		TestActivity a2=new TestActivity("inner-a2",wfID);
-		String innerScript="\"1:::2\".equals(new "+Evaluator.class.getName()
+		String innerScript="\"1:::2\".equals(new "+ContextFunctions.class.getName()
 				+"(\"wf\", "+Constants.VAR_KEY_CURRENT_TOTAL_ITERATION+").getIteration())";
 		Condition c=new ScriptCondition("inner_conditon",wfID,innerScript);
 		Transition t1=new Transition("inner-a1->inner-a2",wfID,"inner-a1", "inner-a2",c);
