@@ -31,7 +31,6 @@ import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.Transition;
 import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.util.TestActivity;
-import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 
