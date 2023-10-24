@@ -4,15 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.WorkflowInstance;
 import org.json.JSONObject;
@@ -24,6 +15,14 @@ import eu.unicore.util.ConcurrentAccess;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * A very simplistic file catalog that stores names and physical locations for files used in a 
