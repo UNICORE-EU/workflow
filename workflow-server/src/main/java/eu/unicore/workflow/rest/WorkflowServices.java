@@ -30,11 +30,10 @@ public class WorkflowServices extends Application implements USERestApplication 
 
 	@Override
 	public Set<Class<?>> getClasses() {
-		Set<Class<?>>classes=new HashSet<Class<?>>();
+		Set<Class<?>>classes = new HashSet<>();
 		classes.add(Workflows.class);
 		return classes;
 	}
-
 
 	public static boolean isEnabled(Kernel kernel){
 		return kernel.getService("workflows")!=null;

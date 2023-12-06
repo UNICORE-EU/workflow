@@ -97,7 +97,8 @@ public class WorkflowStartupTask implements Runnable{
 				logger.info("No configuration for Workflow feature found. Setting internal mode = {}", isInternal);
 			}
 			wp = new WorkflowProperties(rawProperties);
-			kernel.addConfigurationHandler(WorkflowProperties.class, wp);
+			kernel.addConfigurationHandler(wp);
+			kernel.setAttribute(WorkflowProperties.class, wp);
 		}
 		logger.info("UNICORE Workflow service, version {}", VERSION);
 		if(PEConfig.getInstance().getProcessEngine()!=null){

@@ -28,6 +28,7 @@ import eu.unicore.security.Client;
 import eu.unicore.security.Role;
 import eu.unicore.services.ExternalSystemConnector;
 import eu.unicore.services.Home;
+import eu.unicore.services.ISubSystem;
 import eu.unicore.services.rest.Link;
 import eu.unicore.services.rest.PagingHelper;
 import eu.unicore.services.rest.USEResource;
@@ -306,8 +307,10 @@ public class Workflows extends ServicesBase {
 		props.put("trustedSAMLIssuers",trustedSAML);
 		
 		Map<String,Object>connectors = new HashMap<>();
-		for(ExternalSystemConnector ec: kernel.getExternalSystemConnectors()){
-			connectors.put(ec.getExternalSystemName(), ec.getConnectionStatus());
+		for(ISubSystem sub: kernel.getSubSystems()) {
+			for(ExternalSystemConnector ec: sub.getExternalConnections()){
+				connectors.put(ec.getExternalSystemName(), ec.getConnectionStatus());
+			}
 		}
 		props.put("externalConnections", connectors);
 
