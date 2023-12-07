@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.WorkflowFactoryHomeImpl;
 import org.chemomentum.dsws.WorkflowFactoryImpl;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
@@ -71,15 +70,9 @@ public class WorkflowStartupTask implements Runnable{
 	public static final String VERSION = Kernel.getVersion(WorkflowFactoryImpl.class);
 
 	private final Kernel kernel;
-	private final MetricRegistry registry;
-	
-	public WorkflowStartupTask(Kernel kernel){
-		this(kernel, kernel.getMetricRegistry());
-	}
 
-	public WorkflowStartupTask(Kernel kernel, MetricRegistry registry){
+	public WorkflowStartupTask(Kernel kernel){
 		this.kernel = kernel;
-		this.registry = registry;
 	}
 
 	protected void init() throws Exception{
@@ -119,7 +112,6 @@ public class WorkflowStartupTask implements Runnable{
 		WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
 		ConfigurationSource cs = new ConfigurationSource();
 		cs.getProperties().putAll(wp.getRawProperties());
-		cs.setMetricRegistry(registry);
 		cs.addModule(new WFEngineModule(cs.getProperties(), kernel));
 		String xnjsID = wp.isInternal()? "wf" : null;
 		XNJS xnjs = new XNJS(cs, xnjsID);
