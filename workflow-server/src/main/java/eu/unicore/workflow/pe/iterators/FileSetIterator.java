@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * iterator to traverse file sets
@@ -37,7 +37,7 @@ public class FileSetIterator extends ValueSetIterator {
 	 * @param workflowID - the workflow ID
 	 * @param fileSets - the file sets
 	 */
-	public FileSetIterator(String workflowID, FileSet... fileSets)throws ProcessingException{
+	public FileSetIterator(String workflowID, FileSet... fileSets)throws eu.unicore.xnjs.ems.ProcessingException{
 		this.workflowID=workflowID;
 		this.fileSets=fileSets;
 	}

@@ -6,16 +6,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Scanner;
 
-import de.fzj.unicore.uas.fts.FiletransferOptions;
-import de.fzj.unicore.uas.util.LimitedByteArrayOutputStream;
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.client.data.FiletransferClient;
+import eu.unicore.uas.fts.FiletransferOptions;
+import eu.unicore.uas.util.LimitedByteArrayOutputStream;
 import eu.unicore.util.Log;
+import eu.unicore.util.Pair;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 
 /**

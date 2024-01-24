@@ -2,14 +2,14 @@ package eu.unicore.workflow.pe.xnjs;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionResult;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.ems.processors.DefaultProcessor;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.Activity;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionResult;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.processors.DefaultProcessor;
 
 /**
  * Processes a routing (no-op) activity<br/>

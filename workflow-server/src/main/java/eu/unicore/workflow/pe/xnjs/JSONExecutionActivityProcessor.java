@@ -6,14 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.Builder;
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionResult;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.JobClient.Status;
@@ -21,7 +13,9 @@ import eu.unicore.client.core.SiteClient;
 import eu.unicore.client.lookup.RandomSelection;
 import eu.unicore.client.lookup.SiteSelectionStrategy;
 import eu.unicore.client.lookup.TargetSystemFinder;
+import eu.unicore.uas.json.Builder;
 import eu.unicore.util.Log;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.StageOutProcessor;
@@ -32,6 +26,12 @@ import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.util.InsertVariablesFilter;
 import eu.unicore.workflow.pe.util.WorkAssignmentUtils;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionResult;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.event.ContinueProcessingEvent;
 
 /**
  * Processes a single workflow activity<br/>

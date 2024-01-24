@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.ActivityGroup;
@@ -25,6 +24,7 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.util.IOUtils;
 
 public class TestRepeatLoopProcessing extends TestBase {
 	

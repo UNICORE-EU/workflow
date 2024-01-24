@@ -2,7 +2,7 @@ package org.chemomentum.dsws;
 
 import java.util.Calendar;
 
-import de.fzj.unicore.uas.impl.BaseInitParameters;
+import eu.unicore.uas.impl.BaseInitParameters;
 import eu.unicore.workflow.pe.files.Locations;
 
 public class WorkflowInitParameters extends BaseInitParameters {

@@ -5,11 +5,11 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
-import de.fzj.unicore.xnjs.tsi.IReservation;
-import de.fzj.unicore.xnjs.tsi.ReservationStatus;
 import eu.unicore.security.Client;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ExecutionException;
+import eu.unicore.xnjs.tsi.IReservation;
+import eu.unicore.xnjs.tsi.ReservationStatus;
 
 public class MockReservation implements IReservation {
 	

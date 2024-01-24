@@ -2,11 +2,11 @@ package eu.unicore.workflow;
 
 import java.util.Map;
 
-import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.services.rest.client.IAuthCallback;
+import eu.unicore.uas.json.JSONUtil;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
 /**

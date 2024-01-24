@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.persist.util.Wrapper;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.iterators.IterationException;
 import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * A group of activities connected by transitions

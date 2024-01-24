@@ -1,6 +1,6 @@
 package org.chemomentum.dsws;
 
-import de.fzj.unicore.uas.impl.UASBaseModel;
+import eu.unicore.uas.impl.UASBaseModel;
 
 public class WorkflowFactoryModel extends UASBaseModel {
 	

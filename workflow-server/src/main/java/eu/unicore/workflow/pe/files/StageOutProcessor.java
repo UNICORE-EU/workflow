@@ -8,15 +8,15 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.impl.sms.SMSBaseImpl;
-import de.fzj.unicore.xnjs.io.FileSet;
-import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.persist.Persist;
+import eu.unicore.uas.impl.sms.SMSBaseImpl;
 import eu.unicore.workflow.Constants;
 import eu.unicore.workflow.pe.PEConfig;
+import eu.unicore.xnjs.io.FileSet;
+import eu.unicore.xnjs.util.IOUtils;
 
 /**
  * Stage-out processing for workflow files. <br/>

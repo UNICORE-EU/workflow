@@ -3,9 +3,9 @@ package eu.unicore.workflow.pe.iterators;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.model.ForEachIterate;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
+import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
  * Process one or multiple files in each iteration of a for-each loop

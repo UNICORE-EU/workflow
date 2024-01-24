@@ -1,6 +1,6 @@
 package eu.unicore.workflow.builder;
 
-import de.fzj.unicore.uas.json.JSONUtil;
+import eu.unicore.uas.json.JSONUtil;
 
 public class Repeat extends Loop {
 

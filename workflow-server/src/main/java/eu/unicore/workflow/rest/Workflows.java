@@ -21,8 +21,6 @@ import org.chemomentum.dsws.WorkflowModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.JSONUtil;
-import de.fzj.unicore.uas.util.UnitParser;
 import eu.unicore.security.AuthorisationException;
 import eu.unicore.security.Client;
 import eu.unicore.security.Role;
@@ -35,7 +33,9 @@ import eu.unicore.services.rest.USEResource;
 import eu.unicore.services.rest.impl.ServicesBase;
 import eu.unicore.services.rest.security.AuthNHandler;
 import eu.unicore.services.security.util.AuthZAttributeStore;
+import eu.unicore.services.utils.UnitParser;
 import eu.unicore.services.utils.Utilities;
+import eu.unicore.uas.json.JSONUtil;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;

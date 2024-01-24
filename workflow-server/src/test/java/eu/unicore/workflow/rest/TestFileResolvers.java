@@ -10,12 +10,12 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fzj.unicore.uas.util.Pair;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.client.data.HttpFileTransferClient;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.pe.iterators.FileIndirectionHelper;

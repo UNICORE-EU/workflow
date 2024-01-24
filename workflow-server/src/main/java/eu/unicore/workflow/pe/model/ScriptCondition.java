@@ -2,9 +2,9 @@ package eu.unicore.workflow.pe.model;
 
 import java.util.Map;
 
-import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.xnjs.Constants;
+import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
  * Evaluate a condition that is based on a script

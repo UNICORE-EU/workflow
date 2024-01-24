@@ -4,10 +4,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import de.fzj.unicore.uas.UAS;
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 public class TestActivityGroupProcessor extends TestBase {
 

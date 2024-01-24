@@ -7,15 +7,15 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.util.ErrorCode;
-import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.VariableConstants;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.util.ErrorCode;
+import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
  * iterator over a set of values calculated from

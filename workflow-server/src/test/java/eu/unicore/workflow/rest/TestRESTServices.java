@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.ems.InternalManager;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.services.rest.client.RESTException;
@@ -21,6 +20,7 @@ import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.WorkflowFilesClient;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.xnjs.Statistics;
+import eu.unicore.xnjs.ems.InternalManager;
 
 public class TestRESTServices extends WSSTestBase {
 

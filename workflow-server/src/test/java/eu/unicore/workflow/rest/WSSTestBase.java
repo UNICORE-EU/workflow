@@ -9,13 +9,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import de.fzj.unicore.uas.UAS;
-import de.fzj.unicore.xnjs.XNJS;
 import eu.unicore.services.Kernel;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.ResolverFactory;
 import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
+import eu.unicore.xnjs.XNJS;
 
 /**
  * starts a full USE workflow engine

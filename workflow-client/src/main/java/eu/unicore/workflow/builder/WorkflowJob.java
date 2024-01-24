@@ -2,8 +2,8 @@ package eu.unicore.workflow.builder;
 
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.client.Job;
+import eu.unicore.uas.json.JSONUtil;
 
 public class WorkflowJob extends Job {
 

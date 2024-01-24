@@ -4,14 +4,14 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.util.ScriptEvaluator;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.model.ModifyVariableActivity;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
  * Modifies a named variable <br/>

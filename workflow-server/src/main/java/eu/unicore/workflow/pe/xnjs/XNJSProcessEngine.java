@@ -4,12 +4,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ActionResult;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.Manager;
 import eu.unicore.security.Client;
 import eu.unicore.security.SecurityTokens;
 import eu.unicore.workflow.pe.PEConfig;
@@ -20,6 +14,12 @@ import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ActionResult;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.Manager;
 
 /**
  * XNJS based process engine implementation

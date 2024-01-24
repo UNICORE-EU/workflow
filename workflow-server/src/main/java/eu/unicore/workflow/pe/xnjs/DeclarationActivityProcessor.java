@@ -2,13 +2,13 @@ package eu.unicore.workflow.pe.xnjs;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * Processes a variable declaration

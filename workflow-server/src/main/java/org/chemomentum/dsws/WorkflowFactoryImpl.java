@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.uas.impl.BaseResourceImpl;
 import eu.unicore.security.SecurityTokens;
 import eu.unicore.services.Home;
 import eu.unicore.services.InitParameters;
 import eu.unicore.services.messaging.Message;
 import eu.unicore.services.messaging.PullPoint;
 import eu.unicore.services.messaging.ResourceDeletedMessage;
+import eu.unicore.uas.impl.BaseResourceImpl;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.json.Delegate;
@@ -30,7 +30,7 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 	/**
 	 * maps dialect URIs to DSLDelegates that do the actual DSL processing
 	 */
-	private static final Map<String, DSLDelegate>dslDelegates=new HashMap<String, DSLDelegate>();
+	private static final Map<String, DSLDelegate>dslDelegates = new HashMap<>();
 
 	static {
 		dslDelegates.put(Delegate.DIALECT, new Delegate());

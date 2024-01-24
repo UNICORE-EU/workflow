@@ -1,9 +1,9 @@
 package eu.unicore.workflow.pe.xnjs;
 
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ExecutionContext;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
-import de.fzj.unicore.xnjs.ems.IExecutionContextManager;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ExecutionContext;
+import eu.unicore.xnjs.ems.ExecutionException;
+import eu.unicore.xnjs.ems.IExecutionContextManager;
 
 public class NullECM implements IExecutionContextManager{
 

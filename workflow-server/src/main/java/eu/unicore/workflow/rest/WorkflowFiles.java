@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.WorkflowInstance;
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.JSONUtil;
 import eu.unicore.services.Kernel;
 import eu.unicore.services.rest.impl.RESTRendererBase;
+import eu.unicore.uas.json.JSONUtil;
 import eu.unicore.util.ConcurrentAccess;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.PEConfig;

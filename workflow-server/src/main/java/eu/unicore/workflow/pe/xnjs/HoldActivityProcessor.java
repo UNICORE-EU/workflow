@@ -5,13 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
 import eu.unicore.util.Log;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.HoldActivity;
@@ -19,6 +14,11 @@ import eu.unicore.workflow.pe.model.ModelBase;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.event.ContinueProcessingEvent;
 
 /**
  * Processes HOLD activities

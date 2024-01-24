@@ -6,10 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
@@ -18,6 +14,10 @@ import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.RepeatGroup;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * processes "repeat-until" loops

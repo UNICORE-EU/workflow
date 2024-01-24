@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.fzj.unicore.uas.impl.UASBaseModel;
+import eu.unicore.uas.impl.UASBaseModel;
 
 public class WorkflowModel extends UASBaseModel {
 

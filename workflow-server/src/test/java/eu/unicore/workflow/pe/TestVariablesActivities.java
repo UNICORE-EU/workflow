@@ -6,10 +6,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ActionResult;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.Manager;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.DeclareVariableActivity;
@@ -18,6 +14,10 @@ import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ActionResult;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.Manager;
 
 public class TestVariablesActivities extends TestBase {
 
@@ -25,7 +25,7 @@ public class TestVariablesActivities extends TestBase {
 	public void test1()throws Exception{
 		String wfID=UUID.randomUUID().toString();
 		PEWorkflow job=new PEWorkflow(wfID);
-		List<Activity>as=new ArrayList<Activity>();
+		List<Activity>as = new ArrayList<>();
 		as.add(new DeclareVariableActivity("a1", wfID, "test1", "INTEGER","1"));
 		as.add(new DeclareVariableActivity("a2", wfID, "test2", "INTEGER","1"));
 		job.setActivities(as);

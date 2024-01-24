@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.util.ErrorCode;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.util.ErrorCode;
 
 /**
  * Use this to get a {@link Resolver} that can resolve elements of file sets

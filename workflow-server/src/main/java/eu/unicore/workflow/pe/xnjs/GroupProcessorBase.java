@@ -5,12 +5,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ExecutionException;
-import de.fzj.unicore.xnjs.ems.Manager;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
-import de.fzj.unicore.xnjs.util.LogUtil;
 import eu.unicore.persist.PersistenceException;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
@@ -25,6 +19,12 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.pe.util.WorkAssignmentUtils;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ExecutionException;
+import eu.unicore.xnjs.ems.Manager;
+import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.util.LogUtil;
 
 /**
  * base processor for groups and control constructs (for, repeat, ...) 

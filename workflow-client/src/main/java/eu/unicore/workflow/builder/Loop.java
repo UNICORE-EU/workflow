@@ -3,7 +3,7 @@ package eu.unicore.workflow.builder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.JSONUtil;
+import eu.unicore.uas.json.JSONUtil;
 
 public abstract class Loop {
 

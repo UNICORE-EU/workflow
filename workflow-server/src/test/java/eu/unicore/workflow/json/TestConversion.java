@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.util.IOUtils;
+import eu.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.pe.iterators.ForEachFileIterator;
 import eu.unicore.workflow.pe.iterators.Iteration;
 import eu.unicore.workflow.pe.model.Activity;

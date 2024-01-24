@@ -6,16 +6,16 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.services.Kernel;
 import eu.unicore.util.Log;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.Constants;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * this class can resolve "wf:..." file names using the file catalog

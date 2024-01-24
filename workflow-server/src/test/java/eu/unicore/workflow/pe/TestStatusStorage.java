@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.model.Transition;
@@ -14,12 +13,13 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 public class TestStatusStorage extends TestBase {
 
 	private PEWorkflow buildJob(String workflowID)throws ProcessingException{
 		PEWorkflow job=new PEWorkflow(workflowID);
-		List<Activity>as=new ArrayList<Activity>();
+		List<Activity>as = new ArrayList<>();
 		as.add(new TestActivity("a1",job.getWorkflowID()));
 		as.add(new TestActivity("a2",job.getWorkflowID()));
 		Transition t=new Transition("a1->a2",job.getWorkflowID(),"a1","a2");

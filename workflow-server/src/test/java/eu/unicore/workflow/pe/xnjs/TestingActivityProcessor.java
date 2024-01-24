@@ -3,13 +3,13 @@ package eu.unicore.workflow.pe.xnjs;
 import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.util.TestActivity;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * Testing only: processes a single workflow activity<br/>

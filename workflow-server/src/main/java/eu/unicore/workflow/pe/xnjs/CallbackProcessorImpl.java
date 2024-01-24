@@ -4,20 +4,20 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.logging.log4j.Logger;
 
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.Action;
-import de.fzj.unicore.xnjs.ems.ActionResult;
-import de.fzj.unicore.xnjs.ems.ActionStatus;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.event.CallbackEvent;
-import de.fzj.unicore.xnjs.ems.event.ContinueProcessingEvent;
-import de.fzj.unicore.xnjs.ems.event.XnjsEvent;
 import eu.unicore.services.Kernel;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.CallbackProcessor;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.Action;
+import eu.unicore.xnjs.ems.ActionResult;
+import eu.unicore.xnjs.ems.ActionStatus;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.event.CallbackEvent;
+import eu.unicore.xnjs.ems.event.ContinueProcessingEvent;
+import eu.unicore.xnjs.ems.event.XnjsEvent;
 
 public class CallbackProcessorImpl implements CallbackProcessor{
 

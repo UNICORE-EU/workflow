@@ -3,8 +3,8 @@ package eu.unicore.workflow.pe.iterators;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 public class TestResolverFactory {
 

@@ -7,11 +7,11 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.util.Pair;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 public class TestFileSetIterator {
 

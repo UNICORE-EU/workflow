@@ -2,7 +2,7 @@ package eu.unicore.workflow.builder;
 
 import org.json.JSONObject;
 
-import de.fzj.unicore.uas.json.JSONUtil;
+import eu.unicore.uas.json.JSONUtil;
 
 public class Group {
 

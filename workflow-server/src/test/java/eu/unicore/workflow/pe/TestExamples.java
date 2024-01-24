@@ -7,7 +7,6 @@ import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import de.fzj.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.VariableSetIterator;
 import eu.unicore.workflow.pe.model.Activity;
@@ -16,6 +15,7 @@ import eu.unicore.workflow.pe.model.ForGroup;
 import eu.unicore.workflow.pe.model.PEWorkflow;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.util.IOUtils;
 
 /**
  * runs example .json workflows

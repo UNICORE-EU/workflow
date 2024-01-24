@@ -12,14 +12,6 @@ import org.chemomentum.dsws.WorkflowFactoryImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
-import de.fzj.unicore.xnjs.ConfigurationSource;
-import de.fzj.unicore.xnjs.XNJS;
-import de.fzj.unicore.xnjs.ems.BasicManager;
-import de.fzj.unicore.xnjs.ems.IExecutionContextManager;
-import de.fzj.unicore.xnjs.ems.InternalManager;
-import de.fzj.unicore.xnjs.ems.Manager;
-import de.fzj.unicore.xnjs.persistence.IActionStoreFactory;
-import de.fzj.unicore.xnjs.persistence.JDBCActionStoreFactory;
 import eu.unicore.persist.PersistenceFactory;
 import eu.unicore.persist.PersistenceProperties;
 import eu.unicore.persist.impl.LockSupport;
@@ -56,6 +48,14 @@ import eu.unicore.workflow.pe.xnjs.RoutingActivityProcessor;
 import eu.unicore.workflow.pe.xnjs.WhileGroupProcessor;
 import eu.unicore.workflow.pe.xnjs.XNJSProcessEngine;
 import eu.unicore.workflow.rest.WorkflowServices;
+import eu.unicore.xnjs.ConfigurationSource;
+import eu.unicore.xnjs.XNJS;
+import eu.unicore.xnjs.ems.BasicManager;
+import eu.unicore.xnjs.ems.IExecutionContextManager;
+import eu.unicore.xnjs.ems.InternalManager;
+import eu.unicore.xnjs.ems.Manager;
+import eu.unicore.xnjs.persistence.IActionStoreFactory;
+import eu.unicore.xnjs.persistence.JDBCActionStoreFactory;
 
 /**
  * the run() method creates a workflow service instance, and

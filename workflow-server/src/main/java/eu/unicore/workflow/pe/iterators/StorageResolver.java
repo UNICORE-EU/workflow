@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.fzj.unicore.uas.util.Pair;
-import de.fzj.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.services.Kernel;
+import eu.unicore.util.Pair;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
+import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * resolve files on a UNICORE storage.
