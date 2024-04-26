@@ -10,16 +10,14 @@
   <parent>
     <groupId>eu.unicore.workflow</groupId>
     <artifactId>workflow-parent</artifactId>
-    <version>3.6.0</version>
+    <version>3.7.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <version>3.6.0</version>
-
   <properties>
-    <specification.version>10.0.0</specification.version>
+    <specification.version>10.1.0</specification.version>
     <compiler.fork>false</compiler.fork>
-    <package.version>10.0.0</package.version>
+    <package.version>10.1.0</package.version>
     <package.release>1</package.release>
   </properties>
 
