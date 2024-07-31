@@ -1,6 +1,6 @@
 package eu.unicore.workflow;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.builder.ForEach;
 import eu.unicore.workflow.builder.Workflow;

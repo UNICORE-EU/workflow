@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.util.Pair;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;

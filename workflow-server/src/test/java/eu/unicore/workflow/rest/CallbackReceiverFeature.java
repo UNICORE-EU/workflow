@@ -3,24 +3,23 @@ package eu.unicore.workflow.rest;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
+
+import eu.unicore.services.Kernel;
+import eu.unicore.services.rest.RestService;
+import eu.unicore.services.utils.deployment.DeploymentDescriptorImpl;
+import eu.unicore.services.utils.deployment.FeatureImpl;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.MediaType;
 
-import org.json.JSONObject;
-import org.junit.Ignore;
-
-import eu.unicore.services.Kernel;
-import eu.unicore.services.rest.RestService;
-import eu.unicore.services.utils.deployment.DeploymentDescriptorImpl;
-import eu.unicore.services.utils.deployment.FeatureImpl;
-
 /**
  * callback receiver
  */
-@Ignore
+@Disabled
 public class CallbackReceiverFeature extends FeatureImpl {
 
 	public CallbackReceiverFeature(Kernel kernel) {

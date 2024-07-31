@@ -6,8 +6,8 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.chemomentum.dsws.ConversionResult;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -42,7 +42,7 @@ public abstract class TestBase {
 
 	protected static WorkflowProperties workflowProperties;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void startUp()throws Exception{
 		FileUtils.deleteQuietly(new File("target","data"));
 		
@@ -105,7 +105,7 @@ public abstract class TestBase {
 
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void tearDown()throws Exception{
 		xnjs.stop();
 		PEConfig.getInstance().setProcessEngine(null);

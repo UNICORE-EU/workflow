@@ -1,7 +1,7 @@
 package eu.unicore.workflow.pe.xnjs;
 
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
@@ -17,7 +17,7 @@ import eu.unicore.xnjs.ems.ProcessingException;
  * to simulate a bit the real-life conditions in the workflow engine 
  * @author schuller
  */
-@Ignore
+@Disabled
 public class TestingActivityProcessor extends ProcessorBase implements Constants{
 
 	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, TestingActivityProcessor.class);

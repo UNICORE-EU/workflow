@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe.iterators;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.iterators.VariableSetIterator.VariableSet;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;

@@ -1,14 +1,16 @@
 package eu.unicore.workflow.pe.iterators;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.xnjs.ems.ProcessingException;
 
 public class TestResolverFactory {
 
-	@BeforeClass
+	@BeforeAll
 	public static void cleanUp() {
 		ResolverFactory.clear();
 		ResolverFactory.registerResolver(StorageResolver.class);
@@ -30,9 +32,11 @@ public class TestResolverFactory {
 		assert r instanceof StorageResolver;
 	}
 	
-	@Test(expected=ProcessingException.class)
+	@Test
 	public void testResolverCannotResolveBase()throws Exception{
-		ResolverFactory.getResolver("this does not exist");
-	}
+		 assertThrows(ProcessingException.class, ()->{
+			 ResolverFactory.getResolver("this does not exist");
+		 });
+		}
 
 }

@@ -1,6 +1,6 @@
 package eu.unicore.workflow.pe;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.model.PEWorkflow;

@@ -2,7 +2,7 @@ package eu.unicore.workflow.pe;
 
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.model.Activity.MergeType;
 import eu.unicore.workflow.pe.model.Activity.SplitType;

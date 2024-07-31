@@ -8,8 +8,8 @@ import java.util.UUID;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.util.Pair;
 import eu.unicore.workflow.json.Converter;
@@ -315,7 +315,7 @@ public class TestForLoopProcessing extends TestBase {
 			"Expect "+total/chunkSize+", have: "+Validate.getInvocations("a1").intValue();
 	}
 
-	@Test @Ignore
+	@Test @Disabled
 	public void testLargeSet()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();

@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.Iteration;
@@ -42,7 +42,7 @@ public class TestRepeatLoopProcessing extends TestBase {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void testRepeatLoop()throws Exception{
 		Validate.clear();
 		PEConfig.getInstance().getPersistence().removeAll();

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.workflow.pe.model.ActivityGroup;

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.xnjs.util.IOUtils;
 import eu.unicore.workflow.pe.iterators.ForEachFileIterator;

@@ -5,7 +5,7 @@ import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.workflow.WorkflowClient;

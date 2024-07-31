@@ -1,5 +1,7 @@
 package eu.unicore.workflow.rest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -7,8 +9,7 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.EnumerationClient;
@@ -35,7 +36,7 @@ public class TestFileResolvers extends WSSTestBase {
 		FileSet fileset = new FileSet("wf:", new String[] {"*/*"}, null, false, false);
 		Collection<Pair<String,Long>> results = resolver.resolve(wfID, fileset);
 		System.out.println(results);
-		Assert.assertEquals(2, results.size());
+		assertEquals(2, results.size());
 		
 		StorageResolver smsResolver = new StorageResolver();
 		EnumerationClient jobList = client.getJobList();
@@ -45,7 +46,7 @@ public class TestFileResolvers extends WSSTestBase {
 		fileset = new FileSet(smsURL, new String[] {"std*"}, null, false, false);
 		results = smsResolver.resolve(wfID, fileset);
 		System.out.println(results);
-		Assert.assertEquals(2, results.size());
+		assertEquals(2, results.size());
 	}
 	
 	@Test
@@ -69,7 +70,7 @@ public class TestFileResolvers extends WSSTestBase {
 		FileIndirectionHelper fih = new FileIndirectionHelper(source, wfID);
 		Collection<Pair<String,Long>> results = fih.resolve();
 		System.out.println(results);
-		Assert.assertEquals(2, results.size());
+		assertEquals(2, results.size());
 	}
 	
 	private WorkflowFactoryClient getFactoryClient() {

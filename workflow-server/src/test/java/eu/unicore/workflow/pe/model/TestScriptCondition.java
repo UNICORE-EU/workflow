@@ -1,6 +1,8 @@
 package eu.unicore.workflow.pe.model;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
@@ -48,17 +50,17 @@ public class TestScriptCondition {
 		assert(cond.evaluate());
 	}
 	
-	@Test(expected=EvaluationException.class)
+	@Test
 	public void testSecurityCheck()throws EvaluationException{
 		ProcessVariables pv=new ProcessVariables();
 		pv.put("X", Integer.valueOf(1));
-
 		//malicious code
 		String script="System.exit(1);";
-		
 		ScriptCondition cond=new ScriptCondition("1","1234",script);
 		cond.setProcessVariables(pv);
-		assert(cond.evaluate());
+		assertThrows(EvaluationException.class, ()->{
+			cond.evaluate();
+		});
 	}
 
 }

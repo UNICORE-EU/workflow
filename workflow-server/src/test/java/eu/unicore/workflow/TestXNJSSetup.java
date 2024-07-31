@@ -2,7 +2,7 @@ package eu.unicore.workflow;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.xnjs.ActivityGroupProcessor;

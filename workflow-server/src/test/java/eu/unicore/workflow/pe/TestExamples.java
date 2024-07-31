@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.chemomentum.dsws.ConversionResult;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.json.Converter;
 import eu.unicore.workflow.pe.iterators.VariableSetIterator;

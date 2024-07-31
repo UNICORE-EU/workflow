@@ -4,9 +4,9 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import eu.unicore.uas.UAS;
 import eu.unicore.services.Kernel;
@@ -26,14 +26,14 @@ public abstract class WSSTestBase {
 
 	protected static UAS uas;
 	
-	@Before
+	@BeforeEach
 	public void cleanup()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data/WORK"));
 		FileUtils.forceMkdir(new File("target/data/WORK"));
 		ResolverFactory.reset();
 	}
 	
-	@BeforeClass
+	@BeforeAll
 	public static void setUp()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data"));
 		uas=new UAS("src/test/resources/container.properties");
@@ -41,7 +41,7 @@ public abstract class WSSTestBase {
 		uas.startSynchronous();
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void tearDown()throws Exception{
 		if(kernel!=null)kernel.shutdown();
 	}

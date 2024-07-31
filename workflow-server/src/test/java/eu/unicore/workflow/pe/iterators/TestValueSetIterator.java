@@ -1,6 +1,6 @@
 package eu.unicore.workflow.pe.iterators;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;

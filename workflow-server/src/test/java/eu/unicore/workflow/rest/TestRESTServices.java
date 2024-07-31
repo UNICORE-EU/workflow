@@ -1,6 +1,8 @@
 package eu.unicore.workflow.rest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.util.HashMap;
@@ -8,8 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
@@ -102,21 +103,21 @@ public class TestRESTServices extends WSSTestBase {
 		// check location map
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
 		System.out.println(loc);
-		Assert.assertNotNull(loc.get("wf:date1/out"));
+		assertNotNull(loc.get("wf:date1/out"));
 		WorkflowFilesClient fileList = client.getFileList();
 		fileList.setUpdateInterval(-1);
 		Map<String,String>mappings = fileList.getMappings();
 		System.out.println(mappings);
-		Assert.assertNotNull(mappings.get("wf:date1/out"));
+		assertNotNull(mappings.get("wf:date1/out"));
 		// register
 		Map<String,String> toRegister = new HashMap<>();
 		toRegister.put("foo", "http://somewhere");
 		fileList.register(toRegister);
 		mappings = fileList.getMappings();
-		Assert.assertEquals(2,  mappings.size());
-		Assert.assertEquals("http://somewhere", mappings.get("wf:foo"));
+		assertEquals(2,  mappings.size());
+		assertEquals("http://somewhere", mappings.get("wf:foo"));
 		mappings = fileList.getMappings("wf:date1/*");
-		Assert.assertEquals(1,  mappings.size());
+		assertEquals(1,  mappings.size());
 		client.delete();
 	}
 	
@@ -135,12 +136,12 @@ public class TestRESTServices extends WSSTestBase {
 		// check location map
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
 		System.out.println(loc);
-		Assert.assertNotNull(loc.get("wf:infile"));
+		assertNotNull(loc.get("wf:infile"));
 		// via REST API
 		BaseServiceClient fileList = client.getFileList();
 		JSONObject files = fileList.getProperties();
 		System.out.println(files.toString(2));
-		Assert.assertNotNull(files.getString("wf:infile"));
+		assertNotNull(files.getString("wf:infile"));
 		client.delete();
 	}
 	
@@ -163,8 +164,8 @@ public class TestRESTServices extends WSSTestBase {
 				getJSONObject("activities").
 				getJSONArray("fail-on-missing-file").
 				getJSONObject(0);
-		Assert.assertTrue(status.getString("errorMessage").contains("SUBMIT_FAILED"));
-		Assert.assertTrue(status.getString("status").equals("FAILED"));
+		assertTrue(status.getString("errorMessage").contains("SUBMIT_FAILED"));
+		assertTrue(status.getString("status").equals("FAILED"));
 	}
 	
 	@Test
@@ -177,12 +178,12 @@ public class TestRESTServices extends WSSTestBase {
 				getJSONObject("activities").
 				getJSONArray("fail-and-resubmit").
 				getJSONObject(0);
-		Assert.assertTrue(status.getString("errorMessage").contains("JOB_FAILED"));
-		Assert.assertTrue(status.getString("status").equals("FAILED"));
+		assertTrue(status.getString("errorMessage").contains("JOB_FAILED"));
+		assertTrue(status.getString("status").equals("FAILED"));
 		String url = client.getEndpoint().getUrl();
 		String wfID = url.substring(url.lastIndexOf("/")+1);
 		Statistics stats = getXNJS().get(InternalManager.class).getAction(wfID).getProcessingContext().get(Statistics.class);
-		Assert.assertEquals(2, stats.getTotalJobs());
+		assertEquals(2, stats.getTotalJobs());
 	}
 	
 	@Test

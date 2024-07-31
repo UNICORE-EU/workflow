@@ -1,7 +1,9 @@
 package eu.unicore.workflow.pe.xnjs;
 
-import org.junit.After;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import de.fzj.unicore.uas.UAS;
 import eu.unicore.workflow.WorkflowProperties;
@@ -28,7 +30,7 @@ public class TestActivityGroupProcessor extends TestBase {
 	}
 	
 	
-	@Test(expected=ExecutionException.class)
+	@Test
 	public void testExceptionWhenCounterExceeded()throws ExecutionException{
 		xnjs.get(WorkflowProperties.class).setProperty("maxActivitiesPerGroup", "10");
 		WorkflowProperties wp = xnjs.get(WorkflowProperties.class);
@@ -39,9 +41,11 @@ public class TestActivityGroupProcessor extends TestBase {
 		Action a=new Action();
 		agp.setAction(a);
 		//now exceed the counter
-		for(int i=0;i<100;i++){
-			agp.incrementCounterAndCheckMaxActivities();
-		}
+		assertThrows(ExecutionException.class, ()->{
+			for(int i=0;i<100;i++){
+				agp.incrementCounterAndCheckMaxActivities();
+			}
+		});
 	}
 	
 	@Test
@@ -62,7 +66,7 @@ public class TestActivityGroupProcessor extends TestBase {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void cleanUp(){
 		xnjs.get(WorkflowProperties.class).setProperty(WorkflowProperties.MAX_ACTIVITIES_PER_GROUP, "1000");
 	}

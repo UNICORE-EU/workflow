@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.persist.Persist;
 import eu.unicore.workflow.pe.model.Activity;

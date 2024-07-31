@@ -3,7 +3,7 @@ package eu.unicore.workflow.pe.util;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.client.Job;
 import eu.unicore.workflow.pe.iterators.ForEachFileIterator;

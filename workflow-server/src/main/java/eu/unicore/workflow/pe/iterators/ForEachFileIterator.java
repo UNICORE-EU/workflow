@@ -292,7 +292,7 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 		Map<String,Object> vars = varsOrig.asMap();
 		vars.put(EXPR_TOTAL_NUMBER, source.getTotalNumberOfFiles());
 		vars.put(EXPR_TOTAL_SIZE, source.getTotalFileSize());
-		Object res = ScriptEvaluator.evaluate(chunkSizeExpression, vars, null);
+		Object res = ScriptEvaluator.evaluate(chunkSizeExpression, vars);
 		try{
 			return Integer.valueOf(String.valueOf(res));
 		}

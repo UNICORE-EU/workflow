@@ -150,10 +150,10 @@ public class VariableSetIterator extends ValueSetIterator {
 			int c=0;
 			try{
 				while(true){
-					Boolean cont = (Boolean)ScriptEvaluator.evaluate(condition, vars, null);
+					Boolean cont = (Boolean)ScriptEvaluator.evaluate(condition, vars);
 					if(cont==null || !cont)break;
 					values.add(nextValue);
-					ScriptEvaluator.evaluate(modifier, vars, null);
+					ScriptEvaluator.evaluate(modifier, vars);
 					Object next = vars.get(variableName);
 					vars.put(variableName, next);
 					if(nextValue.equals(String.valueOf(next))){

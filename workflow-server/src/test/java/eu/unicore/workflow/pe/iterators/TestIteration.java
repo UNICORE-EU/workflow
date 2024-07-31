@@ -1,6 +1,8 @@
 package eu.unicore.workflow.pe.iterators;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
 
@@ -38,13 +40,15 @@ public class TestIteration {
 		 assert("abc123:::SomeOtherFOOContent:::456abc".equals(i.getResolvedBase()));
 	 }
 	 
-	 @Test(expected=IllegalStateException.class)
+	 @Test
 	 public void testForIllegalState(){
 		 ProcessVariables vars=new ProcessVariables();
 		 vars.put("TEST", "123");
 		 Iteration i=new Iteration();
 		 i.setBase("foo");
-		 i.getCurrentValue();
+		 assertThrows(IllegalStateException.class, ()->{
+			 i.getCurrentValue();
+		 });
 	 }
 
 }
