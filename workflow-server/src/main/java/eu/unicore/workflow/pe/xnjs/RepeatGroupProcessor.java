@@ -17,7 +17,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.Action;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * processes "repeat-until" loops
@@ -37,7 +37,7 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 	 * subactions for dealing with those
 	 */
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		super.handleCreated();
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
@@ -49,12 +49,12 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 			ag.getBody().getIterate().reset(vars);
 		}catch(Exception ex){
 			reportError("ITERATION_ERROR", Log.createFaultMessage("Iteration error", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 		submitAllEligibleActivities();
 	}
 
-	protected void submitAllEligibleActivities()throws ProcessingException{
+	protected void submitAllEligibleActivities()throws Exception{
 		List<String>subTasks=getOrCreateSubTasks();
 		RepeatGroup ag=(RepeatGroup)action.getAjd();
 		Iterate iterate=ag.getBody().getIterate();
@@ -72,17 +72,17 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 					}
 				}catch(Exception ex){
 					setToDoneAndFailed(Log.createFaultMessage("Exception occured", ex));
-					throw new ProcessingException(ex);
+					throw ex;
 				}
 			}catch(Exception ex){
-				throw new ProcessingException(ex);
+				throw ExecutionException.wrapped(ex);
 			}
 		}
 	}
 
 
 	@Override
-	protected void handleRunning() throws ProcessingException {
+	protected void handleRunning() throws Exception {
 		logger.trace("Handle running for {}", action.getUUID());
 		boolean subTasksStillRunning=false;
 
@@ -143,7 +143,7 @@ public class RepeatGroupProcessor extends GroupProcessorBase{
 			}
 		}catch(Exception ex){
 			setToDoneAndFailed(Log.createFaultMessage("Error occurred", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 		if(subTasksStillRunning){
 			sleep(5, TimeUnit.SECONDS);

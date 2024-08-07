@@ -19,14 +19,6 @@
    <automatic.module.name>eu.unicore.workflow.client</automatic.module.name>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>unicore.eu</id>
-      <name>UNICORE repository</name>
-      <url>https://unicore-dev.zam.kfa-juelich.de/maven</url>
-    </repository>
-  </repositories>
-
   <dependencies>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -38,16 +30,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <!-- no javadoc -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-     	<artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

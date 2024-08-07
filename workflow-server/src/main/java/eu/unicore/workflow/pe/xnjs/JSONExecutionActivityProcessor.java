@@ -30,7 +30,6 @@ import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionResult;
 import eu.unicore.xnjs.ems.ActionStatus;
 import eu.unicore.xnjs.ems.InternalManager;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.ems.event.ContinueProcessingEvent;
 
 /**
@@ -68,7 +67,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		super.handleCreated();
 		JSONExecutionActivity work = getWork();
 		String iteration=getCurrentIteration();
@@ -213,53 +212,49 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 * in RUNNING, the status of the current job is checked
 	 */
 	@Override
-	protected void handleRunning()throws ProcessingException{
+	protected void handleRunning()throws Exception{
 		// check last send instant
 		Long lastSend = (Long)action.getProcessingContext().get(SEND_INSTANT);
 		if(lastSend!=null && lastSend+5000>System.currentTimeMillis()){
 			return;
 		}
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-			
-			String err="running";
-			Pair<Status, String>state=new Pair<>(Status.RUNNING, err);
-			String jobURL = getCurrentJobURL();
-			try{
-				state = getJobStatus(jobURL);
-			}catch(Exception e){
-				String msg="Problem getting status for job "+jobURL;
-				Log.logException(msg,e,logger);
-			}
-			Status status = state.getM1();
-
-			switch(status) {
-			case READY:
-			case STAGINGIN:
-			case QUEUED:
-			case RUNNING:
-			case STAGINGOUT:
-				sleep(properties.getStatusPollingInterval(), TimeUnit.SECONDS);
-				return;
-
-			case SUCCESSFUL:
-				action.setStatus(ActionStatus.DONE);
-				action.setResult(new ActionResult(ActionResult.SUCCESSFUL));
-				return;
-
-			case FAILED:
-			default:
-				err="Job failed.";
-			}
-			setToPostprocessing(err, state.getM2());
-
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
 		}
+
+		String err="running";
+		Pair<Status, String>state=new Pair<>(Status.RUNNING, err);
+		String jobURL = getCurrentJobURL();
+		try{
+			state = getJobStatus(jobURL);
+		}catch(Exception e){
+			String msg="Problem getting status for job "+jobURL;
+			Log.logException(msg,e,logger);
+		}
+		Status status = state.getM1();
+
+		switch(status) {
+		case READY:
+		case STAGINGIN:
+		case QUEUED:
+		case RUNNING:
+		case STAGINGOUT:
+			sleep(properties.getStatusPollingInterval(), TimeUnit.SECONDS);
+			return;
+
+		case SUCCESSFUL:
+			action.setStatus(ActionStatus.DONE);
+			action.setResult(new ActionResult(ActionResult.SUCCESSFUL));
+			return;
+
+		case FAILED:
+		default:
+			err="Job failed.";
+		}
+		setToPostprocessing(err, state.getM2());
+
 	}
 
 	private Pair<Status,String>getJobStatus(String jobUrl) throws Exception {
@@ -284,15 +279,11 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 * If it failed, we check whether to resubmit or not
 	 */
 	@Override
-	protected void handlePostProcessing()throws ProcessingException{
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+	protected void handlePostProcessing()throws Exception{
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
 		}
 		if(action.getResult().isSuccessful()) {
 			setToDoneSuccessfully();
@@ -319,7 +310,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 		}
 	}
 
-	private void handleResubmit()throws ProcessingException {
+	private void handleResubmit()throws Exception {
 		JSONExecutionActivity work = getWork();
 		String errorCode = (String)action.getProcessingContext().get(LAST_ERROR_CODE);
 		String errorDescription = (String)action.getProcessingContext().get(LAST_ERROR_DESCRIPTION);

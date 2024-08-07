@@ -9,7 +9,6 @@ import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * Testing only: processes a single workflow activity<br/>
@@ -29,18 +28,13 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		super.handleCreated();
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
 		}
-		
 		getStatistics().incrementJobs();
 		action.setStatus(ActionStatus.RUNNING);
 		TestActivity activity=(TestActivity)action.getAjd();
@@ -65,40 +59,28 @@ public class TestingActivityProcessor extends ProcessorBase implements Constants
 	}
 
 	@Override
-	protected void handlePostProcessing()throws ProcessingException{
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-			String errorCode=(String)action.getProcessingContext().get(JSONExecutionActivityProcessor.LAST_ERROR_CODE);
-			String errorDescription=(String)action.getProcessingContext().get(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION);
-			setToDoneAndFailed("Failed: "+errorCode+" "+errorDescription);
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+	protected void handlePostProcessing()throws Exception{
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
 		}
+		String errorCode=(String)action.getProcessingContext().get(JSONExecutionActivityProcessor.LAST_ERROR_CODE);
+		String errorDescription=(String)action.getProcessingContext().get(JSONExecutionActivityProcessor.LAST_ERROR_DESCRIPTION);
+		setToDoneAndFailed("Failed: "+errorCode+" "+errorDescription);
 	}
 
 	@Override
-	protected void handleRunning() throws ProcessingException{
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+	protected void handleRunning() throws Exception{
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
 		}
 		TestActivity activity=(TestActivity)action.getAjd();
 		if(activity.useCallback()){
 			String workAssignmentID=action.getUUID()+"/someiteration";
-			try{
-				PEConfig.getInstance().getCallbackProcessor().handleCallback(activity.getWorkflowID(), workAssignmentID, "", true);
-			}catch(Exception e){
-				throw new ProcessingException(e);
-			}
+			PEConfig.getInstance().getCallbackProcessor().handleCallback(activity.getWorkflowID(), workAssignmentID, "", true);
 		}
 		else{
 			setToDoneSuccessfully();

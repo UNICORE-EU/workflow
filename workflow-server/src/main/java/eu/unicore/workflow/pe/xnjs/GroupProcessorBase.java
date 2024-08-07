@@ -23,7 +23,6 @@ import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.Action;
 import eu.unicore.xnjs.ems.ExecutionException;
 import eu.unicore.xnjs.ems.Manager;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.util.LogUtil;
 
 /**

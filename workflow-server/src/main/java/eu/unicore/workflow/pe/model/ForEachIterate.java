@@ -17,8 +17,8 @@ public interface ForEachIterate extends Iterate {
 	
 	/**
 	 * Holds individual original file name variable. 
-	 * With n>1 chunks, this will have an "_N" appended, with "N" being 
-	 * the index of the file within the current chunk
+	 * When there are more than one chunk, this will have an "_N" appended, with
+	 * "N" being the index of the file within the current chunk
 	 */
 	public static final String PV_ORIGINAL_FILENAME = "_ORIGINAL_FILENAME";
 	

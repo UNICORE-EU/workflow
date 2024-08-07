@@ -92,7 +92,7 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 	 *  
 	 * @param source -  the underlying file set iterator
 	 * @param chunkSize - the chunk size
-	 * @throws IllegalArgumentException if chunksize is < 2
+	 * @throws IllegalArgumentException if chunksize is less than 2
 	 */
 	public ForEachFileIterator(FileSetIterator source, int chunkSize){
 		this(source, chunkSize, Type.NUMBER);
@@ -103,9 +103,8 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 	 *  
 	 * @param source -  the underlying file set iterator
 	 * @param chunkSize - the chunk size
-	 * @param isAggregatedFileSize - if <code>true</code>, the chunk size is 
-	 *        interpreted as aggregated file size in kbytes
-	 * @throws IllegalArgumentException if chunksize is < 2
+	 * @param type - the chunking type
+	 * @throws IllegalArgumentException if chunksize is less than 2
 	 */
 	public ForEachFileIterator(FileSetIterator source, int chunkSize, Type type){
 		this.source=source;

@@ -31,7 +31,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.Action;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * processes activity groups, i.e. both toplevel workflows and sub-workflows
@@ -41,7 +41,7 @@ import eu.unicore.xnjs.ems.ProcessingException;
 public class ActivityGroupProcessor extends GroupProcessorBase{
 
 	private static final Logger logger = Log.getLogger(WorkflowProperties.LOG_CATEGORY, ActivityGroupProcessor.class);
-	
+
 	public ActivityGroupProcessor(XNJS configuration) {
 		super(configuration);
 	}
@@ -51,12 +51,12 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	 * subactions for dealing with those
 	 */
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		super.handleCreated();
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		addDeclarations(ag,vars);
-		
+
 		ag.init(vars);
 		if(ag.getID().equals(ag.getWorkflowID())){
 			logger.info("Processing workflow <{}>", ag.getWorkflowID());
@@ -73,15 +73,15 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			startRunning();
 		}
 	}
-	
-	private void startRunning() throws ProcessingException{
+
+	private void startRunning() throws Exception{
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		submitAllEligibleActivities(true);
 	}
-	
-	
-	protected void performCoBrokering() throws ProcessingException{
+
+
+	protected void performCoBrokering() {
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
 		logger.debug("Co-brokering activities for <{}>", ag.getID());
 		// first collect all Job activities
@@ -103,7 +103,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			setToDoneAndFailed(msg);
 		}
 	}
-	
+
 	private void setupPreferredHost(Collection<JSONObject>jobs, String host) throws JSONException {
 		for(JSONObject j: jobs){
 			if(host!=null)j.put("Site name", host);
@@ -120,20 +120,20 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			addTo.put(jea.getID(),jea.getJobDefinition());
 		}
 	}
-	
+
 	private void updateJobdescriptions(Map<String,JSONObject> updated, ActivityGroup group, boolean recurse){
 		for(Activity a: group.getActivities()){
 			if(a instanceof ActivityGroup){
 				addJobs(updated, (ActivityGroup)a, recurse);
 			}
 			if(! (a instanceof JSONExecutionActivity))continue;
-			
+
 			JSONExecutionActivity jea=(JSONExecutionActivity)a;
 			jea.setJobDefinition(updated.get(jea.getID()));
 		}
 	}
-	
-	protected void submitAllEligibleActivities(boolean subActionsStillRunning)throws ProcessingException{
+
+	protected void submitAllEligibleActivities(boolean subActionsStillRunning)throws Exception{
 		List<String>subTasks=getOrCreateSubTasks();
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
 		List<Activity>activities=ag.getDueActivities();
@@ -166,11 +166,8 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 					}
 				}catch(Exception ex){
 					setToDoneAndFailed(Log.createFaultMessage("Exception occured", ex));
-					throw new ProcessingException(ex);
+					throw ExecutionException.wrapped(ex);
 				}
-
-			}catch(Exception ex){
-				throw new ProcessingException(ex);
 			}
 		}
 	}
@@ -179,18 +176,18 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	 * in PREPROCESSING, co-brokering is performed
 	 */
 	@Override
-	protected void handlePreProcessing() throws ProcessingException {
+	protected void handlePreProcessing() throws Exception {
 		logger.trace("Handle pre-processing for {}", action.getUUID());
 		performCoBrokering();
 	}
-	
+
 	@Override
-	protected void handleRunning() throws ProcessingException {
+	protected void handleRunning() throws Exception {
 		logger.trace("Handle running for {}", action.getUUID());
 		boolean stillRunning=false;
-		
+
 		boolean stopProcessingThisGroup=false;
-		
+
 		try{
 			if(!isTopLevelWorkflowStillRunning()){
 				String msg="Parent workflow was aborted or failed";
@@ -207,7 +204,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			}
 
 			Iterator<String>iterator=subTasks.iterator();
-			
+
 			subActionLoop: while(iterator.hasNext() && !stopProcessingThisGroup){
 				String subActionID=iterator.next();
 				Action sub=manager.getAction(subActionID);
@@ -219,7 +216,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 				else{
 					int status=sub.getStatus();
 					logger.trace("Sub-Action <{}> is {}", subActionID, ActionStatus.toString(status));
-					
+
 					if(ActionStatus.DONE!=status){
 						stillRunning=true;
 						continue subActionLoop;
@@ -247,7 +244,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 						else{
 							subActivity.setStatus(ActivityStatus.SUCCESS);
 						}
-	
+
 						if(!stopProcessingThisGroup){
 							ProcessVariables pv=sub.getProcessingContext().get(ProcessVariables.class);
 							//set follow-on activities to state READY so they can be submitted
@@ -260,11 +257,11 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			}
 		}catch(Exception ex){
 			setToDoneAndFailed(Log.createFaultMessage("Error occurred", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 
 		if(stopProcessingThisGroup)return;
-		
+
 		if(ActionStatus.DONE!=action.getStatus()){
 			submitAllEligibleActivities(stillRunning);
 		}
@@ -286,14 +283,14 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 	 */
 	protected void logUsage(){
 		if(!logger.isInfoEnabled())return;
-		
+
 		ActivityGroup ag=(ActivityGroup)action.getAjd();
 		String wfID=ag.getWorkflowID();
 		if(!ag.getID().equals(wfID)){
 			// not a toplevel workflow
 			return;
 		}
-		
+
 		boolean success=action.getResult()!=null && action.getResult().isSuccessful();
 		String client=action.getClient()!=null?action.getClient().getDistinguishedName():"n/a";
 		Statistics stats=getStatistics();
@@ -306,27 +303,27 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 		sb.append("]");
 		logger.info(sb.toString());
 	}
-	
+
 	@Override
 	protected void setToDoneSuccessfully(){
 		super.setToDoneSuccessfully();
 		sendNotification(null);
 		logUsage();
 	}
-	
+
 	@Override
 	protected void setToDoneAndFailed(String reason){
 		super.setToDoneAndFailed(reason);
 		sendNotification(reason);
 		logUsage();
 	}
-	
+
 	protected void sendNotification(String failureReason) {
 		ActivityGroup ag = (ActivityGroup)action.getAjd();
 		String wfID = ag.getWorkflowID();
 		String url = ag.getNotificationURL();
 		if(url==null)return;
-		
+
 		try{
 			Kernel kernel = PEConfig.getInstance().getKernel();
 			final JSONObject msg = new JSONObject();
@@ -347,11 +344,11 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 					kernel.getContainerProperties().getThreadingServices(),
 					30, TimeUnit.SECONDS).call();
 			if(res==null)throw new TimeoutException("Timeout waiting for notification send/reply");
-			
+
 		}catch(Exception ex) {
 			logger.warn("Could not send success/failure notification for workflow <{}> to <{}>", wfID, url);
 		}
-		
+
 	}
-	
+
 }

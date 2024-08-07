@@ -17,7 +17,6 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionStatus;
 import eu.unicore.xnjs.ems.InternalManager;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.ems.event.ContinueProcessingEvent;
 
 /**
@@ -36,7 +35,7 @@ public class HoldActivityProcessor extends ProcessorBase{
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		HoldActivity work=(HoldActivity )action.getAjd();
@@ -84,45 +83,41 @@ public class HoldActivityProcessor extends ProcessorBase{
 	 * exit the HOLD task is fulfilled 
 	 */
 	@Override
-	protected void handleRunning()throws ProcessingException{
+	protected void handleRunning()throws Exception{
 		logger.debug("Handling running action <{}>", action.getUUID());
-		try{
-			if(!isTopLevelWorkflowStillRunning()){
-				setToDoneAndFailed("Parent workflow was aborted or failed");
-				reportError("PARENT_FAILED","Parent aborted or failed.");
-				return;
-			}
-			Pair<Boolean, Map<String,String>>resume=isHeld(getParentWorkflowID(),getActivityID());
-			boolean exit = false;
-			if(!resume.getM1()){
-				logger.debug("Exiting HOLD task <{}>", action.getUUID());
-				Map<String,String>resumeParams = resume.getM2();
-				if(resumeParams!=null){
-					try{
-						updateProcessVariables(resumeParams);
-					}catch(Exception e){
-						String msg = Log.createFaultMessage("Error updating variable(s)", e);
-						setToDoneAndFailed(msg);
-						reportError("EvaluationError",msg);
-						return;
-					}
+		if(!isTopLevelWorkflowStillRunning()){
+			setToDoneAndFailed("Parent workflow was aborted or failed");
+			reportError("PARENT_FAILED","Parent aborted or failed.");
+			return;
+		}
+		Pair<Boolean, Map<String,String>>resume=isHeld(getParentWorkflowID(),getActivityID());
+		boolean exit = false;
+		if(!resume.getM1()){
+			logger.debug("Exiting HOLD task <{}>", action.getUUID());
+			Map<String,String>resumeParams = resume.getM2();
+			if(resumeParams!=null){
+				try{
+					updateProcessVariables(resumeParams);
+				}catch(Exception e){
+					String msg = Log.createFaultMessage("Error updating variable(s)", e);
+					setToDoneAndFailed(msg);
+					reportError("EvaluationError",msg);
+					return;
 				}
+			}
+			exit = true;
+		}
+		else {
+			// check if we have a sleep interval set and it has passed
+			Long wakeUp = (Long)action.getProcessingContext().get(_exit_at);
+			if(wakeUp!=null && wakeUp<System.currentTimeMillis()) {
+				logger.debug("Exiting HOLD task <{}> after it's waiting time has passed.", action.getUUID());
 				exit = true;
 			}
-			else {
-				// check if we have a sleep interval set and it has passed
-				Long wakeUp = (Long)action.getProcessingContext().get(_exit_at);
-				if(wakeUp!=null && wakeUp<System.currentTimeMillis()) {
-					logger.debug("Exiting HOLD task <{}> after it's waiting time has passed.", action.getUUID());
-					exit = true;
-				}
-			}
-			if(exit) {
-				setToDoneSuccessfully();
-				return;
-			}
-		}catch(Exception ex){
-			throw new ProcessingException(ex);
+		}
+		if(exit) {
+			setToDoneSuccessfully();
+			return;
 		}
 		action.setWaiting(true);
 		action.setDirty();

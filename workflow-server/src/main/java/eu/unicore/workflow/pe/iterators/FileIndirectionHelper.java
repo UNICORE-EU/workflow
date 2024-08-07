@@ -15,7 +15,7 @@ import eu.unicore.util.Pair;
 import eu.unicore.util.httpclient.IClientConfiguration;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 
 /**
@@ -88,11 +88,11 @@ public class FileIndirectionHelper {
 		return results;
 	}
 
-	public StorageClient getStorageClientForFileSet(String workflowID, String url_base) throws ProcessingException {
+	public StorageClient getStorageClientForFileSet(String workflowID, String url_base) throws ExecutionException {
 		try{
 			return getStorageClient(getURL(url_base), workflowID);
 		}catch(Exception ex){
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 	}
 

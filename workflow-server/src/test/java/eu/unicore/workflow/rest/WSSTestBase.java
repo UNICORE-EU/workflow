@@ -64,11 +64,7 @@ public abstract class WSSTestBase {
 	protected IClientConfiguration getClientSideSecurityProperties(){
 		return new DefaultClientConfiguration() ;
 	}
-	
-	protected String getBaseurl(){
-		return kernel.getContainerProperties().getBaseUrl();
-	}
-	
+
 	protected JSONObject loadJSON(String fileName)throws Exception{
 		return new JSONObject(FileUtils.readFileToString(new File(fileName), "UTF-8"));
 	}

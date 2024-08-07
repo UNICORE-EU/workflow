@@ -13,11 +13,10 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
 import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.xnjs.TestBase;
-import eu.unicore.xnjs.ems.ProcessingException;
 
 public class TestStatusStorage extends TestBase {
 
-	private PEWorkflow buildJob(String workflowID)throws ProcessingException{
+	private PEWorkflow buildJob(String workflowID)throws Exception{
 		PEWorkflow job=new PEWorkflow(workflowID);
 		List<Activity>as = new ArrayList<>();
 		as.add(new TestActivity("a1",job.getWorkflowID()));

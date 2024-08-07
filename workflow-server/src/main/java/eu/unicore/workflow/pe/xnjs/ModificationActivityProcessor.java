@@ -10,7 +10,6 @@ import eu.unicore.workflow.pe.ContextFunctions;
 import eu.unicore.workflow.pe.model.ModifyVariableActivity;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
@@ -27,7 +26,7 @@ public class ModificationActivityProcessor extends ProcessorBase{
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		ModifyVariableActivity activity=(ModifyVariableActivity)action.getAjd();

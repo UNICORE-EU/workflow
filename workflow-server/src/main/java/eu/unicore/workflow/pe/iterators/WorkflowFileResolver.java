@@ -15,7 +15,7 @@ import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.files.Locations;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * this class can resolve "wf:..." file names using the file catalog
@@ -32,14 +32,14 @@ public class WorkflowFileResolver extends StorageResolver {
 	}
 
 	@Override
-	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ProcessingException {
+	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ExecutionException {
 		try{
 			Kernel kernel=PEConfig.getInstance().getKernel();
 			ArrayList<Pair<String,Long>>results = new ArrayList<>();
 			results.addAll(getMatches(workflowID, fileset, kernel));
 			return results;
 		}catch(Exception ex){
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 	}
 

@@ -10,7 +10,6 @@ import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.Condition;
-import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.Iterate;
 import eu.unicore.workflow.pe.model.WhileGroup;
 import eu.unicore.workflow.pe.persistence.SubflowContainer;
@@ -18,7 +17,7 @@ import eu.unicore.workflow.pe.persistence.WorkflowContainer;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.Action;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * processes "do-while" loops
@@ -38,7 +37,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 	 * subactions for dealing with those
 	 */
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		super.handleCreated();
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
@@ -50,31 +49,26 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 			ag.getBody().getIterate().reset(vars);
 		}catch(Exception ex){
 			reportError("ITERATION_ERROR", Log.createFaultMessage("Iteration error", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 		try{
 			submitAllEligibleActivities();
 		}catch(Exception ex){
 			reportError("ERROR", Log.createFaultMessage("Error", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 	}
 
-	protected void submitAllEligibleActivities()throws ProcessingException{
+	protected void submitAllEligibleActivities()throws Exception{
 		WhileGroup ag=(WhileGroup)action.getAjd();
 		Condition cond=ag.getCondition();
 		ProcessVariables vars=action.getProcessingContext().get(ProcessVariables.class);
 		cond.setProcessVariables(vars);
-		try{
-			if(!cond.evaluate()){
-				setToDoneSuccessfully();
-				return;
-			}
-		}catch(EvaluationException ee){
-			throw new ProcessingException(ee);
+		if(!cond.evaluate()){
+			setToDoneSuccessfully();
+			return;
 		}
 		List<String>subTasks=getOrCreateSubTasks();
-		
 		Iterate iterate=ag.getBody().getIterate();
 		boolean haveMore=iterate.hasNext();
 		if(!haveMore && (subTasks.size()==0)){
@@ -90,17 +84,14 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 					}
 				}catch(Exception ex){
 					setToDoneAndFailed(Log.createFaultMessage("Exception occured", ex));
-					throw new ProcessingException(ex);
+					throw ex;
 				}
-
-			}catch(Exception ex){
-				throw new ProcessingException(ex);
 			}
 		}
 	}
 
 	@Override
-	protected void handleRunning() throws ProcessingException {
+	protected void handleRunning() throws Exception {
 		logger.trace("Handle running for {}", action.getUUID());
 		boolean subTasksStillRunning=false;
 
@@ -153,7 +144,7 @@ public class WhileGroupProcessor extends GroupProcessorBase{
 			}
 		}catch(Exception ex){
 			setToDoneAndFailed(Log.createFaultMessage("Error occurred", ex));
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 		if(subTasksStillRunning){
 			sleep(5, TimeUnit.SECONDS);

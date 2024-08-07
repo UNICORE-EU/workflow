@@ -8,7 +8,6 @@ import eu.unicore.workflow.pe.model.Activity;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionResult;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.ems.processors.DefaultProcessor;
 
 /**
@@ -25,7 +24,7 @@ public class RoutingActivityProcessor extends DefaultProcessor implements Consta
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		action.setStatus(ActionStatus.DONE);
 		action.setResult(new ActionResult(ActionResult.SUCCESSFUL,"Success.",0));
 		String myIteration=(String)action.getProcessingContext().get(PV_KEY_ITERATION);

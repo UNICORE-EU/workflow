@@ -11,7 +11,7 @@ import eu.unicore.util.Pair;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * iterator to traverse file sets
@@ -37,7 +37,7 @@ public class FileSetIterator extends ValueSetIterator {
 	 * @param workflowID - the workflow ID
 	 * @param fileSets - the file sets
 	 */
-	public FileSetIterator(String workflowID, FileSet... fileSets)throws eu.unicore.xnjs.ems.ProcessingException{
+	public FileSetIterator(String workflowID, FileSet... fileSets)throws ExecutionException {
 		this.workflowID=workflowID;
 		this.fileSets=fileSets;
 	}
@@ -46,7 +46,7 @@ public class FileSetIterator extends ValueSetIterator {
 	 * (re-)initialise the list of values from the defined filesets 
 	 * @throws ProcessingException
 	 */
-	protected void reInit()throws ProcessingException{
+	protected void reInit()throws ExecutionException {
 		List<Pair<String,Long>>results = new ArrayList<>();
 		for(FileSet f: fileSets){
 			try{
@@ -58,7 +58,7 @@ public class FileSetIterator extends ValueSetIterator {
 					results.addAll(r.resolve(workflowID, f));
 				}
 			}catch(Exception ex){
-				throw new ProcessingException(ex);
+				throw ExecutionException.wrapped(ex);
 			}
 		}
 		fillValuesArray(results);

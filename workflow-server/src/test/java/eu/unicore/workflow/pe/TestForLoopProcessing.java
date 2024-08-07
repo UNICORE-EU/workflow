@@ -31,7 +31,7 @@ import eu.unicore.workflow.pe.persistence.PEStatus;
 import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 import eu.unicore.xnjs.util.IOUtils;
 
 public class TestForLoopProcessing extends TestBase {
@@ -171,7 +171,7 @@ public class TestForLoopProcessing extends TestBase {
 		}
 
 		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)
-				throws ProcessingException {
+				throws ExecutionException {
 			ArrayList<Pair<String, Long>>results = new ArrayList<>();
 			for(int i=0;i<total;i++){
 				results.add(new Pair<>("file_"+i, size));

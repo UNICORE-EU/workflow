@@ -8,7 +8,6 @@ import eu.unicore.workflow.pe.model.DeclareVariableActivity;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
 import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * Processes a variable declaration
@@ -23,7 +22,7 @@ public class DeclarationActivityProcessor extends ProcessorBase{
 	}
 
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		action.setStatus(ActionStatus.RUNNING);
 		action.addLogTrace("Status set to RUNNING.");
 		DeclareVariableActivity activity=(DeclareVariableActivity)action.getAjd();

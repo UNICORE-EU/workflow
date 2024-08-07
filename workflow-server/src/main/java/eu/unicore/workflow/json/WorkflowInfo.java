@@ -37,9 +37,9 @@ public class WorkflowInfo {
 	}
 
 	/**
-	 * get the transitions that are outgoing from the source 
-	 * 
-	 * @param a - The activity
+	 * get the transitions that are outgoing from 'source' 
+	 *
+	 * @param source
 	 * @return a list of Transition elements (not a live copy, but a fixed copy)
 	 */
 	public List<JSONObject>getOutgoingTransitions(JSONObject source) throws JSONException {
@@ -51,9 +51,9 @@ public class WorkflowInfo {
 	}
 	
 	/**
-	 * get the transitions that are incoming to Subworkflow sub
-	 * 
-	 * @param sub - The activity
+	 * get the transitions that are incoming to 'sink'
+	 *
+	 * @param sink
 	 * @return a list of Transition elements (not a live copy, but a fixed copy)
 	 */
 	public List<JSONObject>getIncomingTransitions(JSONObject sink) throws JSONException {

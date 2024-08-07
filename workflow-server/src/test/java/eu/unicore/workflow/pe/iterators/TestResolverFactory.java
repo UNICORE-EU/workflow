@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 public class TestResolverFactory {
 
@@ -26,7 +26,7 @@ public class TestResolverFactory {
 	}
 
     @Test
-	public void testResolveSMS()throws ProcessingException{
+	public void testResolveSMS()throws Exception{
 		Resolver r=ResolverFactory.getResolver("https://unicore/rest/core/storages/...");
 		assert r!=null;
 		assert r instanceof StorageResolver;
@@ -34,7 +34,7 @@ public class TestResolverFactory {
 	
 	@Test
 	public void testResolverCannotResolveBase()throws Exception{
-		 assertThrows(ProcessingException.class, ()->{
+		 assertThrows(ExecutionException.class, ()->{
 			 ResolverFactory.getResolver("this does not exist");
 		 });
 		}

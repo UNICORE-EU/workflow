@@ -11,12 +11,12 @@ import eu.unicore.util.Pair;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 public class TestFileSetIterator {
 
 	@Test
-	public void testGetFile()throws ProcessingException{
+	public void testGetFile()throws Exception{
 		FileSetIterator fsi=new FileSetIterator("wf",(FileSet[])null);
 		String path="/foo/bar.txt";
 		assert "bar.txt" .equals (fsi.getFile(path));
@@ -35,7 +35,7 @@ public class TestFileSetIterator {
 			return true;
 		}
 		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)
-				throws ProcessingException {
+				throws ExecutionException {
 			ArrayList<Pair<String, Long>>results = new ArrayList<>();
 			for(int i=0;i<total;i++){
 				long thisSize=size+(random?size+r.nextInt(1024*1024):size);
@@ -62,7 +62,7 @@ public class TestFileSetIterator {
 	
 
 	@Test
-	public void testDefaultChunkedIteratorFormatString()throws ProcessingException{
+	public void testDefaultChunkedIteratorFormatString()throws Exception {
 		String format = ForEachFileIterator.DEFAULT_FORMAT;
 		String result=MessageFormat.format(format, 1, "test",".png");
 		assert "1_test.png".equals(result);

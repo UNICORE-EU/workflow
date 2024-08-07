@@ -13,8 +13,7 @@ import eu.unicore.workflow.pe.VariableConstants;
 import eu.unicore.workflow.pe.model.EvaluationException;
 import eu.unicore.workflow.pe.model.util.VariableUtil;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
-import eu.unicore.xnjs.ems.ProcessingException;
-import eu.unicore.xnjs.util.ErrorCode;
+import eu.unicore.xnjs.ems.ExecutionException;
 import eu.unicore.xnjs.util.ScriptEvaluator;
 
 /**
@@ -43,14 +42,13 @@ public class VariableSetIterator extends ValueSetIterator {
 	 * @param vars - ProcessVariables
 	 * @throws ProcessingException
 	 */
-	protected void reInit(final ProcessVariables vars)throws ProcessingException{
+	protected void reInit(final ProcessVariables vars)throws ExecutionException{
 		List<String>results = new ArrayList<>();
 		try{
 			zip(results,vars.copy(),null,variableSets);
 		}catch(Exception ex){
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
-
 		values=results.toArray(new String[results.size()]);	
 		if(logger.isDebugEnabled()){
 			StringBuilder sb=new StringBuilder();
@@ -157,7 +155,7 @@ public class VariableSetIterator extends ValueSetIterator {
 					Object next = vars.get(variableName);
 					vars.put(variableName, next);
 					if(nextValue.equals(String.valueOf(next))){
-						throw new ProcessingException(new ErrorCode(0,"Evaluation error: variable value did not change in loop iteration."));
+						throw new ExecutionException(0,"Evaluation error: variable value did not change in loop iteration.");
 					}
 					nextValue=String.valueOf(next);
 					c++;

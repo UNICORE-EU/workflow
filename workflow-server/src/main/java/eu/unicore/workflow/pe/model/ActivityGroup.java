@@ -7,10 +7,8 @@ import java.util.List;
 
 import eu.unicore.persist.util.Wrapper;
 import eu.unicore.util.Log;
-import eu.unicore.workflow.pe.iterators.IterationException;
 import eu.unicore.workflow.pe.xnjs.Constants;
 import eu.unicore.workflow.pe.xnjs.ProcessVariables;
-import eu.unicore.xnjs.ems.ProcessingException;
 
 /**
  * A group of activities connected by transitions
@@ -77,7 +75,7 @@ public class ActivityGroup extends ActivityContainer{
 		return false;
 	}
 
-	public void init()throws ProcessingException{
+	public void init()throws Exception{
 		init(null);
 	}
 
@@ -85,14 +83,10 @@ public class ActivityGroup extends ActivityContainer{
 	 * update this group: put activities that can be submitted 
 	 * into "READY" state.
 	 */
-	public void init(final ProcessVariables vars)throws ProcessingException{
+	public void init(final ProcessVariables vars)throws Exception{
 		for(Wrapper<Activity> wa: activities.values()){
 			Activity a = wa.get();
-			try{
-				a.getIterate().reset(vars);
-			}catch(IterationException ex){
-				throw new ProcessingException(ex);
-			}
+			a.getIterate().reset(vars);
 			if(isStartActivity(a)){
 					a.status=ActivityStatus.READY;
 			}

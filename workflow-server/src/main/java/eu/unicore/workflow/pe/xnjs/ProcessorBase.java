@@ -18,7 +18,6 @@ import eu.unicore.xnjs.XNJS;
 import eu.unicore.xnjs.ems.Action;
 import eu.unicore.xnjs.ems.ActionResult;
 import eu.unicore.xnjs.ems.ActionStatus;
-import eu.unicore.xnjs.ems.ProcessingException;
 import eu.unicore.xnjs.ems.processors.DefaultProcessor;
 
 /**
@@ -48,7 +47,7 @@ public abstract class ProcessorBase extends DefaultProcessor implements Constant
 	}
 	
 	@Override
-	protected void handleCreated() throws ProcessingException {
+	protected void handleCreated() throws Exception {
 		getStatistics();
 	}
 	

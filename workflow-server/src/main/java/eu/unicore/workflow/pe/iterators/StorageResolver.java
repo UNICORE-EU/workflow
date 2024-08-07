@@ -18,7 +18,7 @@ import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.iterators.FileSetIterator.FileSet;
 import eu.unicore.workflow.pe.iterators.ResolverFactory.Resolver;
 import eu.unicore.workflow.pe.persistence.WorkflowContainer;
-import eu.unicore.xnjs.ems.ProcessingException;
+import eu.unicore.xnjs.ems.ExecutionException;
 
 /**
  * resolve files on a UNICORE storage.
@@ -36,7 +36,7 @@ public class StorageResolver implements Resolver{
 	}
 
 	@Override
-	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ProcessingException {
+	public Collection<Pair<String,Long>> resolve(String workflowID, FileSet fileset) throws ExecutionException {
 		try{
 			String url=extractStorageURL(fileset.base);
 			String baseDir=extractBaseDir(fileset.base);
@@ -46,7 +46,7 @@ public class StorageResolver implements Resolver{
 			results.addAll(getMatches(sms,baseDir,fileset));
 			return results;
 		}catch(Exception ex){
-			throw new ProcessingException(ex);
+			throw ExecutionException.wrapped(ex);
 		}
 	}
 	
