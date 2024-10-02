@@ -62,15 +62,13 @@ public abstract class TestBase {
 		xnjs.start();
 		
 		//setup persistence
-		H2Persist<WorkflowContainer>persist = new H2Persist<>();
-		persist.setDaoClass(WorkflowContainer.class);
+		H2Persist<WorkflowContainer>persist = new H2Persist<>(WorkflowContainer.class, null);
 		Properties props=new Properties();
 		props.setProperty("persistence.directory", "target/data");
 		persist.setConfigSource(new PersistenceProperties(props));
 		persist.init();
 		PEConfig.getInstance().setPersistence(persist);
-		H2Persist<Locations>persist2 = new H2Persist<Locations>();
-		persist2.setDaoClass(Locations.class);
+		H2Persist<Locations>persist2 = new H2Persist<>(Locations.class, null);
 		persist2.setConfigSource(new PersistenceProperties(props));
 		persist2.init();
 		PEConfig.getInstance().setLocationStore(persist2);

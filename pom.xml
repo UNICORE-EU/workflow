@@ -7,7 +7,7 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>https://www.unicore.eu</url>
-  <version>3.7.1-SNAPSHOT</version>
+  <version>3.7.1</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
@@ -20,11 +20,12 @@
     <connection>scm:git:git://github.com/UNICORE-EU/workflow.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/workflow.git</developerConnection>
     <url>https://github.com/UNICORE-EU/workflow</url>
-    <tag>workflow-3.7.0</tag>
+    <tag>workflow-3.7.1</tag>
   </scm>
 
   <properties>
-    <unicorex.version>2.7.0</unicorex.version>
+    <unicorex.version>2.7.1</unicorex.version>
+    <junit.version>5.11.1</junit.version>
   </properties>
 
   <modules>
@@ -37,7 +38,7 @@
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>5.10.3</version>
+        <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
