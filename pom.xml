@@ -7,7 +7,7 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>https://www.unicore.eu</url>
-  <version>3.7.1</version>
+  <version>3.7.2-SNAPSHOT</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
@@ -20,7 +20,7 @@
     <connection>scm:git:git://github.com/UNICORE-EU/workflow.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/workflow.git</developerConnection>
     <url>https://github.com/UNICORE-EU/workflow</url>
-    <tag>workflow-3.7.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
