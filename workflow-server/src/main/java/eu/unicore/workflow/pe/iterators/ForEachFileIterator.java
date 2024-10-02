@@ -293,10 +293,10 @@ public class ForEachFileIterator extends Iteration implements ForEachIterate {
 		vars.put(EXPR_TOTAL_SIZE, source.getTotalFileSize());
 		Object res = ScriptEvaluator.evaluate(chunkSizeExpression, vars);
 		try{
-			return Integer.valueOf(String.valueOf(res));
+			return (int)Double.parseDouble(String.valueOf(res));
 		}
 		catch(Exception ex){
-			throw new IllegalArgumentException("Expression does not evaluate to an Integer! " +
+			throw new IllegalArgumentException("Expression does not evaluate to an integer! " +
 					"Result was '"+res+"' of class "+res.getClass());
 		}
 	}

@@ -32,6 +32,7 @@ import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 import eu.unicore.xnjs.ems.ExecutionException;
+import eu.unicore.xnjs.ems.Manager;
 import eu.unicore.xnjs.util.IOUtils;
 
 public class TestForLoopProcessing extends TestBase {
@@ -236,7 +237,6 @@ public class TestForLoopProcessing extends TestBase {
 		body.setActivities(a1);
 		ForGroup fl = new ForGroup("for1",wfID,body);
 		wf.setActivities(fl);
-
 		doProcess(wf);
 
 		assert Validate.wasInvoked("a1");

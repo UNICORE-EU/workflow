@@ -109,7 +109,6 @@ public abstract class TestBase {
 		PEConfig.getInstance().setProcessEngine(null);
 	}
 
-
 	protected void doProcess(PEWorkflow wf)throws Exception{
 		doProcess(wf,null);
 	}
