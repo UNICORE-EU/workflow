@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.client.core.EnumerationClient;
-import eu.unicore.services.rest.client.IAuthCallback;
+import eu.unicore.services.restclient.IAuthCallback;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
 /**
@@ -23,7 +23,7 @@ public class WorkflowFactoryClient extends BaseServiceClient {
 		String url = bc.create(job);
 		return new WorkflowClient(endpoint.cloneTo(url), security, auth);
 	}
-	
+
 	/**
 	 * get the list of workflows
 	 */

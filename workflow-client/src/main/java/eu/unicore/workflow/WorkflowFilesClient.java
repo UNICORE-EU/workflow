@@ -4,7 +4,7 @@ import java.util.Map;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
-import eu.unicore.services.rest.client.IAuthCallback;
+import eu.unicore.services.restclient.IAuthCallback;
 import eu.unicore.uas.json.JSONUtil;
 import eu.unicore.util.httpclient.IClientConfiguration;
 
@@ -18,15 +18,15 @@ public class WorkflowFilesClient extends BaseServiceClient {
 	public WorkflowFilesClient(Endpoint endpoint, IClientConfiguration security, IAuthCallback auth) {
 		super(endpoint, security, auth);
 	}
-	
+
 	public void register(Map<String,String> mappings) throws Exception {
 		bc.put(JSONUtil.asJSON(mappings));
-		}
-	
+	}
+
 	public Map<String,String> getMappings() throws Exception{
 		return JSONUtil.asMap(getProperties());
 	}
-	
+
 	public Map<String,String> getMappings(String query) throws Exception{
 		bc.pushURL(bc.getURL()+"/"+query);
 		try {

@@ -13,8 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import eu.unicore.services.Kernel;
-import eu.unicore.services.rest.client.BaseClient;
-import eu.unicore.services.rest.client.IAuthCallback;
+import eu.unicore.services.restclient.BaseClient;
+import eu.unicore.services.restclient.IAuthCallback;
 import eu.unicore.services.utils.TimeoutRunner;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;

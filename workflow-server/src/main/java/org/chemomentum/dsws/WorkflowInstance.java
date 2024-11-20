@@ -13,7 +13,7 @@ import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.services.InitParameters;
 import eu.unicore.services.messaging.ResourceDeletedMessage;
-import eu.unicore.services.rest.client.IAuthCallback;
+import eu.unicore.services.restclient.IAuthCallback;
 import eu.unicore.uas.impl.BaseResourceImpl;
 import eu.unicore.util.Log;
 import eu.unicore.util.httpclient.IClientConfiguration;

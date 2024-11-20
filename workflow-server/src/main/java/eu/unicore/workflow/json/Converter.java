@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import eu.unicore.services.restclient.utils.UnitParser;
 import eu.unicore.uas.json.JSONUtil;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.pe.iterators.CounterIteration;
@@ -39,7 +40,6 @@ import eu.unicore.workflow.pe.model.RoutingActivity;
 import eu.unicore.workflow.pe.model.ScriptCondition;
 import eu.unicore.workflow.pe.model.WhileGroup;
 import eu.unicore.workflow.pe.util.TestActivity;
-import eu.unicore.xnjs.util.UnitParser;
 
 public class Converter {
 

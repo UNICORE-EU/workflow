@@ -20,7 +20,7 @@ import eu.unicore.services.InitParameters;
 import eu.unicore.services.InitParameters.TerminationMode;
 import eu.unicore.services.Kernel;
 import eu.unicore.services.exceptions.ResourceUnknownException;
-import eu.unicore.services.registry.RegistryHandler;
+import eu.unicore.services.rest.registry.RegistryHandler;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;

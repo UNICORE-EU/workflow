@@ -1,7 +1,6 @@
 package eu.unicore.workflow.pe.util;
 
 import eu.unicore.workflow.Constants;
-
 import eu.unicore.workflow.pe.persistence.Filter;
 
 public class ParentIterationFilter implements Filter {

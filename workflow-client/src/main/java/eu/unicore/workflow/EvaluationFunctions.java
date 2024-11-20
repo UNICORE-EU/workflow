@@ -51,7 +51,7 @@ public interface EvaluationFunctions {
 	
 	/**
 	 * check if a file exists. This can also be a global file, if the path starts
-	 * with the logical filename prefix (i.e. "c9m")
+	 * with the logical filename prefix (i.e. "wf:")
 	 * 
 	 * @param activityID
 	 * @param path - the file path
@@ -61,7 +61,7 @@ public interface EvaluationFunctions {
 	/**
 	 * check if the length of a file is greater than zero. 
 	 * This can also refer to a global file, if the path starts
-	 * with "c9m:"
+	 * with "wf:"
 	 * 
 	 * @param activityID
 	 * @param path - the file path
@@ -71,7 +71,7 @@ public interface EvaluationFunctions {
 	/**
 	 * check if the length of a file is greater than zero. 
 	 * This can also refer to a global file, if the path starts
-	 * with "c9m:"
+	 * with "wf:"
 	 * 
 	 * @param activityID
 	 * @param path - the file path

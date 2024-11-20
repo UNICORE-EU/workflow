@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
-import eu.unicore.services.rest.client.RESTException;
+import eu.unicore.services.restclient.RESTException;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowClient.Status;
 import eu.unicore.workflow.WorkflowFactoryClient;
