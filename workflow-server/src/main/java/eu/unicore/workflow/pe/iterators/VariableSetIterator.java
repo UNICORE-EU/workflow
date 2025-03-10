@@ -40,7 +40,7 @@ public class VariableSetIterator extends ValueSetIterator {
 	/**
 	 * (re-)initialise the list of values from the defined variable sets
 	 * @param vars - ProcessVariables
-	 * @throws ProcessingException
+	 * @throws ExecutionException
 	 */
 	protected void reInit(final ProcessVariables vars)throws ExecutionException{
 		List<String>results = new ArrayList<>();

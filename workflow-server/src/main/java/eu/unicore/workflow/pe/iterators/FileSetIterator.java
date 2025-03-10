@@ -44,7 +44,7 @@ public class FileSetIterator extends ValueSetIterator {
 	
 	/**
 	 * (re-)initialise the list of values from the defined filesets 
-	 * @throws ProcessingException
+	 * @throws ExecutionException
 	 */
 	protected void reInit()throws ExecutionException {
 		List<Pair<String,Long>>results = new ArrayList<>();

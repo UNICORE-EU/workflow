@@ -95,21 +95,17 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 	 */
 	protected void scheduleWakeupCall(){
 		final String id=action.getUUID();
-		Runnable r=new Runnable(){
-			public void run(){
-				try{
-					ContinueProcessingEvent event=new ContinueProcessingEvent(id);
-					xnjs.get(InternalManager.class).handleEvent(event);
-				}catch(Exception ex){
-					Log.logException("Error continuing action <"+id+">", ex, logger);
-				}
-			}
-		};
 		boolean useNotifications = !Boolean.parseBoolean(getWork()
 				.getOption(JSONExecutionActivity.OPTION_NO_NOTIFICATIONS));
 		int wakeUpPeriod = useNotifications? 
 				properties.getStatusPollingInterval() : properties.getFastPollingInterval();
-		xnjs.getScheduledExecutor().schedule(r, wakeUpPeriod, TimeUnit.SECONDS);
+		xnjs.getScheduledExecutor().schedule(()->{
+			try{
+				xnjs.get(InternalManager.class).handleEvent(new ContinueProcessingEvent(id));
+			}catch(Exception ex){
+				Log.logException("Error continuing action <"+id+">", ex, logger);
+			}
+		}, wakeUpPeriod, TimeUnit.SECONDS);
 	}
 
 	private void submitJob() throws Exception {
@@ -167,7 +163,7 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 			builder.setProperty("blacklist",
 					WorkAssignmentUtils.toCommaSeparatedList(getWork().getBlacklist(), existingBL));
 		}
-		TargetSystemFinder f = new TargetSystemFinder();
+		TargetSystemFinder f = new TargetSystemFinder(null);
 		SiteClient sc = f.findTSS(
 				PEConfig.getInstance().getRegistry(), 
 				PEConfig.getInstance().getConfigProvider(), 

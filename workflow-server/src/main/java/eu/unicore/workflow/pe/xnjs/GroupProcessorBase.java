@@ -150,10 +150,7 @@ public abstract class GroupProcessorBase extends ProcessorBase {
 	 *  <li>the "success" result is stored in the WorkflowInfo persistence
 	 * </ul>
 	 * @param sub - the sub-action
-	 * @throws ExecutionException
-	 * @throws ProcessingException
-	 * @throws PersistenceException
-	 * @throws InterruptedException
+	 * @throws Exception
 	 */
 	protected void cleanupSubAction(Action sub) throws Exception {
 		//copy results

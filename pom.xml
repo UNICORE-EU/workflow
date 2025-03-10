@@ -7,25 +7,25 @@
   <description>UNICORE Workflow System</description>
   <inceptionYear>2007</inceptionYear>
   <url>https://www.unicore.eu</url>
-  <version>3.8.0</version>
+  <version>3.8.1</version>
   <name>UNICORE Workflow System</name>
 
   <parent>
     <groupId>eu.unicore</groupId>
     <artifactId>unicore-parent</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.3</version>
   </parent>
 
   <scm>
     <connection>scm:git:git://github.com/UNICORE-EU/workflow.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/UNICORE-EU/workflow.git</developerConnection>
     <url>https://github.com/UNICORE-EU/workflow</url>
-    <tag>HEAD</tag>
+    <tag>workflow-3.8.1</tag>
   </scm>
 
   <properties>
-    <unicorex.version>2.8.0</unicorex.version>
-    <junit.version>5.11.3</junit.version>
+    <unicorex.version>2.8.1</unicorex.version>
+    <junit.version>5.12.0</junit.version>
   </properties>
 
   <modules>

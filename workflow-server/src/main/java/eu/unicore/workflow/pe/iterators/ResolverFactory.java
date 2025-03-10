@@ -39,7 +39,7 @@ public class ResolverFactory {
 	/**
 	 * creates a new resolver instance for the given base
 	 * @param base
-	 * @throws ProcessingException
+	 * @throws ExecutionException
 	 */
 	public static Resolver getResolver(String base)throws ExecutionException {
 		for(Class<? extends Resolver> c: resolvers){
@@ -63,7 +63,7 @@ public class ResolverFactory {
 		 * @param workflowID
 		 * @param fileset
 		 * @return a collection of pairs (filename,size) where size is -1 if unknown
-		 * @throws ProcessingException
+		 * @throws ExecutionException
 		 */
 		public Collection<Pair<String, Long>> resolve(String workflowID, FileSet fileset)throws ExecutionException;
 	}
