@@ -107,7 +107,7 @@ public class WorkflowStartupTask implements Runnable{
 		 }
 		 return false;
 	}
-	
+
 	protected XNJS setupXNJS() throws Exception {
 		WorkflowProperties wp = kernel.getAttribute(WorkflowProperties.class);
 		ConfigurationSource cs = new ConfigurationSource();
@@ -116,8 +116,7 @@ public class WorkflowStartupTask implements Runnable{
 		String xnjsID = wp.isInternal()? "wf" : null;
 		XNJS xnjs = new XNJS(cs, xnjsID);
 		configureProcessing(xnjs);
-		
-		// configure persistence
+
 		PersistenceProperties pp = kernel.getPersistenceProperties();
 		PEConfig.getInstance().setPersistence(PersistenceFactory.get(pp).getPersist(WorkflowContainer.class));
 		PEConfig.getInstance().setLocationStore(PersistenceFactory.get(pp).getPersist(Locations.class));
@@ -125,43 +124,25 @@ public class WorkflowStartupTask implements Runnable{
 		PEConfig.getInstance().setProcessEngine(new XNJSProcessEngine(xnjs));
 		PEConfig.getInstance().setCallbackProcessor(new CallbackProcessorImpl(xnjs));
 
-		// configure registry
 		String type="standard";
-		String url = null;
 		RegistryHandler rh = RegistryHandler.get(kernel);
 		rh.getExternalRegistryClient();
 		if(wp.isInternal() || !rh.usesExternalRegistry()) {
 			type="internal";
-			url = kernel.getContainerProperties().getContainerURL()+"/rest/registries/default_registry";
+			PEConfig.getInstance().setInternalMode(true);
 		}
-		else {
-			url = rh.getExternalRegistryURLs()[0];
-		}
-		if(url.contains("/services/Registry")){
-			url = convertToREST(url);
-			logger.warn("Config has obsolete Registry URL, please use {}", url);
-		}
-		PEConfig.getInstance().setRegistryURL(url);
-		logger.info("Workflow engine running in {} mode, using registry <{}>", type, url);
-
+		logger.info("Workflow engine running in <{}> mode.", type);
 		return xnjs;
 	}
 
-
-	private String convertToREST(String soapURL) {
-		String base = soapURL.split("/services/")[0];
-		String regID = soapURL.split("res=")[1]; 
-		return base+"/rest/registries/"+regID;
-	}
-
 	public static class WFEngineModule extends AbstractModule {
-		
+
 		protected final Kernel kernel;
-		
+
 		protected final Properties properties;
-		
+
 		protected final WorkflowProperties workflowProperties;
-		
+
 		public WFEngineModule(Properties properties, Kernel kernel){
 			this.kernel = kernel;
 			this.properties = properties;
@@ -172,12 +153,12 @@ public class WorkflowStartupTask implements Runnable{
 		public WorkflowProperties getWorkflowProperties(){
 			return workflowProperties;
 		}
-		
+
 		@Provides
 		public Kernel getKernel(){
 			return kernel;
 		}
-		
+
 		@Override
 		protected void configure(){
 			bind(InternalManager.class).to(BasicManager.class);
@@ -187,7 +168,7 @@ public class WorkflowStartupTask implements Runnable{
 		}
 
 	}
-	
+
 	public static void configureProcessing(XNJS xnjs){
 
 		String[]types={
@@ -225,6 +206,7 @@ public class WorkflowStartupTask implements Runnable{
 
 	}
 
+	@Override
 	public void run() {
 		try{
 			init();
@@ -267,5 +249,5 @@ public class WorkflowStartupTask implements Runnable{
 		h.createResource(init);
 		logger.debug("Added {} resource to workflow submission service.", WorkflowFactoryHomeImpl.DEFAULT_RESOURCEID);
 	}
-	
+
 }

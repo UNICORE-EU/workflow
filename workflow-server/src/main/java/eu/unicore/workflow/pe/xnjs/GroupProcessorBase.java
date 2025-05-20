@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-import eu.unicore.persist.PersistenceException;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.pe.PEConfig;
 import eu.unicore.workflow.pe.model.Activity;
