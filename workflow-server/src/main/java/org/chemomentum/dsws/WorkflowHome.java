@@ -7,7 +7,7 @@ import eu.unicore.util.Log;
 public class WorkflowHome extends DefaultHome {
 
 	public static final String SERVICE_NAME = "WorkflowManagement";
-	
+
 	@Override
 	protected Resource doCreateInstance() {
 		return new WorkflowInstance();
@@ -20,13 +20,8 @@ public class WorkflowHome extends DefaultHome {
 		try{
 			//for each deployed instance, run the postRestart() method
 			for(String id: getStore().getUniqueIDs()){
-				WorkflowInstance i=(WorkflowInstance)getForUpdate(id);
-				try{
+				try(WorkflowInstance i=(WorkflowInstance)getForUpdate(id)){
 					i.postRestart();
-				}finally{
-					if(i!=null){
-						getStore().persist(i);
-					}
 				}
 			}
 		}catch(Exception ex){

@@ -27,13 +27,8 @@ public class WorkflowFactoryHomeImpl extends DefaultHome {
 		try{
 			//for each deployed instance, run the postRestart() method
 			for(String id: getStore().getUniqueIDs()){
-				WorkflowFactoryImpl i=(WorkflowFactoryImpl)getForUpdate(id);
-				try{
+				try(WorkflowFactoryImpl i=(WorkflowFactoryImpl)getForUpdate(id)){
 					i.postRestart();
-				}finally{
-					if(i!=null){
-						getStore().persist(i);
-					}
 				}
 			}
 		}catch(Exception ex){

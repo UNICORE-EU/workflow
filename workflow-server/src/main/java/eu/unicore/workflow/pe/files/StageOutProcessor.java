@@ -90,16 +90,12 @@ public class StageOutProcessor {
 		try{
 			l = p.getForUpdate(workflowID, 30, TimeUnit.SECONDS);
 			Map<String,String> locationMap  =  l.getLocations();
-
 			for(int i=0; i<outputs.length(); i++) {
 				JSONObject in = outputs.getJSONObject(i);
 				String target = in.getString("To");
 				String source = in.getString("From");
-				
 				getRemoteInfo(source);
-
 				Map<String,String>toRegister = new HashMap<>();
-				
 				if(remote.isDirectory) {
 					doCollectOutputs(toRegister, remote, target, remote.path);
 				}
@@ -118,7 +114,7 @@ public class StageOutProcessor {
 			}
 		}
 	}
-	
+
 	protected void doCollectOutputs(Map<String,String> collection, FileListEntry sourceFolder, 
 			String targetFolder, String baseDirectory) throws Exception {
 		for (FileListEntry child : storageClient.ls(sourceFolder.path).list(0, SMSBaseImpl.MAX_LS_RESULTS)) {

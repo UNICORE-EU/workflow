@@ -52,7 +52,7 @@ public class XNJSProcessEngine implements ProcessEngine {
 		action.getProcessingContext().put(Constants.PV_KEY_ITERATION, "");
 		WorkflowContainer attr=new WorkflowContainer();
 		attr.build(workflow);
-		if(securityTokens!=null) {
+		if(securityTokens!=null && securityTokens.getUserName()!=null) {
 			attr.setUserDN(securityTokens.getUserName());
 		}
 		else {

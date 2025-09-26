@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.chemomentum.dsws.ConversionResult;
 import org.chemomentum.dsws.WorkflowFactoryHomeImpl;
 import org.chemomentum.dsws.WorkflowFactoryImpl;
-import org.chemomentum.dsws.WorkflowHome;
 import org.chemomentum.dsws.WorkflowInstance;
 import org.chemomentum.dsws.WorkflowModel;
 import org.json.JSONArray;
@@ -85,8 +84,6 @@ public class Workflows extends ServicesBase {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createWorkflow(String json) throws Exception {
 		WorkflowFactoryImpl factory = null;
-		WorkflowInstance newWF = null;
-
 		try{
 			String newUID = Utilities.newUniqueID();
 
@@ -144,7 +141,6 @@ public class Workflows extends ServicesBase {
 			}
 			String[] tags = getTags(j);
 			factory.createNewWorkflow(newUID, cr, locations, name, tt, storageURL, tags);
-			kernel.getHome(WorkflowHome.SERVICE_NAME).done(newWF);
 			String location = getBaseURL()+"/"+newUID;
 			return Response.created(new URI(location)).build();
 		}catch(Exception ex){
