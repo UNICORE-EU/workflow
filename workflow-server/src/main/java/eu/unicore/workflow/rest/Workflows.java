@@ -144,15 +144,11 @@ public class Workflows extends ServicesBase {
 			}
 			String[] tags = getTags(j);
 			factory.createNewWorkflow(newUID, cr, locations, name, tt, storageURL, tags);
+			kernel.getHome(WorkflowHome.SERVICE_NAME).done(newWF);
 			String location = getBaseURL()+"/"+newUID;
 			return Response.created(new URI(location)).build();
 		}catch(Exception ex){
 			return handleError("Could not create workflow", ex, logger);
-		}
-		finally{
-			if(newWF !=null){
-				kernel.getHome(WorkflowHome.SERVICE_NAME).persist(newWF);
-			}
 		}
 	}
 

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import de.fzj.unicore.uas.UAS;
+import eu.unicore.uas.UAS;
 import eu.unicore.workflow.WorkflowProperties;
 import eu.unicore.workflow.xnjs.TestBase;
 import eu.unicore.xnjs.ems.Action;

@@ -8,13 +8,15 @@ import eu.unicore.workflow.pe.model.ActivityGroup;
 import eu.unicore.workflow.pe.xnjs.ActivityGroupProcessor;
 import eu.unicore.workflow.pe.xnjs.TestingActivityProcessor;
 import eu.unicore.workflow.xnjs.TestBase;
+import eu.unicore.xnjs.ConfigurationSource.ProcessorChain;
 
 public class TestXNJSSetup extends TestBase {
 
 	@Test
 	public void test1(){
 		assert(xnjs.haveProcessingFor(ActivityGroup.ACTION_TYPE));
-		List<String> p=xnjs.getProcessorChain(ActivityGroup.ACTION_TYPE);
+		ProcessorChain pc = xnjs.getProcessorChain(ActivityGroup.ACTION_TYPE);
+		List<String> p = pc.getProcessorClasses();
 		assert(p.size()==1);
 		assert(ActivityGroupProcessor.class.getName().equals(p.get(0)));
 	}
@@ -22,7 +24,8 @@ public class TestXNJSSetup extends TestBase {
 	@Test
 	public void test2(){
 		assert(xnjs.haveProcessingFor(TestingActivityProcessor.ACTION_TYPE));
-		List<String> p = xnjs.getProcessorChain(TestingActivityProcessor.ACTION_TYPE);
+		ProcessorChain pc = xnjs.getProcessorChain(TestingActivityProcessor.ACTION_TYPE);
+		List<String> p = pc.getProcessorClasses();
 		assert(p.size()==1);
 		assert(TestingActivityProcessor.class.getName().equals(p.get(0)));
 	}
