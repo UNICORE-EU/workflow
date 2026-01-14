@@ -132,7 +132,7 @@ public class FileIndirectionHelper {
 		try{
 			fts = sms.createExport(url_without_base,"BFT",null);
 			ByteArrayOutputStream baos = new LimitedByteArrayOutputStream(1024*1024);
-			((FiletransferOptions.Read)fts).readAllData(baos);
+			((FiletransferOptions.Read)fts).readFully(baos);
 			return baos.toString("UTF-8");
 		} finally{
 			try{

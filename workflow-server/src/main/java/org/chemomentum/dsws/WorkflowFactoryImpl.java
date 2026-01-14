@@ -9,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 import eu.unicore.security.SecurityTokens;
 import eu.unicore.services.Home;
 import eu.unicore.services.InitParameters;
-import eu.unicore.services.messaging.Message;
 import eu.unicore.services.messaging.PullPoint;
-import eu.unicore.services.messaging.ResourceDeletedMessage;
+import eu.unicore.services.messaging.impl.ResourceDeletedMessage;
 import eu.unicore.uas.impl.BaseResourceImpl;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
@@ -71,9 +70,9 @@ public class WorkflowFactoryImpl extends BaseResourceImpl {
 	public void processMessages(PullPoint p){
 		try{
 			while(p.hasNext()){
-				Message m = p.next();
+				var m = p.next();
 				if(m instanceof ResourceDeletedMessage){
-					String id = ((ResourceDeletedMessage) m).getDeletedResource();
+					String id = ((ResourceDeletedMessage) m).getDeletedInstance();
 					getModel().removeChild(id);
 				}
 			}

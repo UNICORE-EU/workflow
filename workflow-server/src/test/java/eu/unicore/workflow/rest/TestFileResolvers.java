@@ -62,7 +62,7 @@ public class TestFileResolvers extends WSSTestBase {
 		String smsURL = "http://localhost:64433/rest/core/storages/WORK";
 		StorageClient sms = new StorageClient(new Endpoint(smsURL),kernel.getClientConfiguration(),null);
 		HttpFileTransferClient ftc = (HttpFileTransferClient)sms.createImport("file_list.txt", false, -1, "BFT", null);
-		ftc.writeAllData(new ByteArrayInputStream(list.getBytes()));
+		ftc.write(new ByteArrayInputStream(list.getBytes()));
 		ftc.delete();
 
 		Collection<Pair<String,Long>>source = new ArrayList<>();

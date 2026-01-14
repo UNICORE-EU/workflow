@@ -1,11 +1,11 @@
 package eu.unicore.workflow.pe;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
 import eu.unicore.client.Endpoint;
@@ -211,9 +211,7 @@ public class ContextFunctions implements EvaluationFunctions {
 		HttpFileTransferClient ft = null;
 		try {
 			ft = (HttpFileTransferClient)sms.createExport(path, "BFT", null);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ft.readAllData(bos);
-			return bos.toString();
+			return IOUtils.toString(ft.getInputStream()," UTF-8");
 		}
 		finally{
 			if(ft!=null)ft.delete();
@@ -292,9 +290,7 @@ public class ContextFunctions implements EvaluationFunctions {
 		HttpFileTransferClient ft = null;
 		try {
 			ft = (HttpFileTransferClient)sms.createExport(path, "BFT", null);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ft.readAllData(bos);
-			return bos.toString();
+			return IOUtils.toString(ft.getInputStream()," UTF-8");
 		}
 		finally{
 			if(ft!=null)ft.delete();
