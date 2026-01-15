@@ -1,5 +1,7 @@
 # UNICORE Workflow service
 
+[![Unit tests](https://github.com/UNICORE-EU/workflow/actions/workflows/maven.yml/badge.svg)](https://github.com/UNICORE-EU/workflow/actions/workflows/maven.yml)
+
 This repository contains the source code for the UNICORE
 Workflow service, a server component that supports submission
 and execution of application workflows consisting of UNICORE jobs
