@@ -21,6 +21,11 @@
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
+      <groupId>eu.unicore.services</groupId>
+      <artifactId>use-core</artifactId>
+      <version>5.5.4-1</version>
+    </dependency>
+    <dependency>
       <groupId>eu.unicore</groupId>
       <artifactId>uas-core</artifactId>
     </dependency>
