@@ -211,7 +211,7 @@ public class ContextFunctions implements EvaluationFunctions {
 		HttpFileTransferClient ft = null;
 		try {
 			ft = (HttpFileTransferClient)sms.createExport(path, "BFT", null);
-			return IOUtils.toString(ft.getInputStream()," UTF-8");
+			return IOUtils.toString(ft.getInputStream(), "UTF-8");
 		}
 		finally{
 			if(ft!=null)ft.delete();
@@ -290,7 +290,7 @@ public class ContextFunctions implements EvaluationFunctions {
 		HttpFileTransferClient ft = null;
 		try {
 			ft = (HttpFileTransferClient)sms.createExport(path, "BFT", null);
-			return IOUtils.toString(ft.getInputStream()," UTF-8");
+			return IOUtils.toString(ft.getInputStream(), "UTF-8");
 		}
 		finally{
 			if(ft!=null)ft.delete();
