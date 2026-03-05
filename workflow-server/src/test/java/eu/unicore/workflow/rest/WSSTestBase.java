@@ -36,8 +36,8 @@ public abstract class WSSTestBase {
 	@BeforeAll
 	public static void setUp()throws Exception{
 		FileUtils.deleteQuietly(new File("target/data"));
-		uas=new UAS("src/test/resources/container.properties");
-		kernel=uas.getKernel();
+		uas = new UAS("src/test/resources/container.properties");
+		kernel = uas.getKernel();
 		uas.startSynchronous();
 	}
 	

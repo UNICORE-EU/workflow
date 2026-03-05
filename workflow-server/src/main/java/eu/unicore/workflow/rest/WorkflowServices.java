@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.chemomentum.dsws.WorkflowFactoryHomeImpl;
 
 import eu.emi.security.authn.x509.X509Credential;
 import eu.unicore.services.Kernel;
@@ -14,6 +15,7 @@ import eu.unicore.services.registry.LocalRegistryClient;
 import eu.unicore.services.registry.RegistryImpl;
 import eu.unicore.services.rest.USERestApplication;
 import eu.unicore.services.rest.registry.RegistryHandler;
+import eu.unicore.services.security.pdp.DefaultPDP;
 import eu.unicore.util.Log;
 import eu.unicore.workflow.WorkflowProperties;
 import jakarta.ws.rs.core.Application;
@@ -26,7 +28,17 @@ import jakarta.ws.rs.core.Application;
 public class WorkflowServices extends Application implements USERestApplication {
 
 	@Override
-	public void initialize(Kernel kernel) throws Exception {}
+	public void initialize(Kernel kernel) throws Exception {
+		DefaultPDP pdp = DefaultPDP.get(kernel);
+		if(pdp!=null) {
+			pdp.setServiceRules("workflows",
+					DefaultPDP.PERMIT_READ,
+					DefaultPDP.PERMIT_POST_FOR_USER);
+			pdp.setServiceRules(WorkflowFactoryHomeImpl.SERVICE_NAME,
+					DefaultPDP.PERMIT_READ,
+					DefaultPDP.PERMIT_POST_FOR_USER);
+		}
+	}
 
 	@Override
 	public Set<Class<?>> getClasses() {
