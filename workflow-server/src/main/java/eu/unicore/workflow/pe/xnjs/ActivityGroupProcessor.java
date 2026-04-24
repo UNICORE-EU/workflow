@@ -341,7 +341,7 @@ public class ActivityGroupProcessor extends GroupProcessorBase{
 			IClientConfiguration security = kernel.getClientConfiguration();
 			final BaseClient bc = new BaseClient(url, security, auth);
 			String res = new TimeoutRunner<String>( () -> {bc.postQuietly(msg); return "OK";},
-					kernel.getContainerProperties().getThreadingServices(),
+					kernel.getExecutorService(),
 					30, TimeUnit.SECONDS).call();
 			if(res==null)throw new TimeoutException("Timeout waiting for notification send/reply");
 
