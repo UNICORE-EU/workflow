@@ -48,6 +48,7 @@ public class TestRESTServices extends WSSTestBase {
 		assertEquals(1, client.getJobList().getUrls(0, 100).size());
 		client.abort();
 		client.delete();
+		client.close();
 	}
 	
 	@Test
@@ -59,6 +60,7 @@ public class TestRESTServices extends WSSTestBase {
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		client.delete();
+		client.close();
 	}
 	
 	@Test
@@ -70,6 +72,7 @@ public class TestRESTServices extends WSSTestBase {
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
 		client.delete();
+		client.close();
 	}
 	
 	@Test
@@ -89,6 +92,7 @@ public class TestRESTServices extends WSSTestBase {
 		System.out.println(wfProps.toString(2));
 		assert "456".equals(wfProps.getJSONObject("parameters").getString("COUNTER"));
 		client.delete();
+		client.close();
 	}
 	
 	@Test
@@ -120,6 +124,7 @@ public class TestRESTServices extends WSSTestBase {
 		mappings = fileList.getMappings("wf:date1/*");
 		assertEquals(1,  mappings.size());
 		client.delete();
+		client.close();
 	}
 	
 	@Test
