@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
@@ -102,7 +101,7 @@ public class ContextFunctions implements EvaluationFunctions {
 				return exitCode.intValue();
 			}
 			else {
-				throw new Exception("Exit code is null for job "+jc.getEndpoint().getUrl());
+				throw new Exception("Exit code is null for job "+jc.getEndpoint());
 			}			
 		}catch(Exception e){
 			throw errorReport(activityID, "Evaluation error", e);
@@ -260,8 +259,9 @@ public class ContextFunctions implements EvaluationFunctions {
 		String file = tok[1];
 		Kernel kernel = PEConfig.getInstance().getKernel();
 		IClientConfiguration sp = kernel.getClientConfiguration();
-		StorageClient sms = new StorageClient(new Endpoint(url), sp, getAuth());
-		return sms.stat(file).size;
+		try(StorageClient sms = new StorageClient(url, sp, getAuth())){
+			return sms.stat(file).size;
+		}
 	}
 
 	protected String logicalFileContent(String activityID, String path) throws Exception {
@@ -282,7 +282,7 @@ public class ContextFunctions implements EvaluationFunctions {
 		String file = tok[1];
 		Kernel kernel = PEConfig.getInstance().getKernel();
 		IClientConfiguration sp = kernel.getClientConfiguration();
-		return new Pair<>(new StorageClient(new Endpoint(url), sp, getAuth()), file);
+		return new Pair<>(new StorageClient(url, sp, getAuth()), file);
 	}
 
 	private String download(StorageClient sms, String path) throws Exception {
@@ -300,7 +300,7 @@ public class ContextFunctions implements EvaluationFunctions {
 	private JobClient getJobClient(String activityID, String iteration)throws Exception{
 		String url = findJobReference(activityID, iteration);
 		Kernel kernel = PEConfig.getInstance().getKernel();
-		return new JobClient(new Endpoint(url), kernel.getClientConfiguration(), getAuth());
+		return new JobClient(url, kernel.getClientConfiguration(), getAuth());
 	}
 
 	private IAuthCallback getAuth() throws Exception {

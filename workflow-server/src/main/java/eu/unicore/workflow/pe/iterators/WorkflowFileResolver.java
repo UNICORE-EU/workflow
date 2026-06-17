@@ -65,7 +65,7 @@ public class WorkflowFileResolver extends StorageResolver {
 			for(String logicalName: locations.getLocations().keySet()){
 				if(match(logicalName, loc) && !isExcluded(logicalName, fileSet)){
 					String physicalLocation = locations.getLocations().get(logicalName);
-					if(smsClient==null || !physicalLocation.contains(smsClient.getEndpoint().getUrl())){
+					if(smsClient==null || !physicalLocation.contains(smsClient.getEndpoint())){
 						smsClient = getSMSClient(extractStorageURL(physicalLocation),
 								workflowID, kernel.getClientConfiguration());
 					}

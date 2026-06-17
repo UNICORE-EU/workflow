@@ -2,7 +2,6 @@ package eu.unicore.workflow;
 
 import java.util.Map;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.services.restclient.IAuthCallback;
@@ -25,7 +24,7 @@ public class WorkflowClient extends BaseServiceClient {
 		HELD,
 	}
 
-	public WorkflowClient(Endpoint endpoint, IClientConfiguration security, IAuthCallback auth) {
+	public WorkflowClient(String endpoint, IClientConfiguration security, IAuthCallback auth) {
 		super(endpoint, security, auth);
 	}
 
@@ -47,13 +46,13 @@ public class WorkflowClient extends BaseServiceClient {
 	}
 
 	public EnumerationClient getJobList() throws Exception {
-		return new EnumerationClient(endpoint.cloneTo(getLinkUrl("jobs")), 
+		return new EnumerationClient(getLinkUrl("jobs"), 
 				getSecurityConfiguration(), 
 				getAuth());
 	}
 
 	public WorkflowFilesClient getFileList() throws Exception {
-		return new WorkflowFilesClient(endpoint.cloneTo(getLinkUrl("files")), 
+		return new WorkflowFilesClient(getLinkUrl("files"),
 				getSecurityConfiguration(), 
 				getAuth());
 	}

@@ -2,7 +2,6 @@ package eu.unicore.workflow;
 
 import java.util.Map;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.services.restclient.IAuthCallback;
 import eu.unicore.uas.json.JSONUtil;
@@ -15,7 +14,7 @@ import eu.unicore.util.httpclient.IClientConfiguration;
  */
 public class WorkflowFilesClient extends BaseServiceClient {
 
-	public WorkflowFilesClient(Endpoint endpoint, IClientConfiguration security, IAuthCallback auth) {
+	public WorkflowFilesClient(String endpoint, IClientConfiguration security, IAuthCallback auth) {
 		super(endpoint, security, auth);
 	}
 

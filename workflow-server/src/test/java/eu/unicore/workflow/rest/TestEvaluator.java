@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.workflow.WorkflowClient;
 import eu.unicore.workflow.WorkflowFactoryClient;
 import eu.unicore.workflow.pe.ContextFunctions;
@@ -19,7 +19,7 @@ public class TestEvaluator extends WSSTestBase {
 	public void testEvaluator()throws Exception{
 		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
 		waitWhileRunning(client);
-		String url = client.getEndpoint().getUrl();
+		String url = client.getEndpoint();
 		String wfID = url.substring(url.lastIndexOf("/")+1);
 		ContextFunctions ev = new ContextFunctions(wfID, "");
 		assert ev.exitCodeEquals("date1", 0);
@@ -41,6 +41,7 @@ public class TestEvaluator extends WSSTestBase {
 		}catch(EvaluationException e) {
 			System.out.println("As expected: "+e.getMessage());
 		}
+		IOUtils.closeQuietly(client);
 	}
 
 	@Test
@@ -63,7 +64,7 @@ public class TestEvaluator extends WSSTestBase {
 	
 	private WorkflowFactoryClient getFactoryClient() {
 		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
-		return new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
+		return new WorkflowFactoryClient(url,kernel.getClientConfiguration(),null);
 	}
 	
 	private WorkflowClient createWorkflow(String wfFileName) throws Exception {
@@ -76,7 +77,9 @@ public class TestEvaluator extends WSSTestBase {
 			wf.put("name", "n/a");
 		}
 		wf.put("storageURL","https://somestorage");
-		return getFactoryClient().submitWorkflow(wf);
+		try(var factory = getFactoryClient()){
+			return factory.submitWorkflow(wf);
+		}
 	}
 
 	protected JSONObject waitWhileRunning(WorkflowClient client) throws Exception {

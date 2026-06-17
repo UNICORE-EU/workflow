@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.persist.Persist;
@@ -135,11 +134,10 @@ public class StageOutProcessor {
 
 	protected void getRemoteInfo(String source) throws Exception {
 		if(storageClient==null) {
-			storageClient = new StorageClient(new Endpoint(workingDirectoryURL), 
+			storageClient = new StorageClient(workingDirectoryURL, 
 					PEConfig.getInstance().getKernel().getClientConfiguration(), 
 					PEConfig.getInstance().getAuthCallback(user));
 		}
-		
 		if(!FileSet.hasWildcards(source)){
 			remote = storageClient.stat(source);
 			boolean dir = remote.isDirectory;

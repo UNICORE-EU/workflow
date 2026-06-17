@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
@@ -30,7 +30,7 @@ public class TestFileResolvers extends WSSTestBase {
 	public void testResolveWorkflowFiles()throws Exception{
 		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
 		waitWhileRunning(client);
-		String wfURL = client.getEndpoint().getUrl();
+		String wfURL = client.getEndpoint();
 		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
 		WorkflowFileResolver resolver = new WorkflowFileResolver();
 		FileSet fileset = new FileSet("wf:", new String[] {"*/*"}, null, false, false);
@@ -53,14 +53,13 @@ public class TestFileResolvers extends WSSTestBase {
 	public void testIndirectResolve()throws Exception{
 		WorkflowClient client = createWorkflow("src/test/resources/json/date1.json");
 		waitWhileRunning(client);
-		String wfURL = client.getEndpoint().getUrl();
+		String wfURL = client.getEndpoint();
 		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
-
 		String list = 
 				"wf:date1/out\n" +
 				"wf:date1/err\n";
 		String smsURL = "http://localhost:64433/rest/core/storages/WORK";
-		StorageClient sms = new StorageClient(new Endpoint(smsURL),kernel.getClientConfiguration(),null);
+		StorageClient sms = new StorageClient(smsURL,kernel.getClientConfiguration(),null);
 		HttpFileTransferClient ftc = (HttpFileTransferClient)sms.createImport("file_list.txt", false, -1, "BFT", null);
 		ftc.write(new ByteArrayInputStream(list.getBytes()));
 		ftc.delete();
@@ -71,16 +70,19 @@ public class TestFileResolvers extends WSSTestBase {
 		Collection<Pair<String,Long>> results = fih.resolve();
 		System.out.println(results);
 		assertEquals(2, results.size());
+		IOUtils.closeQuietly(client, sms, ftc);
 	}
 	
 	private WorkflowFactoryClient getFactoryClient() {
 		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
-		return new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
+		return new WorkflowFactoryClient(url,kernel.getClientConfiguration(),null);
 	}
 	
 	private WorkflowClient createWorkflow(JSONObject wf) throws Exception {
 		wf.put("storageURL","https://somestorage");
-		return getFactoryClient().submitWorkflow(wf);
+		try(var factory = getFactoryClient()){
+			return factory.submitWorkflow(wf);
+		}
 	}
 
 	private WorkflowClient createWorkflow(String wfFileName) throws Exception {

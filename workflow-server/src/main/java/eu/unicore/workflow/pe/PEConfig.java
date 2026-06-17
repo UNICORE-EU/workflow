@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.registry.IRegistryClient;
-import eu.unicore.client.registry.RegistryClient;
 import eu.unicore.client.registry.RegistryClient.ServiceTypeFilter;
 import eu.unicore.persist.Persist;
 import eu.unicore.services.Kernel;
@@ -134,8 +132,8 @@ public class PEConfig {
 
 	public static class RC implements IRegistryClient {
 
-		private final static ServiceListFilter acceptAll = new ServiceListFilter(){
-			public boolean accept(Endpoint ep){return true;}
+		private final static ServiceListFilter acceptAll = (x)->{
+			return true;
 		};
 
 		final IRegistry backend;
@@ -145,26 +143,26 @@ public class PEConfig {
 		}
 
 		@Override
-		public List<Endpoint> listEntries(ServiceListFilter acceptFilter) throws Exception {
-			List<Endpoint>endpoints = new ArrayList<>();
+		public List<String> listEntries(ServiceListFilter acceptFilter) throws Exception {
+			List<String>endpoints = new ArrayList<>();
 			List<Map<String,String>> e =  backend.listEntries();
 			for(int i=0; i<e.size(); i++){
 				try{
-					Endpoint ep = toEP(e.get(i));
-					if(acceptFilter!=null && !acceptFilter.accept(ep))continue;
-					endpoints.add(ep);
+					Map<String,String> entry = e.get(i);
+					if(acceptFilter!=null && !acceptFilter.accept(entry))continue;
+					endpoints.add(toEP(entry));
 				}catch(Exception ex){}
 			}
 			return endpoints;
 		}
 
 		@Override
-		public List<Endpoint> listEntries() throws Exception {
+		public List<String> listEntries() throws Exception {
 			return listEntries(acceptAll);
 		}
 
 		@Override
-		public List<Endpoint> listEntries(String type) throws Exception {
+		public List<String> listEntries(String type) throws Exception {
 			return listEntries(new ServiceTypeFilter(type));
 		}
 
@@ -178,16 +176,10 @@ public class PEConfig {
 			return true;
 		}
 
-		private Endpoint toEP(Map<String,String>content){
+		private String toEP(Map<String,String>content){
 			String url = content.get("href");
 			if(url==null)url=content.get("Endpoint");
-			Endpoint ep = new Endpoint(url);
-			String type = content.get("type");
-			if(type==null)type=content.get("InterfaceName");
-			ep.setInterfaceName(type);
-			ep.setServerPublicKey(content.get(RegistryClient.SERVER_PUBKEY));
-			ep.setServerIdentity(content.get(RegistryClient.SERVER_IDENTITY));
-			return ep;
+			return url;
 		}
 	}
 }

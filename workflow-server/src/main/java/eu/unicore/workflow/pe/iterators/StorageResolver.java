@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.FileList;
 import eu.unicore.client.core.FileList.FileListEntry;
 import eu.unicore.client.core.StorageClient;
@@ -52,7 +51,7 @@ public class StorageResolver implements Resolver{
 	
 	protected Collection<Pair<String,Long>>getMatches(StorageClient sms, String base, FileSet fileSet)throws Exception{
 		String urlBase = //protocol+":"+
-				sms.getEndpoint().getUrl()+"/files";
+				sms.getEndpoint()+"/files";
 		List<Pair<String,Long>>result=new ArrayList<>();
 		FileList files = sms.ls(base);
 		for (FileListEntry file : files.list(0, 1000)) {
@@ -179,7 +178,7 @@ public class StorageResolver implements Resolver{
 	}
 	
 	public StorageClient getStorageClient(String url, IClientConfiguration sp, String user)throws Exception{
-		return new StorageClient(new Endpoint(url), sp, PEConfig.getInstance().getAuthCallback(user));
+		return new StorageClient(url, sp, PEConfig.getInstance().getAuthCallback(user));
 	}
 	
 	public int hashCode(){

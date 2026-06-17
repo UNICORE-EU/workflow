@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.StorageClient;
 import eu.unicore.services.InitParameters;
@@ -169,8 +168,10 @@ public class WorkflowInstance extends BaseResourceImpl {
 
 					String url = getModel().getStorageURL();
 					if (url != null && !url.toLowerCase().endsWith("home")) {
-						StorageClient sc = new StorageClient(new Endpoint(url), sec, auth);
-						sc.delete();
+						try(var sc = new StorageClient(url, sec, auth))
+						{
+							sc.delete();
+						}
 					}
 				} catch (Exception ex) {
 					logger.info("Could not remove storage for workflow {}", getUniqueID());
@@ -179,38 +180,35 @@ public class WorkflowInstance extends BaseResourceImpl {
 
 			final Collection<String> jobs = wfc.collectJobs();
 			final boolean jobCleanup = wp.isJobsCleanup();
-			Runnable r = new Runnable() {
-				public void run() {
-					if (destroy) {
-						if (jobCleanup)
-							logger.info("Will delete <{}> jobs from workflow <{}>", jobs.size(), getUniqueID());
-					} else {
-						logger.info("Will abort <{}> from workflow <{}>", jobs.size(), getUniqueID());
-					}
-					String operation = destroy ? "destroy" : "abort";
-					for (String job : jobs) {
-						try {
-							JobClient b = new JobClient(new Endpoint(job), sec, auth);
-							if (destroy) {
-								if (jobCleanup)
-									b.delete();
-							} else {
-								b.abort();
-							}
-						} catch (Exception e) {
-							Log.logException("Could not " + operation
-									+ " job.", e, logger);
+			Runnable r = () -> {
+				if (destroy) {
+					if (jobCleanup)
+						logger.info("Will delete <{}> jobs from workflow <{}>", jobs.size(), getUniqueID());
+				} else {
+					logger.info("Will abort <{}> from workflow <{}>", jobs.size(), getUniqueID());
+				}
+				String operation = destroy ? "destroy" : "abort";
+				for (String job : jobs) {
+					try (var b = new JobClient(job, sec, auth)){
+						if (destroy) {
+							if (jobCleanup)
+								b.delete();
+						} else {
+							b.abort();
 						}
+					} catch (Exception e) {
+						Log.logException("Could not " + operation
+								+ " job.", e, logger);
 					}
+				}
 
-					if (destroy) {
-						try {
-							PEConfig.getInstance().getPersistence().remove(getUniqueID());
-						} catch (Exception e) {
-							Log.logException(
-									"Could not delete persistent data for <"
-											+ getUniqueID() + ">", e, logger);
-						}
+				if (destroy) {
+					try {
+						PEConfig.getInstance().getPersistence().remove(getUniqueID());
+					} catch (Exception e) {
+						Log.logException(
+								"Could not delete persistent data for <"
+										+ getUniqueID() + ">", e, logger);
 					}
 				}
 			};

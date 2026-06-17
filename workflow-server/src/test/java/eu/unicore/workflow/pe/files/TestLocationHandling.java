@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.junit.jupiter.api.Test;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.Job;
 import eu.unicore.client.Job.Stage;
 import eu.unicore.client.core.StorageClient;
@@ -56,11 +55,13 @@ public class TestLocationHandling extends WSSTestBase {
 		FileUtils.writeStringToFile(new File("target/data/WORK/test1.dat"), "test 1", "UTF-8");
 		FileUtils.writeStringToFile(new File("target/data/WORK/test2.dat"), "test 2", "UTF-8");
 		
-		StorageClient sc = new StorageClient(new Endpoint(storageURL), 
+		try(var sc = new StorageClient(storageURL, 
 				kernel.getClientConfiguration(),
 				null);
-		assert 2 == sc.ls("/").list(0, 10).size();
-		
+			var fileList = sc.ls("/"))
+		{
+			assert 2 == fileList.list(0, 10).size();
+		}
 		JSONArray exports = new JSONArray();
 		
 		exports.put(new Stage().from("test1.dat").to("wf:out1").getJSON());

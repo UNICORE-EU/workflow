@@ -32,7 +32,6 @@ import eu.unicore.workflow.pe.util.TestActivity;
 import eu.unicore.workflow.pe.xnjs.Validate;
 import eu.unicore.workflow.xnjs.TestBase;
 import eu.unicore.xnjs.ems.ExecutionException;
-import eu.unicore.xnjs.ems.Manager;
 import eu.unicore.xnjs.util.IOUtils;
 
 public class TestForLoopProcessing extends TestBase {

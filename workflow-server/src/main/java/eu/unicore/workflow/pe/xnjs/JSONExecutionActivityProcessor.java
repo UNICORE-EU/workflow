@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.JobClient;
 import eu.unicore.client.core.JobClient.Status;
 import eu.unicore.client.core.SiteClient;
@@ -164,26 +163,28 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 					WorkAssignmentUtils.toCommaSeparatedList(getWork().getBlacklist(), existingBL));
 		}
 		TargetSystemFinder f = new TargetSystemFinder(null);
-		SiteClient sc = f.findTSS(
+		try(SiteClient sc = f.findTSS(
 				PEConfig.getInstance().getRegistry(), 
 				PEConfig.getInstance().getConfigProvider(), 
 				PEConfig.getInstance().getAuthCallback(user), 
 				builder, 
-				defaultStrategy);
-		JSONObject prefs = job.optJSONObject("User preferences");
-		if(prefs!=null) {
-			for(String attr: new String[]{"uid", "xlogin", "role",
-					"group", "pgid", "supgids", "supplementaryGroups" }) {
-				String value = prefs.optString(attr, null);
-				if(value!=null)sc.getUserPreferences().put(attr,value);
+				defaultStrategy)){
+			JSONObject prefs = job.optJSONObject("User preferences");
+			if(prefs!=null) {
+				for(String attr: new String[]{"uid", "xlogin", "role",
+						"group", "pgid", "supgids", "supplementaryGroups" }) {
+					String value = prefs.optString(attr, null);
+					if(value!=null)sc.getUserPreferences().put(attr,value);
+				}
+			}
+			try(JobClient jc = sc.submitJob(job)){
+				String wd = jc.getLinkUrl("workingDirectory");
+				action.getProcessingContext().put(WD_REF, wd);
+				action.getProcessingContext().put(USER, user);
+				action.setDirty();
+				return jc.getEndpoint();
 			}
 		}
-		JobClient jc = sc.submitJob(job);
-		String wd = jc.getLinkUrl("workingDirectory");
-		action.getProcessingContext().put(WD_REF, wd);
-		action.getProcessingContext().put(USER, user);
-		action.setDirty();
-		return jc.getEndpoint().getUrl();
 	}
 
 	private void storeJobURL(String jobURL) throws Exception {
@@ -255,11 +256,12 @@ public class JSONExecutionActivityProcessor extends ProcessorBase {
 
 	private Pair<Status,String>getJobStatus(String jobUrl) throws Exception {
 		String user = action.getProcessingContext().getAs(USER, String.class);
-		JobClient jc = new JobClient(new Endpoint(jobUrl), 
+		try(JobClient jc = new JobClient(jobUrl, 
 				PEConfig.getInstance().getConfigProvider().getClientConfiguration(jobUrl),
-				PEConfig.getInstance().getAuthCallback(user));
-		Status s = jc.getStatus();
-		return new Pair<>(s, "OK");
+				PEConfig.getInstance().getAuthCallback(user))){
+			Status s = jc.getStatus();
+			return new Pair<>(s, "OK");
+		}
 	}
 
 

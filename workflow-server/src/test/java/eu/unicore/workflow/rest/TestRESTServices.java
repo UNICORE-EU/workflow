@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.services.restclient.RESTException;
 import eu.unicore.workflow.WorkflowClient;
@@ -27,9 +27,10 @@ public class TestRESTServices extends WSSTestBase {
 
 	@Test
 	public void testBase()throws Exception{
-		WorkflowFactoryClient client = getFactoryClient();
-		JSONObject wfProps = client.getProperties();
-		System.out.println(wfProps.toString(2));
+		try(var client = getFactoryClient()){
+			JSONObject wfProps = client.getProperties();
+			System.out.println(wfProps.toString(2));
+		}
 	}
 	
 	@Test
@@ -98,7 +99,7 @@ public class TestRESTServices extends WSSTestBase {
 		waitWhileRunning(client);
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
-		String wfURL = client.getEndpoint().getUrl();
+		String wfURL = client.getEndpoint();
 		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
 		// check location map
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
@@ -131,7 +132,7 @@ public class TestRESTServices extends WSSTestBase {
 		waitWhileRunning(client);
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
-		String wfURL = client.getEndpoint().getUrl();
+		String wfURL = client.getEndpoint();
 		String wfID = wfURL.substring(wfURL.lastIndexOf("/")+1);
 		// check location map
 		Map<String,String> loc = PEConfig.getInstance().getLocationStore().read(wfID).getLocations();
@@ -143,6 +144,7 @@ public class TestRESTServices extends WSSTestBase {
 		System.out.println(files.toString(2));
 		assertNotNull(files.getString("wf:infile"));
 		client.delete();
+		IOUtils.closeQuietly(client, fileList);
 	}
 	
 	@Test
@@ -166,6 +168,7 @@ public class TestRESTServices extends WSSTestBase {
 				getJSONObject(0);
 		assertTrue(status.getString("errorMessage").contains("SUBMIT_FAILED"));
 		assertTrue(status.getString("status").equals("FAILED"));
+		IOUtils.closeQuietly(client);
 	}
 	
 	@Test
@@ -180,10 +183,11 @@ public class TestRESTServices extends WSSTestBase {
 				getJSONObject(0);
 		assertTrue(status.getString("errorMessage").contains("JOB_FAILED"));
 		assertTrue(status.getString("status").equals("FAILED"));
-		String url = client.getEndpoint().getUrl();
+		String url = client.getEndpoint();
 		String wfID = url.substring(url.lastIndexOf("/")+1);
 		Statistics stats = getXNJS().get(InternalManager.class).getAction(wfID).getProcessingContext().get(Statistics.class);
 		assertEquals(2, stats.getTotalJobs());
+		IOUtils.closeQuietly(client);
 	}
 	
 	@Test
@@ -193,16 +197,19 @@ public class TestRESTServices extends WSSTestBase {
 		waitWhileRunning(client);
 		wfProps = client.getProperties();
 		System.out.println(wfProps.toString(2));
+		IOUtils.closeQuietly(client);
 	}
 
 	private WorkflowFactoryClient getFactoryClient() {
 		String url = kernel.getContainerProperties().getContainerURL()+"/rest/workflows";
-		return new WorkflowFactoryClient(new Endpoint(url),kernel.getClientConfiguration(),null);
+		return new WorkflowFactoryClient(url,kernel.getClientConfiguration(),null);
 	}
 	
 	private WorkflowClient createWorkflow(JSONObject wf) throws Exception {
 		wf.put("storageURL","https://somestorage");
-		return getFactoryClient().submitWorkflow(wf);
+		try(var f = getFactoryClient()){
+			return f.submitWorkflow(wf);
+		}
 	}
 
 	private WorkflowClient createWorkflow(String wfFileName) throws Exception {

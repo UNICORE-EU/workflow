@@ -2,7 +2,6 @@ package eu.unicore.workflow;
 
 import org.json.JSONObject;
 
-import eu.unicore.client.Endpoint;
 import eu.unicore.client.core.BaseServiceClient;
 import eu.unicore.client.core.EnumerationClient;
 import eu.unicore.services.restclient.IAuthCallback;
@@ -15,20 +14,19 @@ import eu.unicore.util.httpclient.IClientConfiguration;
  */
 public class WorkflowFactoryClient extends BaseServiceClient {
 
-	public WorkflowFactoryClient(Endpoint endpoint, IClientConfiguration security, IAuthCallback auth) {
+	public WorkflowFactoryClient(String endpoint, IClientConfiguration security, IAuthCallback auth) {
 		super(endpoint, security, auth);
 	}
 
 	public WorkflowClient submitWorkflow(JSONObject job) throws Exception {
-		String url = bc.create(job);
-		return new WorkflowClient(endpoint.cloneTo(url), security, auth);
+		return new WorkflowClient(bc.create(job), security, auth);
 	}
 
 	/**
 	 * get the list of workflows
 	 */
 	public EnumerationClient getWorkflowList() throws Exception {
-		return new EnumerationClient(endpoint.cloneTo(endpoint.getUrl()), security, auth);
+		return new EnumerationClient(endpoint, security, auth);
 	}
 
 }

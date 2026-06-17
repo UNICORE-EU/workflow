@@ -24,11 +24,11 @@
   </scm>
 
   <properties>
-    <specification.version>11.0.1</specification.version>
+    <specification.version>11.1.0</specification.version>
     <compiler.fork>false</compiler.fork>
-    <package.version>11.0.1</package.version>
+    <package.version>11.1.0</package.version>
     <package.release>1</package.release>
-    <unicorex.version>3.0.1</unicorex.version>
+    <unicorex.version>3.1.0</unicorex.version>
     <junit.version>5.12.0</junit.version>
     <junit.p.version>1.12.0</junit.p.version>
   </properties>
