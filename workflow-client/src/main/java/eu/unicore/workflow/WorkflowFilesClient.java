@@ -19,7 +19,7 @@ public class WorkflowFilesClient extends BaseServiceClient {
 	}
 
 	public void register(Map<String,String> mappings) throws Exception {
-		bc.put(JSONUtil.asJSON(mappings));
+		bc.putQuietly(JSONUtil.asJSON(mappings));
 	}
 
 	public Map<String,String> getMappings() throws Exception{
